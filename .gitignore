@@ -16,4 +16,5 @@ DSaA/python/sorted_linked_list/.mypy_cache/
 CDM/.idea/
 CDM/venv/
 CDM/code/__pycache__/
+DSaA/rust/bbst/Cargo.lock
 

@@ -1,7 +1,7 @@
 mod print;
 mod rotate;
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Ok, Result};
 use std::{
     cmp::{max, Ordering},
     result,
@@ -114,14 +114,19 @@ impl Node {
                 }
                 Ordering::Equal => {
                     match (&node.left, &node.right) {
-                        (None, None) => *root = None,
-                        (Some(_), None) => *root = node.left.take(),
-                        (None, Some(_)) => *root = node.right.take(),
-                        (Some(_), Some(_)) => {
-                            node.data = Node::delete_min(&mut node.right).unwrap()
+                        (None, None) => {
+                            *root = None;
                         }
-                    }
-
+                        (Some(_), None) => {
+                            *root = node.left.take();
+                        }
+                        (None, Some(_)) => {
+                            *root = node.right.take();
+                        }
+                        (Some(_), Some(_)) => {
+                            node.data = Node::delete_min(&mut node.right).unwrap();
+                        }
+                    };
                     Ok(())
                 }
             };
@@ -135,10 +140,11 @@ impl Node {
     }
 
     fn delete_min(root: &mut BoxNode) -> Option<i32> {
-        // if let Some(ref mut root) = root {
         if root.as_ref().unwrap().left.is_some() {
             let root = root.as_mut().unwrap();
-            root.height -= 1;
+            if root.right.is_none() {
+                root.height -= 1;
+            }
             Node::delete_min(&mut root.left)
         } else {
             let node = root.take().unwrap();

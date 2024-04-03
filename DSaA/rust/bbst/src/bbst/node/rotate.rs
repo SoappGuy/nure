@@ -81,7 +81,6 @@ impl Node {
 
         if balance_factor == -2 {
             let left_balance = Node::balance_factor(&node.as_mut().unwrap().left);
-            // let right_balance = Node::balance_factor(&node.as_mut().unwrap().right);
 
             if left_balance <= 0 {
                 *node = Node::rotate_right(node.take());
@@ -102,26 +101,4 @@ impl Node {
             Node::update_height(node);
         }
     }
-
-    // pub fn balance(node: &mut BoxNode) {
-    //     let balance_factor = Node::balance_factor(node);
-    //
-    //     if balance_factor > 1 {
-    //         if let Some(node) = node {
-    //             if Node::balance_factor(&node.right) < 0 {
-    //                 node.right = Node::rotate_left(node.right.take());
-    //             }
-    //         }
-    //         *node = Node::rotate_right(node.take());
-    //     } else if balance_factor < -1 {
-    //         if let Some(node) = node {
-    //             if Node::balance_factor(&node.left) > 0 {
-    //                 node.left = Node::rotate_right(node.left.take());
-    //             }
-    //         }
-    //         *node = Node::rotate_left(node.take());
-    //     }
-    //
-    //     Node::update_height(node.as_mut().unwrap());
-    // }
 }
