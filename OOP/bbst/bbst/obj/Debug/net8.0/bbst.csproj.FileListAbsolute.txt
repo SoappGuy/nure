@@ -1,0 +1,14 @@
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/bin/Debug/net8.0/bbst
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/bin/Debug/net8.0/bbst.deps.json
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/bin/Debug/net8.0/bbst.runtimeconfig.json
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/bin/Debug/net8.0/bbst.dll
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/bin/Debug/net8.0/bbst.pdb
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.GeneratedMSBuildEditorConfig.editorconfig
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.AssemblyInfoInputs.cache
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.AssemblyInfo.cs
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.csproj.CoreCompileInputs.cache
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.dll
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/refint/bbst.dll
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.pdb
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/bbst.genruntimeconfig.cache
+/home/dumbnerd/stuff/projects/nure/OOP/bbst/bbst/obj/Debug/net8.0/ref/bbst.dll

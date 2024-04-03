@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Gm3y3NNla58JC2/qicLQf+7T67XeFshmrsg2/sGN4S5euFI0mMfLlSkVawFYNiIrSSmulljx8ROHx2BVsfsN5A==",
+  "success": true,
+  "projectFilePath": "/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/List.csproj",
+  "expectedPackageFiles": [
+    "/home/dumbnerd/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.3/microsoft.aspnetcore.app.ref.8.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

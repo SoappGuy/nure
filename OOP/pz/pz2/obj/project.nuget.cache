@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "8zxgx4wczsYUI9pE5V9wyOlAoy/AjaRA5lX8LsNDEFtmRcu4+quB9anvJlrGMfdAU5mFjJ6mXSjvX9of2DR4zw==",
+  "success": true,
+  "projectFilePath": "/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2/pz2.csproj",
+  "expectedPackageFiles": [
+    "/home/dumbnerd/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.3/microsoft.aspnetcore.app.ref.8.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

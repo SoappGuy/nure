@@ -1,0 +1,14 @@
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/bin/Debug/net8.0/pz2_oop
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/bin/Debug/net8.0/pz2_oop.deps.json
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/bin/Debug/net8.0/pz2_oop.runtimeconfig.json
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/bin/Debug/net8.0/pz2_oop.dll
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/bin/Debug/net8.0/pz2_oop.pdb
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.GeneratedMSBuildEditorConfig.editorconfig
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.AssemblyInfoInputs.cache
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.AssemblyInfo.cs
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.csproj.CoreCompileInputs.cache
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.dll
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/refint/pz2_oop.dll
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.pdb
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/pz2_oop.genruntimeconfig.cache
+/home/dumbnerd/stuff/projects/nure/OOP/pz2_oop/pz2_oop/obj/Debug/net8.0/ref/pz2_oop.dll

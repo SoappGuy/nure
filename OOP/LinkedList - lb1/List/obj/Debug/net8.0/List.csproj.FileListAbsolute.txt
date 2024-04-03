@@ -1,0 +1,14 @@
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/bin/Debug/net8.0/List
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/bin/Debug/net8.0/List.deps.json
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/bin/Debug/net8.0/List.runtimeconfig.json
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/bin/Debug/net8.0/List.dll
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/bin/Debug/net8.0/List.pdb
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.GeneratedMSBuildEditorConfig.editorconfig
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.AssemblyInfoInputs.cache
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.AssemblyInfo.cs
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.csproj.CoreCompileInputs.cache
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.dll
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/refint/List.dll
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.pdb
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/List.genruntimeconfig.cache
+/home/dumbnerd/stuff/projects/nure/OOP/lb1/List/obj/Debug/net8.0/ref/List.dll
