@@ -13,3 +13,7 @@ DSaA/rust/bbst/target/
 DSaA/python/sorted_linked_list/.idea/
 DSaA/python/sorted_linked_list/.venv/
 DSaA/python/sorted_linked_list/.mypy_cache/
+CDM/.idea/
+CDM/venv/
+CDM/code/__pycache__/
+
