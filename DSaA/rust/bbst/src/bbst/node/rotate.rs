@@ -71,7 +71,7 @@ impl Node {
         node.as_ref().map_or(0, |node| {
             let left_height = node.left.as_ref().map_or(0, |node| node.height);
             let right_height = node.right.as_ref().map_or(0, |node| node.height);
-            // println!("{}: {}", node.data, left_height - right_height);
+
             right_height - left_height
         })
     }

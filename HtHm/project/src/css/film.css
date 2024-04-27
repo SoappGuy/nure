@@ -1,0 +1,124 @@
+main {
+    display: grid;
+    grid-template-columns: 20% 1fr;
+    grid-gap: 25px;
+    position: relative;
+}
+
+/* about {{{ */
+#about {
+    grid-column: 1;
+}
+
+#about #poster img{
+    width: 100%;
+    border-radius: 20px;
+    transition: max-height 0.3s ease-out;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+#about #info {
+    border: 2px solid var(--overlay);
+    border-radius: 20px;
+}
+
+#about #info td {
+    border-bottom: 2px solid var(--overlay);
+    padding-top: 10px;
+    position: relative;
+    width: 100%;
+    white-space: nowrap;
+}
+
+#about #info tr {
+    width: 100%;
+    height: fit-content;
+}
+
+#about #info tr:last-child td {
+    border-bottom: none;
+    transition: background-color 0.3s ease;
+    border-radius: 0 0 10px 10px;
+    padding: 0 0 5px 5px;
+}
+
+#about #info tr:last-child td:hover {
+    background-color: var(--overlay);
+}
+
+#about #info p {
+    z-index: 1;
+    height: 100%;
+    position: relative;
+    visibility: hidden;
+}
+
+#about #info p.actor {
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+
+#about #info p#actors {
+    visibility: visible;
+}
+
+#about #info input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+#about #info input:checked ~ p.actor {
+    visibility: visible;
+    max-height: 500px;
+    border-bottom: 1px solid var(--overlay);
+    padding-top: 15px;
+}   
+/* }}} */
+
+
+/* video {{{ */
+#video {
+    grid-column: 2;
+}
+
+#video p {
+    font-size: large;
+    margin-bottom: 50px;
+}
+
+#video #player {
+    display: flex;
+    justify-content: center;
+}
+
+#video #player video {
+    border-radius: 20px;
+    border: 2px solid var(--overlay);
+    width: 80%;
+}
+/* }}} */
+
+
+@media (max-width: 968px) or (max-height: 460px) {
+    #about {
+        grid-column: 1 / 4;
+    }
+
+    #about #poster img {
+        display: none;
+    }
+
+    #about #info {
+        width: 100%;
+    } 
+
+    #video {
+        grid-column: 1 / 4;
+    }
+}

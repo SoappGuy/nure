@@ -76,12 +76,18 @@ impl Node {
     }
 
     pub(super) fn is_full(&self) -> bool {
-        let sides = (&self.left, &self.right);
+        // let sides = (&self.left, &self.right);
 
-        if let (Some(left), Some(right)) = sides {
-            left.is_full() && right.is_full()
-        } else {
-            matches!(sides, (None, None))
+        // if let (Some(left), Some(right)) = sides {
+        //     left.is_full() && right.is_full()
+        // } else {
+        //     matches!(sides, (None, None))
+        // }
+
+        match (&self.left, &self.right) {
+            (Some(left), Some(right)) => left.is_full() && right.is_full(),
+            (None, None) => true,
+            _ => false,
         }
     }
 
@@ -142,9 +148,11 @@ impl Node {
     fn delete_min(root: &mut BoxNode) -> Option<i32> {
         if root.as_ref().unwrap().left.is_some() {
             let root = root.as_mut().unwrap();
+
             if root.right.is_none() {
                 root.height -= 1;
             }
+
             Node::delete_min(&mut root.left)
         } else {
             let node = root.take().unwrap();

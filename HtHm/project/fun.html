@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ua">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="super duper puper online cinema">
+    <meta name="keywords" content="awesome, cinema, fun">
+    <meta name="author" content="dumbnerd">
+
+
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/fun.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
+
+    <title>Awesome Online Cinema</title>
+</head>
+<body>
+    <header>
+        <p class="logo">Fun</p>
+        <nav>
+            <ul class="menu">
+                <li id="first"> 
+                    <a href="index.html">Films</a>
+                    <ul class="dropdown">
+                        <li>
+                            <a href="/film1.html">Залізна людина</a>
+                        </li>
+                        <li>
+                            <a href="/film2.html">Залізна людина 2</a>
+                        </li>
+                        <li>
+                            <a href="/film3.html">Тор</a>
+                        </li>
+                        <li>
+                            <a href="/film4.html">Капітан Америка: Перший месник</a>
+                        </li>
+                        <li>
+                            <a href="/film5.html">Месники</a>
+                        </li>
+                        <li>
+                            <a href="/film6.html">Залізна людина 3</a>
+                        </li>
+                        <li>
+                            <a href="/film7.html">Тор: Темний Світ</a>
+                        </li>
+                    </ul>
+                </li>
+                <li id="last"><a href="fun.html">Fun</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="section_1">
+            <h1 class="title">Весело</h1>
+            <div id="article_section">
+                <article id="fun_1">
+                    <p>
+                        Дуже веселий текст, це не просто текст, це справжнісінький article, навіть із ID!
+                    </p>
+                    <p>
+                        На цій сторінці буде знаходитись білша частина потрібних елементів. Фон зображення, таблиці, списки і т.д.
+                    </p>
+                </article>
+
+                <div id="cat">
+                    <video src="src/trash/dancing_cat.webm" loop autoplay></video>
+                </div>
+            </div>
+        </section>
+
+        <section id="section_2">
+            <h1 class="title">Не дуже весело</h1>
+            <table>
+                <tr>
+                    <td>0 0</td>
+                    <td>0 1</td>
+                </tr>
+                <tr>
+                    <td>1 0</td>
+                    <td>1 1</td>
+                </tr>
+                <caption>
+                    Отакий вигляд має таблиця
+                </caption>
+            </table>
+        </section>
+
+        <section id="section_3">
+            <h1 class="title">Списки?</h1>
+            
+            <div id="lists">
+                <p>Отак виглядає list:</p>
+                <ol>
+                    <li>
+                        li 1                        
+                    </li>
+                    <li>
+                        li 2 with ul inside
+                        <ul>
+                            <li>
+                                li 3
+                            </li>
+                            <li>
+                                li 4
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        li 5            
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="section_4">
+            <h1 class="title">Фрейми, фрейми, фрейми...</h1>
+        
+            <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=36.225716471672065%2C50.01404948036192%2C36.229214072227485%2C50.015505889169816&amp;layer=mapnik">
+            </iframe>
+
+        </section>
+
+        <section id="section_5">
+            <h1 class="title">Відео та аудіо</h1>
+
+            <video src="src/trash/не_рік_ролл.mp4" controls="controls" poster="src/trash/не рікролл.png"></video>
+            <audio src="src/trash/не_рік_ролл.mp3" controls="controls"></audio>
+        </section>
+
+        <section id="section_6">
+            <h1 class="title">Spiral</h1>
+
+            <div id="spiral">
+                <div style="grid-column: 6 / 7; grid-row: 10 / 11;">
+                    <div class="circle" id="circle1"></div>
+                </div>
+
+
+                <div style="grid-column: 6 / 7; grid-row: 9 / 10;">
+                    <div class="circle" id="circle2"></div>
+                </div>
+                
+                
+                <div style="grid-column: 7 / 9; grid-row: 9 / 11;">
+                    <div class="circle" id="circle3"></div>
+                </div>
+                
+                
+                <div style="grid-column: 6 / 9; grid-row: 11 / 14;">
+                    <div class="circle" id="circle4"></div>
+                </div>
+                
+                
+                <div style="grid-column: 1 / 6; grid-row: 9 / 14;">
+                    <div class="circle" id="circle5"></div>
+                </div>
+                
+                
+                <div style="grid-column: 1 / 9; grid-row: 1 / 9;">
+                    <div class="circle" id="circle6"></div>
+                </div>
+                
+                
+                <div style="grid-column: 9 / 22; grid-row: 1 / 14;">
+                    <div class="circle" id="circle7"></div>
+                </div>
+                
+                
+                <div style="grid-column: 1 / 22; grid-row: 14 / 35;">
+                    <div class="circle" id="circle8"></div>
+                </div>
+            </div>         
+        </section>
+    </main>
+
+    <a href="#" id="go_back">
+        <p>&#8593;</p>
+    </a>
+
+    <footer>
+        <svg class="arrow" id="arrow" viewbox="0 0 512 512">
+            <polygon points="396.6,352 416,331.3 256,160 96,331.3 115.3,352 256,201.5 "/>
+        </svg>
+        
+        <section class="footer-main">
+            <div class="about">
+                <h3>About</h3>
+                <p>
+                    Як зрозуміло з назви - це просто чудовий сайт для перегляду відео, вам сподобається, обіцяю.
+                </p>
+                
+            </div>
+
+            <div class="gap"></div>
+
+            <div class="social">
+                <h3>Social</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/SoappGuy">github</a></li>
+                    <li><a href="https://t.me/pencel_z_kavunom">telegram</a></li>
+                    <li><a href="https://steamcommunity.com/profiles/76561199021955086/">steam</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <hr class="limiter">
+        
+        <section class="footer-copyright">
+            <p class="cp-text">
+                © No copyright 2024. dumbnerp inc. No rights reserved.
+            </p>
+        </section>
+
+    </footer>
+</body>
+</html>
