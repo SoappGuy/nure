@@ -44,6 +44,27 @@ public partial class MainWindow : Window
             FontSize = 16,
         });
 
+        if (SelectedFigure != null)
+        {
+            parentPanel.Children.Add(new TextBlock
+            {
+                Text = $"Area: {SelectedFigure.GetArea():F2}\nPerimeter: {SelectedFigure.GetPerimeter():F2}",
+                Foreground = Brushes.Bisque,
+                Padding = Thickness.Parse("3 0 0 0"),
+                FontSize = 10,
+            });
+        }
+        else if (SelectedImage != null)
+        {
+            parentPanel.Children.Add(new TextBlock
+            {
+                Text = $"Area: {SelectedImage.GetArea():F2}\nPerimeter: {SelectedImage.GetPerimeter():F2}",
+                Foreground = Brushes.Bisque,
+                Padding = Thickness.Parse("3 0 0 0"),
+                FontSize = 14,
+            });
+        }
+
         var properties = objectType.GetProperties();
         foreach (var property in properties)
         {
@@ -53,7 +74,6 @@ public partial class MainWindow : Window
             switch (property.Name)
             {
                 case "Color":
-                    textBox.Watermark = "#AARRGGBB";
                     textBox.LostFocus += HexColor_TextInput;       
                     break;
                 case "Scale":
@@ -73,7 +93,19 @@ public partial class MainWindow : Window
                 default:
                     break;
             }
-
+            
+            if (parentPanel.Name == "EditPanel")
+            {
+                if (SelectedFigure != null)
+                {
+                    textBox.Watermark = property.GetValue(SelectedFigure)?.ToString() ?? "";
+                }
+                else if (SelectedImage != null)
+                {
+                    textBox.Watermark = property.GetValue(SelectedImage)?.ToString() ?? "";
+                }
+            }
+            
             parentPanel.Children.Add(label);
             parentPanel.Children.Add(textBox);
             Inputs.Add(textBox.Name, textBox);

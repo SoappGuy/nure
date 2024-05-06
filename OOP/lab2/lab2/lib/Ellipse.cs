@@ -44,8 +44,11 @@ public class Ellipse : Figure
     public override double GetArea() {
         return Math.PI * this.Width/2 * this.Height/2;
     }
-    public override double GetPerimeter() {
-        return Math.PI * Math.Sqrt((this.Width * this.Width) + (this.Height * this.Height));
+    public override double GetPerimeter()
+    {
+        double a = this.Width / 2;
+        double b = this.Height / 2;
+        return 4 * ((Math.PI * a * b + (a - b) * (a - b)) / (a + b));
     }
 
     public override void Draw()
