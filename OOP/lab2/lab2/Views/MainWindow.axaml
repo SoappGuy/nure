@@ -3,18 +3,108 @@
         xmlns:vm="using:lab2.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400"
         x:Class="lab2.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="lab2">
+        Title="{Binding Title}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
+    
+    <DockPanel LastChildFill="True">
+        <Border Height="25" Background="Black" BorderBrush="DimGray" BorderThickness="2" DockPanel.Dock="Top">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <MenuItem Header="Open" Click="OpenMenuItem_OnClick"/>
+                    <MenuItem Header="Save" Click="SaveMenuItem_OnClick"/>
+                </MenuItem>
+            </Menu>
+        </Border>
+        
+        
+        <Border Height="25" Background="Black" BorderBrush="DimGray" BorderThickness="2" DockPanel.Dock="Bottom">
+            <TextBlock Name="MessageRow" Foreground="Red" Margin="7 0 0 0"></TextBlock>
+        </Border>
+        
+        
+        <Border Width="200" Background="Black" BorderBrush="DimGray" BorderThickness="2" DockPanel.Dock="Left">
+            <TabControl>
+                <TabItem Header="Create" Foreground="Bisque">
+                    <StackPanel 
+                        Name="FigureCreator" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Top"
+                        Spacing="25"
+                    >
+                        <ComboBox 
+                            Name="SpawnComboBox"
+                            SelectedIndex="0"
+                            MaxDropDownHeight="200"
+                            Foreground="Bisque"
+                            Width="170"
+                            SelectionChanged="OnObjectTypeSelected"
+                        >
+                            <ComboBoxItem>None</ComboBoxItem>
+                            <ComboBoxItem>Circuit</ComboBoxItem>
+                            <ComboBoxItem>Circle</ComboBoxItem>
+                            <ComboBoxItem>Ellipse</ComboBoxItem>
+                            <ComboBoxItem>Cone</ComboBoxItem>
+                            <ComboBoxItem>TruncCone</ComboBoxItem>
+                            <ComboBoxItem>Image</ComboBoxItem>
+                        </ComboBox>
+                        
+                        <StackPanel Name="SpawnPanel"></StackPanel>
+                        
+                        <Button
+                            Name="SpawnButton" 
+                            Width="170"
+                            IsVisible="False"
+                            Click="Spawn_OnClick"
+                            Margin="0 5 0 0"
+                        >
+                            Spawn
+                        </Button>
+                    </StackPanel>
+                </TabItem>
+                
+                <TabItem Name="Edit" Header="Edit" Foreground="Bisque">
+                    <StackPanel>
+                        <TextBlock Foreground="Bisque" Text="{Binding SelectedItem}" FontSize="14">FF</TextBlock>
+                        <StackPanel Name="EditPanel"></StackPanel>
+                        
+                        <Button 
+                            Name="ApplyButton"
+                            Width="170"
+                            IsVisible="False"
+                            Click="Edit_OnClick"
+                            Margin="0 5 0 0"
+                        >
+                            Apply
+                        </Button>
+                        
+                        <Button 
+                            Name="DeleteButton"
+                            Width="170"
+                            IsVisible="False"
+                            Click="Delete_OnClick"
+                            Margin="0 5 0 0"
+                        >
+                            Delete
+                        </Button>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Border>
+        
+        
+        <Border Background="Black" BorderBrush="DimGray" BorderThickness="2">
+            <Canvas Name="Main" ClipToBounds="True"></Canvas>
+        </Border>
+    </DockPanel>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
+    
 </Window>
