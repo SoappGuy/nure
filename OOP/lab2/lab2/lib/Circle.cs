@@ -30,7 +30,6 @@ public class Circle : Circuit
         
         canvas.PointerPressed += MainWindow.SetSelectedFigure;
         
-        
         Canvas.SetLeft(canvas, this.X);
         Canvas.SetTop(canvas, this.Y);
         

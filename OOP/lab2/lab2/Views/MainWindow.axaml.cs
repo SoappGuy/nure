@@ -141,6 +141,9 @@ public partial class MainWindow : Window
         
         switch (selectedTypeName)
         {
+            case "Dot":
+                type = typeof(Dot);
+                break;
             case "Circuit":
                 type = typeof(Circuit);
                 break;
@@ -224,7 +227,7 @@ public partial class MainWindow : Window
         bool isRadius =    Inputs.TryGetValue("txtRadius",     out TextBox? txtRadius)    && !string.IsNullOrEmpty(txtRadius.Text);
         bool isHeight =    Inputs.TryGetValue("txtHeight",     out TextBox? txtHeight)    && !string.IsNullOrEmpty(txtHeight.Text);
         bool isWidth =     Inputs.TryGetValue("txtWidth",      out TextBox? txtWidth)     && !string.IsNullOrEmpty(txtWidth.Text);
-        bool isScale =    Inputs.TryGetValue("txtScale",       out TextBox? txtScale)     && !string.IsNullOrEmpty(txtScale.Text);
+        bool isScale =     Inputs.TryGetValue("txtScale",       out TextBox? txtScale)     && !string.IsNullOrEmpty(txtScale.Text);
         bool isColor =     Inputs.TryGetValue("txtColor",      out TextBox? txtColor)     && !string.IsNullOrEmpty(txtColor.Text);
         bool isX =         Inputs.TryGetValue("txtX",          out TextBox? txtX)         && !string.IsNullOrEmpty(txtX.Text);
         bool isY =         Inputs.TryGetValue("txtY",          out TextBox? txtY)         && !string.IsNullOrEmpty(txtY.Text);
@@ -241,6 +244,9 @@ public partial class MainWindow : Window
     
         switch (selected?.Content)
         {
+            case "Dot":
+                fig = new Dot(x, y, color);
+                break;
             case "Circuit":
                 fig = new Circuit(radius, x, y, color);
                 break;
@@ -301,7 +307,7 @@ public partial class MainWindow : Window
         bool isRadius =    Inputs.TryGetValue("txtRadius",     out TextBox? txtRadius)    && !string.IsNullOrEmpty(txtRadius.Text);
         bool isHeight =    Inputs.TryGetValue("txtHeight",     out TextBox? txtHeight)    && !string.IsNullOrEmpty(txtHeight.Text);
         bool isWidth =     Inputs.TryGetValue("txtWidth",      out TextBox? txtWidth)     && !string.IsNullOrEmpty(txtWidth.Text);
-        bool isScale =    Inputs.TryGetValue("txtScale",       out TextBox? txtScale)     && !string.IsNullOrEmpty(txtScale.Text);
+        bool isScale =     Inputs.TryGetValue("txtScale",       out TextBox? txtScale)     && !string.IsNullOrEmpty(txtScale.Text);
         bool isColor =     Inputs.TryGetValue("txtColor",      out TextBox? txtColor)     && !string.IsNullOrEmpty(txtColor.Text);
         bool isX =         Inputs.TryGetValue("txtX",          out TextBox? txtX)         && !string.IsNullOrEmpty(txtX.Text);
         bool isY =         Inputs.TryGetValue("txtY",          out TextBox? txtY)         && !string.IsNullOrEmpty(txtY.Text);
@@ -326,6 +332,9 @@ public partial class MainWindow : Window
         
         switch (figType)
         {
+            case "Dot":
+                fig = SelectedFigure as Dot;
+                break;
             case "Circuit":
                 fig = SelectedFigure as Circuit;
                 fig.Radius = isRadius ? radius : fig.Radius;

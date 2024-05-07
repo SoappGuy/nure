@@ -49,6 +49,7 @@
                             SelectionChanged="OnObjectTypeSelected"
                         >
                             <ComboBoxItem>None</ComboBoxItem>
+                            <ComboBoxItem>Dot</ComboBoxItem>
                             <ComboBoxItem>Circuit</ComboBoxItem>
                             <ComboBoxItem>Circle</ComboBoxItem>
                             <ComboBoxItem>Ellipse</ComboBoxItem>

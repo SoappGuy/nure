@@ -49,6 +49,9 @@ public static class Serializer
                     string[] metadata = figString.Split(";");
                     switch (metadata[0])
                     {
+                        case "Dot":
+                            figures.Add(new Dot(metadata));
+                            break;
                         case "Circuit":
                             figures.Add(new Circuit(metadata));
                             break;
