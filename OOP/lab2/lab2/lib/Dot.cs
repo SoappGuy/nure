@@ -6,7 +6,7 @@ namespace lab2.lib;
 
 public class Dot : Figure
 {
-    private double _radius = 2.5;
+    private double _radius => this.Scaled(2.5);
 
     public Dot(double x, double y, string? color = null)
     {
