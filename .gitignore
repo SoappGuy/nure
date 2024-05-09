@@ -1,3 +1,9 @@
+*.7z
+*.zip
+*.tar*
+*/bin/*
+*/.idea*
+*/obj/*
 OOP/pz/.idea/
 OOP/pz/pz2/bin/
 OOP/pz/pz2/obj/
