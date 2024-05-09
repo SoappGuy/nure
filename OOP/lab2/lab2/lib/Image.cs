@@ -23,27 +23,37 @@ public class Image
     
     public int Width
     {
-        get => this._width;
+        get => (int) (this._width * this._scale);
         set
         {
             this._width = value;
-            if (this.Canvas != null) this.Canvas.Width = value;
+            if (this.Canvas != null) this.Canvas.Width = this.Width;
         }
     }
     public int Height
     {
-        get => this._height;
+        get => (int) (this._height * this._scale);
         set
         {
             this._height = value;
-            if (this.Canvas != null) this.Canvas.Height = value;
+            if (this.Canvas != null) this.Canvas.Height = this.Height;
         }
     }
 
     public List<Figure> Figures { get; set; }
     public Canvas Canvas;
-    
-    public double Scale { get; set; } = 1;
+
+    private double _scale = 1;
+    public double Scale
+    {
+        get => this._scale;
+        set
+        {
+            this._scale = value;
+            this.Width = this._width;
+            this.Height = this._height;
+        }
+    }
     public Figure this[int index]
     {
         get => this.Figures[index];

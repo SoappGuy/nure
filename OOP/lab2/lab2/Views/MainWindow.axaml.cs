@@ -44,54 +44,42 @@ public partial class MainWindow : Window
             FontSize = 16,
         });
 
-        if (SelectedFigure != null)
+        string text = 
+        (SelectedFigure != null ?
+            $"Area: {SelectedFigure.GetArea():F2}\nPerimeter: {SelectedFigure.GetPerimeter():F2}" 
+            :
+            (SelectedImage != null ?
+                $"Area: {SelectedImage.GetArea():F2}\nPerimeter: {SelectedImage.GetPerimeter():F2}" 
+                :
+                ""
+            )
+        );
+        
+        parentPanel.Children.Add(new TextBlock
         {
-            parentPanel.Children.Add(new TextBlock
-            {
-                Text = $"Area: {SelectedFigure.GetArea():F2}\nPerimeter: {SelectedFigure.GetPerimeter():F2}",
-                Foreground = Brushes.Bisque,
-                Padding = Thickness.Parse("3 0 0 0"),
-                FontSize = 10,
-            });
-        }
-        else if (SelectedImage != null)
-        {
-            parentPanel.Children.Add(new TextBlock
-            {
-                Text = $"Area: {SelectedImage.GetArea():F2}\nPerimeter: {SelectedImage.GetPerimeter():F2}",
-                Foreground = Brushes.Bisque,
-                Padding = Thickness.Parse("3 0 0 0"),
-                FontSize = 14,
-            });
-        }
-
+            Text = text,
+            Foreground = Brushes.Bisque,
+            Padding = Thickness.Parse("3 0 0 0"),
+            FontSize = 10,
+        });
+    
         var properties = objectType.GetProperties();
         foreach (var property in properties)
         {
             var label = new Label { Content = property.Name };
             var textBox = new TextBox { Name = $"txt{property.Name}", Tag = property.Name };
 
-            switch (property.Name)
+            switch (Type.GetTypeCode(property.PropertyType))
             {
-                case "Color":
+                case TypeCode.String:
                     textBox.LostFocus += HexColor_TextInput;       
                     break;
-                case "Scale":
-                case "X":
-                case "Y":
-                case "Width":
-                case "Height":
-                case "Radius":
-                case "BotRadius":
-                case "TopRadius":
+                case TypeCode.Double:
+                case TypeCode.Int32:
                     textBox.LostFocus += NumberInput_TextInput;
                     break;
-                case "Item":
-                case "Figures":
-                    continue;
-                    break;
                 default:
-                    break;
+                    continue;
             }
             
             if (parentPanel.Name == "EditPanel")
@@ -307,7 +295,7 @@ public partial class MainWindow : Window
         bool isRadius =    Inputs.TryGetValue("txtRadius",     out TextBox? txtRadius)    && !string.IsNullOrEmpty(txtRadius.Text);
         bool isHeight =    Inputs.TryGetValue("txtHeight",     out TextBox? txtHeight)    && !string.IsNullOrEmpty(txtHeight.Text);
         bool isWidth =     Inputs.TryGetValue("txtWidth",      out TextBox? txtWidth)     && !string.IsNullOrEmpty(txtWidth.Text);
-        bool isScale =     Inputs.TryGetValue("txtScale",       out TextBox? txtScale)     && !string.IsNullOrEmpty(txtScale.Text);
+        bool isScale =     Inputs.TryGetValue("txtScale",      out TextBox? txtScale)     && !string.IsNullOrEmpty(txtScale.Text);
         bool isColor =     Inputs.TryGetValue("txtColor",      out TextBox? txtColor)     && !string.IsNullOrEmpty(txtColor.Text);
         bool isX =         Inputs.TryGetValue("txtX",          out TextBox? txtX)         && !string.IsNullOrEmpty(txtX.Text);
         bool isY =         Inputs.TryGetValue("txtY",          out TextBox? txtY)         && !string.IsNullOrEmpty(txtY.Text);
@@ -337,32 +325,32 @@ public partial class MainWindow : Window
                 break;
             case "Circuit":
                 fig = SelectedFigure as Circuit;
-                fig.Radius = isRadius ? radius : fig.Radius;
+                if (isRadius && radius != fig.Radius) fig.Radius = radius;
                 break;
             case "Circle":
                 fig = SelectedFigure as Circle;
-                fig.Radius = isRadius ? radius : fig.Radius;
+                if (isRadius && radius != fig.Radius) fig.Radius = radius;
                 break;
             case "Ellipse":
                 fig = SelectedFigure as Ellipse;
-                fig.Height = isHeight ? height : fig.Height;
-                fig.Width = isWidth ? width : fig.Width;
+                if (isHeight && height != fig.Height) fig.Height = height;
+                if (isWidth && width != fig.Width) fig.Width = width; 
                 break;
             case "Cone":
                 fig = SelectedFigure as Cone;
-                fig.Radius = isRadius ? radius : fig.Radius;
-                fig.Height = isHeight ? height : fig.Height;
+                if (isRadius && radius != fig.Radius) fig.Radius = radius;
+                if (isHeight && height != fig.Height) fig.Height = height;
                 break;
             case "TruncCone":
                 fig = SelectedFigure as TruncCone;
-                fig.BotRadius = isBotRadius ? botRadius : fig.BotRadius;
-                fig.TopRadius = isTopRadius ? topRadius : fig.TopRadius;
-                fig.Height = isHeight ? height : fig.Height;
+                if (isBotRadius && botRadius != fig.BotRadius) fig.BotRadius = botRadius;
+                if (isTopRadius && topRadius != fig.TopRadius) fig.TopRadius = topRadius;
+                if (isHeight && height != fig.Height) fig.Height = height;
                 break;
             case "Image":
                 fig = SelectedImage as lib.Image;
-                fig.Height = isHeight ? (int)height : fig.Height;
-                fig.Width = isWidth ? (int)width : fig.Width;
+                if (isHeight && height != fig.Height) fig.Height = height;
+                if (isWidth && width != fig.Width) fig.Width = width; 
                 break;
             default:
                 ShowError("Unexpected Figure");
@@ -411,18 +399,19 @@ public partial class MainWindow : Window
     
     private void OnKeyUp(object sender, KeyEventArgs e)
     {
-        _keyStates[e.Key] = false;
+        this._keyStates[e.Key] = false;
     }
     
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        _keyStates[e.Key] = true;
+        this._keyStates[e.Key] = true;
 
-        _keyStates.TryGetValue(Key.W, out bool W);
-        _keyStates.TryGetValue(Key.A, out bool A);
-        _keyStates.TryGetValue(Key.S, out bool S);
-        _keyStates.TryGetValue(Key.D, out bool D);
-        _keyStates.TryGetValue(Key.LeftCtrl, out bool LeftCtrl);
+        this._keyStates.TryGetValue(Key.W, out bool W);
+        this._keyStates.TryGetValue(Key.A, out bool A);
+        this._keyStates.TryGetValue(Key.S, out bool S);
+        this._keyStates.TryGetValue(Key.D, out bool D);
+        this._keyStates.TryGetValue(Key.LeftCtrl, out bool LeftCtrl);
+        this._keyStates.TryGetValue(Key.LeftShift, out bool LeftShift);
         
         double x = 0;
         double y = 0;
@@ -439,7 +428,14 @@ public partial class MainWindow : Window
         }
         else if (SelectedImage != null)
         {
-            SelectedImage.Move(x, y);
+            if (LeftShift)
+            {
+                SelectedImage.MoveChildren(x, y);    
+            }
+            else
+            {
+                SelectedImage.Move(x, y);    
+            }
             IsSaved = false;
         }
 

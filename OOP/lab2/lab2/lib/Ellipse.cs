@@ -56,8 +56,6 @@ public class Ellipse : Figure
         var canvas = new Canvas
         {
             Tag = this,
-            // Width = this.Width,
-            // Height = this.Height,
             Background = Brushes.Transparent,
         };
         
