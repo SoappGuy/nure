@@ -87,14 +87,14 @@ public class Image
         string[] metadata = header.Split(";");
         this.X = double.Parse(metadata[0]);
         this.Y = double.Parse(metadata[1]);
-        this.Width = int.Parse(metadata[2]);
-        this.Height = int.Parse(metadata[3]);
+        this._width = int.Parse(metadata[2]);
+        this._height = int.Parse(metadata[3]);
         this.Color = metadata[4];
         this.Figures = [];
         this.Canvas = new Canvas
         {
-            Width = this.Width,
-            Height = this.Height,
+            Width = this._width,
+            Height = this._height,
             ClipToBounds = true,
             Background = Brushes.Transparent,
             Tag = this,
@@ -108,6 +108,7 @@ public class Image
         }
 
         this.Scale = double.Parse(metadata[5]);
+        this.DrawAll();
     }
     
     public void Move(double x, double y) {
@@ -147,12 +148,20 @@ public class Image
         this.Figures.RemoveAt(index);
     }
 
-    public void Concat(Image other)
+    public static Image Concat(Image img1, Image img2)
     {
-        foreach (var fig in other.Figures)
+        var img3 = new lib.Image(img1.X, img1.Y, Math.Max(img1._width, img2._width), Math.Max(img1._height, img2._height));
+        
+        foreach (var fig in img1.Figures)
         {
-            this.Add(fig);
+            img3.Add(fig);
         }
+        foreach (var fig in img2.Figures)
+        {
+            img3.Add(fig);
+        }
+        
+        return img3;
     }
     
     public double GetArea()
@@ -208,7 +217,7 @@ public class Image
     public override string ToString()
     {
         return this.Figures.Aggregate(
-            $"{this.X};{this.Y};{this.Width};{this.Height};{this.Color};{this.Scale}\n", 
+            $"{this.X};{this.Y};{this._width};{this._height};{this.Color};{this.Scale}\n", 
             (current, fig) => current + $"{fig.ToString()}\n"
                 );
         

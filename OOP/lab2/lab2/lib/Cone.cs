@@ -141,8 +141,8 @@ public class Cone : Figure
         cone.Children.Add(ellipse2);
         cone.Children.Add(ellipse3);
         
-        Canvas.SetLeft(cone, this.X);
-        Canvas.SetTop(cone, this.Y);
+        Canvas.SetLeft(cone, this.X * (this.ParentImage?.Scale ?? 1));
+        Canvas.SetTop(cone, this.Y * (this.ParentImage?.Scale ?? 1));
         this.ParentImage?.Canvas.Children.Add(cone);
     }
 }

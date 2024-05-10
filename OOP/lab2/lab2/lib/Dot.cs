@@ -52,8 +52,8 @@ public class Dot : Figure
         
         canvas.PointerPressed += MainWindow.SetSelectedFigure;
         
-        Canvas.SetLeft(canvas, this.X);
-        Canvas.SetTop(canvas, this.Y);
+        Canvas.SetLeft(canvas, this.X * (this.ParentImage?.Scale ?? 1));
+        Canvas.SetTop(canvas, this.Y * (this.ParentImage?.Scale ?? 1));
         
         this.ParentImage?.Canvas.Children.Add(canvas);
     }

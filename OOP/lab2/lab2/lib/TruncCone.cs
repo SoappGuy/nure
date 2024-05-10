@@ -165,8 +165,8 @@ public class TruncCone : Figure
         cone.Children.Add(ellipse3);
         cone.Children.Add(ellipse4);
         
-        Canvas.SetLeft(cone, this.X);
-        Canvas.SetTop(cone, this.Y);
+        Canvas.SetLeft(cone, this.X * (this.ParentImage?.Scale ?? 1));
+        Canvas.SetTop(cone, this.Y * (this.ParentImage?.Scale ?? 1));
         this.ParentImage?.Canvas.Children.Add(cone);
     }
     

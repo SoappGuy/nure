@@ -26,8 +26,24 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        
         this.KeyDown += OnKeyDown;
         this.KeyUp += OnKeyUp;
+
+        // var img1 = new lib.Image(0, 0, 100, 200);
+        // var img2 = new lib.Image(200, 250, 200, 100);
+        
+        // img1.Add(new Circle(25, 0, 0));
+        // img2.Add(new Cone(40, 50, 50, 10));
+        // var img3 = lib.Image.Concat(img1, img2);
+
+        // Main.Children.Add(img1.Canvas);
+        // Main.Children.Add(img2.Canvas);
+        // Main.Children.Add(img3.Canvas);
+        
+        // img1.DrawAll();
+        // img2.DrawAll();
+        // img3.DrawAll();
     }
     
     private void CreateUiForType(Type objectType, Panel parentPanel)
@@ -104,7 +120,8 @@ public partial class MainWindow : Window
                 
                 ApplyButton.IsVisible = false;
                 DeleteButton.IsVisible = false;
-            } else if (parentPanel.Name == "EditPanel")
+            } 
+            else if (parentPanel.Name == "EditPanel")
             {
                 ApplyButton.IsVisible = true;
                 DeleteButton.IsVisible = true;
