@@ -14,12 +14,101 @@ main section {
     justify-content: center;
 }
 
+#disappearing_image {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    z-index: 4;
+}
+
+/* section -1 {{{ */
+    #changeSizeForm {
+        justify-items: center;
+        text-align: left;
+        font-size: medium;
+        font-weight: lighter;
+        color: var(--subtext);
+        display: grid;
+        grid-template-columns: 1fr 60px;
+    }
+
+    section#section_-1 * {
+        margin: 2px;
+    }
+
+    section#section_-1 p, section#section_-1 input#send_button {
+        grid-column: 1 / 3;
+        text-align: center;
+    } 
+
+    section#section_-1 input#send_button {
+        width: 60%;
+    }
+
+    section#section_-1 #size_input {
+        width: 100%;
+    }
+    
+    section#section_-1 #text_input {
+        width: 95%;
+    }
+
+    #colored_square {
+        box-sizing: border-box;
+        width: 100%;
+        height: 150px;
+        padding: 15px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    #colored_square #buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .color_button {
+        width: 25px;
+        height: 75px;
+        border-radius: 10px;
+    }
+
+    .color_button#red {
+        background-color: red;
+    }
+    .color_button#green {
+        background-color: green;
+    }
+    .color_button#yellow {
+        background-color: yellow;
+    }
+    .color_button#blue {
+        background-color: blue;
+    }
+    .color_button#pink {
+        background-color: pink;
+    }
+
+    #square {
+        width: 75px;
+        height: 75px;
+        background-color: red;
+    }
+
+    #colored {
+        max-width: 100%;
+    }
+
+/* }}} */
+
 /* section 1 {{{ */
 
     section#section_1 {
         display: grid;
         grid-template-rows: 10% 1fr;
-        
+
     }
 
     section#section_1 h1 {
@@ -30,6 +119,7 @@ main section {
         grid-row: 2;
         display: grid;
         grid-template-columns: 2fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
     }
 
     article#fun_1 {
@@ -37,8 +127,22 @@ main section {
         width: 100%;
     }
 
+    div#cat{
+        grid-row: 1 / 4;
+        grid-column: 2;
+    }
+
     div#cat video {
         width: 100%;
+    }
+
+    #clock {
+        font-size: xxx-large;
+    }
+
+    #change_p_button {
+        width: 100px;
+        height: 25px;
     }
 
 /* }}} */
@@ -198,4 +302,3 @@ main section {
         width: 100%;
     }
 }
-

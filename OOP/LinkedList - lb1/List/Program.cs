@@ -8,11 +8,9 @@ class Program
         lst.PushRecursive(10);
         lst.PushRecursive(10);
         lst.PushRecursive(115);
-        lst.PushRecursive(10);
-        lst.PushRecursive(10);
         Console.WriteLine(lst.ToString());
-
-        Console.WriteLine(lst.FilteredDelete(115));
+        lst.IsShort = false;
+        // Console.WriteLine(lst.FilteredDelete(115));
         Console.WriteLine(lst.ToString());
 
         // // PushRecursive

@@ -84,7 +84,11 @@ public class List
             }
             else
             {
-                this.PushRecursive(5);
+                int count = this.Length <= 5 ? 6 - this.Length : 0;
+                for (int i = 0; i < count; i++)
+                {
+                    this.PushRecursive(5);   
+                }
             }
         }
     }
