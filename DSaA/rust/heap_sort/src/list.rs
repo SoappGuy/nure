@@ -15,11 +15,7 @@ impl List {
         let len = 0;
         let cap = 10;
         let items = vec![0; cap].into_boxed_slice();
-        Self {
-            len,
-            cap,
-            items,
-        }
+        Self { len, cap, items }
     }
 
     pub fn add(&mut self, item: i32) {
@@ -50,7 +46,11 @@ impl List {
     }
 
     fn heapify(arr: &mut [i32], i: usize, is_max_heap: bool) {
-        let comparator = if !is_max_heap { |a: i32, b: i32| b.cmp(&a) } else { |a: i32, b: i32| { a.cmp(&b) } };
+        let comparator = if !is_max_heap {
+            |a: i32, b: i32| b.cmp(&a)
+        } else {
+            |a: i32, b: i32| a.cmp(&b)
+        };
 
         let mut largest = i;
         let left = i * 2 + 1;
@@ -98,7 +98,15 @@ impl List {
 
 impl Display for List {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "[{}]", self.items[0..self.len].iter().map(|item| { item.to_string() }).collect::<Vec<String>>().join(", "));
+        writeln!(
+            f,
+            "[{}]",
+            self.items[0..self.len]
+                .iter()
+                .map(|item| { item.to_string() })
+                .collect::<Vec<String>>()
+                .join(", ")
+        );
         Ok(())
     }
 }

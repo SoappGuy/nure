@@ -29,6 +29,8 @@ public partial class MainWindow : Window
         
         this.KeyDown += OnKeyDown;
         this.KeyUp += OnKeyUp;
+        
+        
 
         // var img1 = new lib.Image(0, 0, 100, 200);
         // var img2 = new lib.Image(200, 250, 200, 100);

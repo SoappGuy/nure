@@ -1,9 +1,12 @@
 *.7z
 *.zip
 *.tar*
-*/bin/*
-*/.idea*
-*/obj/*
+*/bin/
+*/.idea/
+*/obj/
+*/target/
+*/.venv/
+*/.mypy_cache
 OOP/pz/.idea/
 OOP/pz/pz2/bin/
 OOP/pz/pz2/obj/
