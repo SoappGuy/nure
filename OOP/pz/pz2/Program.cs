@@ -38,5 +38,62 @@ class Program
     
     static void Main(string[] args)
     {
+        var DoMath = (double R, double H, double L) => {
+            double A = R;
+            double B = R - H/2;
+            double C = L;
+            
+            double cosA = ((A * A) + (B * B) - (C * C) ) / (2 * A * B);
+            return Math.Acos(cosA);
+        };
+        
+        double R = 10;
+        double R1 = 10;
+        double R2 = 10;
+        double H = 10;
+        double X = 10;
+        double Y = 10;
+
+        double topAngle = 2 * DoMath(R, H, R1);
+        double botAngle = 2 * DoMath(R, H, R2);
+
+        double edgeAngle = 360 - topAngle - botAngle;
+
+        double start1 = edgeAngle / 2 + botAngle;
+        double start2 = start1 + edgeAngle + topAngle;
+
+        var topLine = (
+            ((X + R - R1), (Y + R - (H/2))),
+            ((X + R + R1), (Y + R - (H/2)))
+            );
+        var botLine = (
+            ((X + R - R2), (Y + R + (H/2))),
+            ((X + R + R2), (Y + R + (H/2)))
+        );
+
+        var topArc = (
+            (X, Y, (R + R), (R + R)), 
+            start1, edgeAngle
+            );
+        var botArc = (
+            (X, Y, (R + R), (R + R)), 
+            start2, edgeAngle
+        );
+
+        path.Data = Geometry.Parse(
+            $"M{Math.Round(m2x)},{Math.Round(my)} " +
+            $"A{originalRadius},{originalRadius} 0 0 1 {Math.Round(l2x)},{Math.Round(ly)} " +
+            $"L{Math.Round(l1x)},{Math.Round(ly)} " +
+            $"A{originalRadius},{originalRadius} 0 0 1 {Math.Round(m1x)},{Math.Round(my)} " +
+            $"z");
+
+        float botLeftX = X;
+        float topLeftX = X;
+
+        $"M{},{} " +
+        $"A{originalRadius},{originalRadius} 0 0 1 {Math.Round(l2x)},{Math.Round(ly)} " +
+        $"L{Math.Round(l1x)},{Math.Round(ly)} " +
+        $"A{originalRadius},{originalRadius} 0 0 1 {Math.Round(m1x)},{Math.Round(my)} " +
+        $"z"
     }
 }
