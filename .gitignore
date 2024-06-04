@@ -4,7 +4,7 @@
 */bin/
 */.idea/
 */obj/
-*/target/
+*/target
 */.venv/
 */.mypy_cache
 OOP/pz/.idea/
