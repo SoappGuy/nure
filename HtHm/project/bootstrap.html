@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Grid Example</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="src/css/style.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: var(--surface);
+        }
+
+        .custom-block img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .row > * {
+            transition: all 0.2s ease-out;
+            z-index: 1;
+            margin: 10px 0;
+        }
+
+        .row .custom-block:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row row1">
+        <div class="col-2 col-lg-3 col-xl-3 custom-block">
+            <img src="src/posters/Captain_America_The_First_Avenger_poster.jpg" alt="">
+        </div>
+        <div class="col-2 col-lg-3 col-xl-3 custom-block">
+            <img src="src/posters/TheAvengers2012Poster_ua.jpg" alt="">
+        </div>
+        <div class="col-2 col-lg-3 col-xl-3 custom-block">
+            <img src="src/posters/Thor_The_Dark_World_poster.jpg" alt="">
+        </div>
+        <div class="col-2 col-lg-3 col-xl-3 custom-block">
+            <img src="src/posters/Тор_(фільм,_2011).jpg" alt="">
+        </div>
+    </div>
+
+    <div class="row row2">
+        <div class="col-md-6 d-none d-md-block custom-block">
+            <img src="src/posters/Thor_The_Dark_World_poster.jpg" alt="">
+        </div>
+        <div class="col-md-6 custom-block">
+            <img src="src/posters/Тор_(фільм,_2011).jpg" alt="">
+        </div>
+    </div>
+
+    <div class="row row3">
+        <div class="col-6 custom-block">
+            <img src="src/posters/Залізна_людина_(фільм,_2008).jpeg" alt="">
+        </div>
+        <div class="col-3 d-none d-sm-block custom-block">
+            <img src="src/posters/Залізна_людина_2.jpg" alt="">
+        </div>
+        <div class="col-3 d-sm-none"></div>
+        <div class="col-3 custom-block">
+            <img src="src/posters/Залізна_людина_3.jpg" alt="">
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

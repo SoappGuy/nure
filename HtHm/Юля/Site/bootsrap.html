@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bootstrap grid</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+        body {
+            background-color: #D9CCC1;
+        }
+
+        .row {
+            margin: 10px 0;
+        }
+
+        .block {
+            height: 200px;
+        }
+        .block img {
+            border-radius: 7px;
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <div class="content">
+<!--        row 1-->
+        <div class="row">
+            <div class="col-4 col-md-4 col-lg-6 block">
+                <img src="images/bootstrap/1.png" alt="">
+            </div>
+            <div class="col-4 col-md-4 col-lg-6 block">
+                <img src="images/bootstrap/2.png" alt="">
+            </div>
+        </div>
+<!--        -->
+
+<!--        row 2-->
+        <div class="d-none d-sm-block row">
+            <div class="col-12 block">
+                <img src="images/bootstrap/3.png" alt="">
+            </div>
+        </div>
+
+        <div class="d-block d-sm-none row">
+            <div class="col-12 block">
+                <img src="images/bootstrap/7.png" alt="">
+            </div>
+        </div>
+
+<!--        row 3-->
+        <div class="row">
+            <div class="col-8 block">
+                <img src="images/bootstrap/4.png" alt="">
+            </div>
+            <div class="col-4 col-md-2 block">
+                <img src="images/bootstrap/5.png" alt="">
+            </div>
+            <div class="col-2 d-none d-md-block block">
+                <img src="images/bootstrap/6.png" alt="">
+            </div>
+        </div>
+<!--        -->
+
+<!--        row 4-->
+        <div class="d-none d-sm-block row">
+            <div class="col-12 block">
+                <img src="images/bootstrap/7.png" alt="">
+            </div>
+        </div>
+
+        <div class="d-block d-sm-none row">
+            <div class="col-12 block">
+                <img src="images/bootstrap/3.png" alt="">
+            </div>
+        </div>
+<!--        -->
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description"/>
+    <title>Garbage</title>
+    <link href="styles/style.css" rel="stylesheet"/>
+    <link href="styles/clock.css" rel="stylesheet" />
+
+    <style>
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 0 10%;
+        }
+
+        .block {
+            display: flex;
+            flex-direction: column;
+            border-radius: 7px;
+            border: 2px solid white;
+            height: fit-content;
+            margin: 10px 15px;
+            padding: 15px;
+        }
+
+        #imageMove {
+            width: 100px;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .colored_buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .colored_buttons button {
+            width: 100px;
+            height: 18px;
+            border: none;
+            border-radius: 7px;
+        }
+
+        .colored_buttons button:hover {
+            opacity: 0.7;
+        }
+
+        #red_button {
+            background-color: red;
+        }
+        #blue_button {
+            background-color: blue;
+        }
+        #green_button {
+            background-color: green;
+        }
+        #yellow_button {
+            background-color: yellow;
+        }
+        #orange_button {
+            background-color: orange;
+        }
+    </style>
+
+    <script src="script.js"></script>
+</head>
+<body>
+
+    <header id="header">
+        <img src="images/logo.png" alt="Логотип Daisy">
+
+        <input type="checkbox" id="burger">
+        <label for="burger" class="mainbutton">
+            <span>Меню</span>
+        </label>
+        <nav class="burger__list">
+            <ul>
+                <li>
+                    <a href="index.html" class="header__link">Головна</a>
+                </li>
+                <li>
+                    <a href="price.html" class="header__link">Послуги</a>
+                </li>
+                <li>
+                    <a href="contacts.html" class="header__link">Контакти</a>
+                </li>
+                <li>
+                    <a href="form.html" class="header__link">Запис</a>
+                </li>
+                <li>
+                    <a href="garbage.html" class="header__link">Смітничок</a>
+                </li>
+            </ul>
+        </nav>
+
+        <nav class="header__list">
+            <ul>
+                <li>
+                    <a href="index.html" class="header__link">Головна</a>
+                </li>
+                <li>
+                    <a href="price.html" class="header__link">Послуги</a>
+                </li>
+                <li>
+                    <a href="contacts.html" class="header__link">Контакти</a>
+                </li>
+                <li>
+                    <a href="form.html" class="header__link">Запис</a>
+                </li>
+                <li>
+                    <a href="garbage.html" class="header__link">Смітничок</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <img src="images/flower.png" alt="" id="imageMove">
+
+    <main>
+        <div class="block">
+            <h3>Текст, що змінює розмір</h3>
+
+            <label for="text1">текст:</label>
+            <input type="text" name="text1" id="text1">
+
+            <label for="size1">розмір:</label>
+            <input type="number" name="size1" id="size1">
+
+            <button onclick="textSize()">встановити</button>
+            <p id="change_size"></p>
+        </div>
+
+        <div class="block">
+            <h3>Змінити розмір всіх p на 15px </h3>
+            <button onclick="changeP()">тиць</button>
+        </div>
+
+        <div class="block">
+            <h3>Годинник</h3>
+            <h4 id="clock"></h4>
+        </div>
+
+        <div class="block">
+            <h3>Сховати контент</h3>
+            <button onclick="clearScreen()">тиць</button>
+        </div>
+
+        <div class="block">
+            <h3>Квадрат зі змінним кольором</h3>
+
+            <div style="display: flex; flex-direction: row; justify-content: space-around">
+                <div class="colored_buttons">
+                    <button id="red_button" onclick="squareColor('red')"></button>
+                    <button id="green_button" onclick="squareColor('green')"></button>
+                    <button id="blue_button" onclick="squareColor('blue')"></button>
+                    <button id="yellow_button" onclick="squareColor('yellow')"></button>
+                    <button id="orange_button" onclick="squareColor('orange')"></button>
+                </div>
+
+                <div id="square"
+                     style="background-color: black; width: 120px; height: 120px">
+                </div>
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Миша та клавіатура</h3>
+            <p id="mouse_stats"></p>
+            <p id="keyboard_stats"></p>
+        </div>
+
+        <div class="block">
+            <h3>Текст кукі</h3>
+            <p id="cookie_text">Розмір цього тексту можна змінювати на + та - <br>
+                він залишиться після перезавантаження сторінки</p>
+        </div>
+
+        <div class="block">
+            <h3>Різнокольоровий текст</h3>
+            <label for="text2">текст:</label>
+            <input type="text" name="text2" id="text2">
+
+            <button onclick="colorizeText()">встановити</button>
+            <p id="colored_text"></p>
+        </div>
+
+        <div class="block">
+            <h3>Інформація про користувача</h3>
+            <p id="user_info"></p>
+        </div>
+
+        <div class="block">
+            <h3>Інформація про файл</h3>
+            <input type="file" id="file_input">
+            <p id="file_info"></p>
+        </div>
+    </main>
+
+    <footer>
+        <div style="display: flex; flex-direction: column; align-items: center">
+            <div class="footer_top" style="display: flex; flex-direction: row;">
+                <div class="footer1" style="padding: 0 15px">
+                    <h5>Графік роботи</h5>
+                    <article>Пн-Пт 09:00-18:00</article>
+                    <article>Сб-Нд 10:00-16:00</article>
+                </div>
+                <div class="footer2" style="padding: 0 15px">
+                    <h5>Контакти</h5>
+                    <article>+380000000000</article>
+                </div>
+
+            </div>
+            <h5>©Daisy Салон краси у Харкові. Всі права захищені</h5>
+        </div>
+    </footer>
+    <a href="#header" id="link_to_top">Перейти на початок</a>
+
+    <script>
+        clock();
+        restoreFontSize();
+        userInfo();
+        document.getElementById('file_input').onchange = fileInfo;
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>15</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "JetBrains Mono";
+            font-size: 20px;
+        }
+
+        body {
+            background-color: #1E1F22;
+            height: 100vh;
+        }
+
+        div {
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container .mid {
+            flex-direction: row;
+        }
+
+        .yellow {
+            background-color: #FFC000;
+            align-self: flex-end;
+            justify-self: center;
+            flex: 0 0 8%;
+            width: 46%;
+            margin: 1% 2%;
+        }
+        .pink {
+            background-color: #E01CD7;
+            align-self: center;
+            justify-self: flex-start;
+            flex: 0 0 46%;
+            height: 8%;
+            margin: 1% 2%;
+        }
+        .viol {
+            background-color: #7030A0;
+            align-self: stretch;
+            justify-self: flex-end;
+            flex: 0 0 46%;
+            margin: 1% 2%;
+        }
+        .blue {
+            background-color: #01B0F1;
+            align-self: stretch;
+            justify-self: flex-end;
+            flex: 0 0 20%;
+            margin: 1% 2%;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        @media (max-width: 760px) {
+            .hide-sm {
+                display: none;
+            }
+            .show-sm {
+                display: flex;
+            }
+
+            .yellow {
+                align-self: stretch;
+                justify-self: center;
+                flex: 0 0 8%;
+                width: 96%;
+            }
+
+            .container .mid {
+                flex-direction: column;
+                flex-wrap: wrap;
+            }
+
+            .pink {
+                justify-self: flex-start;
+                flex: 0 0 8%;
+                width: 46%;
+            }
+            .viol {
+                align-self: center;
+                justify-self: flex-end;
+                flex: 0 0 76%;
+                width: 46%;
+                margin: 1% 2%;
+            }
+            .blue {
+                align-self: center;
+                justify-self: flex-end;
+                flex: 0 0 86%;
+                width: 46%;
+                margin: 1% 2%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="yellow"></div>
+        <div class="container bot">
+            <div class="container mid">
+                <div class="pink"></div>
+                <div class="viol"></div>
+                <div class="blue hide show-sm"></div>
+            </div>
+            <div class="blue hide-sm"></div>
+        </div>
+    </div>
+</body>
+</html>

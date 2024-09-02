@@ -1,0 +1,30 @@
+h1 {
+    margin: 20px;
+}
+
+#filling {
+    grid-column: 2;
+    text-align: center;
+}
+
+main p {
+    grid-column: 2;
+}
+
+#salonimage {
+    transition: transform 0.3s ease, filter 0.3s ease;
+    width: 50%;
+    max-width: 550px;
+}
+
+#salonimage:hover {
+    transform: scale(1.1);
+    filter: brightness(110%);
+}
+
+@media (max-width: 320px) {
+    h1 {
+        margin: 20px;
+    }
+
+}

@@ -1,0 +1,121 @@
+main {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 2%;
+}
+
+.block {
+    padding: 10px;
+    flex: 40%;
+    justify-content: space-around;
+    align-items: center;
+    height: 125px;
+    border: 2px solid var(--accent1);
+    background-color: var(--surface);
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+#disappearing_image {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    z-index: 4;
+}
+
+#changeSizeForm {
+    text-align: left;
+    font-size: medium;
+    font-weight: lighter;
+    color: var(--subtext);
+    display: grid;
+    grid-template-columns: 1fr 60px;
+}
+
+input#send_button {
+    width: 100px;
+}
+
+#size_input {
+    width: 100%;
+}
+
+#text_input {
+    width: 95%;
+}
+
+#colored_square {
+    box-sizing: border-box;
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.color_button {
+    width: 25px;
+    height: 75px;
+    border-radius: 10px;
+}
+
+.color_button#red {
+    background-color: red;
+}
+.color_button#green {
+    background-color: green;
+}
+.color_button#yellow {
+    background-color: yellow;
+}
+.color_button#blue {
+    background-color: blue;
+}
+.color_button#pink {
+    background-color: pink;
+}
+
+#square {
+    width: 75px;
+    height: 75px;
+    background-color: red;
+}
+
+#colored {
+    max-width: 100%;
+}
+
+#stats {
+    flex: 0 0 98%;
+    height: 20px;
+}
+
+#stats > *{
+    display: inline-block;
+}
+
+#colored_text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#clock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: xxx-large;
+}
+
+#pSize, #vanishBlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#change_p_button, #vanish {
+    width: 100px;
+    height: 25px;
+}

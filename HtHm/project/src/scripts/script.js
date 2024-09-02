@@ -86,13 +86,44 @@ function paint_onClick() {
     }
 }
 
-function changeFontSize(symbol) {
-    let elements = document.querySelectorAll('body *');
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
 
-    for (let element of elements) {
-        let style = window.getComputedStyle(element, null).getPropertyValue('font-size');
-        let fontSize = parseFloat(style);
-        element.style.fontSize = (fontSize + (symbol == "+" ? 1 : -1)) + 'px';
+function getCookie(name)
+{
+    const regex = new RegExp(`(^| )${name}=([^;]+)`)
+    const match = document.cookie.match(regex)
+    if (match) {
+        return match[2]
+    }
+}
+
+
+function changeFontSize(symbol) {
+    let element = document.getElementById('savedTextP');
+
+    let style = window.getComputedStyle(element, null).getPropertyValue('font-size');
+    let fontSize = parseFloat(style);
+
+    let newFontSize = (fontSize + (symbol == "+" ? 1 : -1));
+    element.style.fontSize = newFontSize + 'px';
+
+    setCookie('fontSize', newFontSize, 7);
+}
+
+function restoreFontSize() {
+    let fontSize = getCookie('fontSize');
+    if (fontSize) {
+        let element = document.getElementById('savedTextP');
+
+        element.style.fontSize = fontSize + "px";
     }
 }
 
@@ -120,6 +151,7 @@ function fileInfo(event) {
 window.setInterval(moveImage_withInterval, 1500);
 window.onload = () => {
     showTime_onLoad();
+    restoreFontSize();
     showInfo();
     document.getElementById('fileInput').onchange = fileInfo;
 };

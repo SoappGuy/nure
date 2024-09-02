@@ -13,14 +13,9 @@
     <link rel="stylesheet" href="src/css/fun.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
 
-    <script src="src/scripts/script.js"></script>
-
     <title>Awesome Online Cinema</title>
 </head>
 <body>
-
-    <img id="disappearing_image" src="/src/cacke.gif"></img>
-
     <header>
         <p class="logo">Fun</p>
         <nav>
@@ -58,46 +53,9 @@
 
     <main>
         <section id="section_-1">
-            <h1 class="title">Текст що змінює свій розмір</h1>
-            <p id="change_size_p">Цей текст змінює свій розмір</p>
-            <form name="changeSizeForm" id="changeSizeForm">
-                <input name="text_input" id="text_input" type="text" placeholder="Введіть текст">
-                <input name="size_input" id="size_input" type="number" placeholder="px">
-                <input type="button" id="send_button" value="Set" onclick="changeTextSize_onClick()">
-            </form>
-
-            <h1 class="title">Квадрат що міняє колір</h1>
-            <div id="colored_square">
-                <div id="buttons">
-                    <input id="red" class="color_button" type="button" onclick="changeColor_onClick('red')">
-                    <input id="green" class="color_button" type="button" onclick="changeColor_onClick('green')">
-                    <input id="blue" class="color_button" type="button" onclick="changeColor_onClick('blue')">
-                    <input id="yellow" class="color_button" type="button" onclick="changeColor_onClick('yellow')">
-                    <input id="pink" class="color_button" type="button" onclick="changeColor_onClick('pink')">
-                </div>
-                
-                <div id="square"></div>
-            </div>
-
-            <h1 class="title">Статистика миші та клавіатури</h1>
-            <div id="stats">
-                <p id="mouse_stats"></p>
-                <p id="keyboard_stats"></p>
-            </div>
-
-            <h1 class="title">Кольоровий текст</h1>
-            <p id="colored"></p>
-            <form name="paintForm" id="paintForm">
-                <input name="text_input" id="paintText_input" type="text" placeholder="Введіть текст">
-                <input type="button" id="paint_button" value="Set" onclick="paint_onClick()">
-            </form>
-
-            <h1 class="title">Info</h1>
-            <div id="userInfo"></div>
-
-            <h1 class="title">Image Info</h1>
-            <input type="file" id="fileInput">
-            <div id="fileInfo"></div>
+            <h1 class="title">Лабораторні 3 та 4:</h1>
+            <a href="main_js.html">лб3</a>
+            <a href="bootstrap.html">лб4</a>
         </section>
 
         <section id="section_1">
@@ -111,12 +69,6 @@
                         На цій сторінці буде знаходитись білша частина потрібних елементів. Фон зображення, таблиці, списки і т.д.
                     </p>
                 </article>
-
-                <div id="clock"></div>
-                <script onload="showTime_onLoad()"></script>
-
-                <input id="change_p_button" type="button" onclick="changeSizeP_onClick()" value="set 15px for p" />
-                <input id="vanish" type="button" onclick="vanish()" value="vanish" />
 
                 <div id="cat">
                     <video src="src/trash/dancing_cat.webm" loop autoplay></video>

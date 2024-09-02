@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ua">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="super duper puper online cinema">
+    <meta name="keywords" content="awesome, cinema, fun">
+    <meta name="author" content="dumbnerd">
+
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/main_js.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
+
+    <script src="src/scripts/script.js"></script>
+
+    <title>Awesome Online Cinema</title>
+</head>
+<body>
+
+<img id="disappearing_image" src="/src/cacke.gif"></img>
+
+<header>
+    <p class="logo">Main js</p>
+    <nav>
+        <ul class="menu">
+            <li id="first">
+                <a href="index.html">Films</a>
+                <ul class="dropdown">
+                    <li>
+                        <a href="/film1.html">Залізна людина</a>
+                    </li>
+                    <li>
+                        <a href="/film2.html">Залізна людина 2</a>
+                    </li>
+                    <li>
+                        <a href="/film3.html">Тор</a>
+                    </li>
+                    <li>
+                        <a href="/film4.html">Капітан Америка: Перший месник</a>
+                    </li>
+                    <li>
+                        <a href="/film5.html">Месники</a>
+                    </li>
+                    <li>
+                        <a href="/film6.html">Залізна людина 3</a>
+                    </li>
+                    <li>
+                        <a href="/film7.html">Тор: Темний Світ</a>
+                    </li>
+                </ul>
+            </li>
+            <li id="last"><a href="fun.html">Fun</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="block">
+        <p id="change_size_p">Цей текст змінює свій розмір</p>
+        <form name="changeSizeForm" id="changeSizeForm">
+            <input name="text_input" id="text_input" type="text" placeholder="Введіть текст">
+            <input name="size_input" id="size_input" type="number" placeholder="px">
+            <input type="button" id="send_button" value="Set" onclick="changeTextSize_onClick()">
+        </form>
+    </section>
+
+    <section id="colored_square" class="block">
+        <div id="buttons">
+            <input id="red" class="color_button" type="button" onclick="changeColor_onClick('red')">
+            <input id="green" class="color_button" type="button" onclick="changeColor_onClick('green')">
+            <input id="blue" class="color_button" type="button" onclick="changeColor_onClick('blue')">
+            <input id="yellow" class="color_button" type="button" onclick="changeColor_onClick('yellow')">
+            <input id="pink" class="color_button" type="button" onclick="changeColor_onClick('pink')">
+        </div>
+
+        <div id="square"></div>
+    </section>
+
+    <section id="stats" class="block">
+        <p id="mouse_stats"></p>
+        <p> | </p>
+        <p id="keyboard_stats"></p>
+    </section>
+
+    <section id="colored_text" class="block">
+        <p id="colored"></p>
+        <form name="paintForm" id="paintForm">
+            <input name="text_input" id="paintText_input" type="text" placeholder="Введіть текст">
+            <input type="button" id="paint_button" value="Set" onclick="paint_onClick()">
+        </form>
+    </section>
+
+    <section id="userInfo" class="block"></section>
+
+    <section id="image" class="block">
+        <input type="file" id="fileInput">
+        <div id="fileInfo"></div>
+    </section>
+
+    <section id="clock" class="block"></section>
+    <script onload="showTime_onLoad()"></script>
+
+    <section id="pSize" class="block">
+        <input id="change_p_button" type="button" onclick="changeSizeP_onClick()" value="set 15px for p" />
+    </section>
+
+    <section id="vanishBlock" class="block">
+        <input id="vanish" type="button" onclick="vanish()" value="vanish" />
+    </section>
+
+    <section id="savedText" class="block">
+        <p id="savedTextP">Розмір цього тексту можна змінювати за допомогою + та -, він збережеться</p>
+        <script onload="restoreFontSize()"></script>
+    </section>
+
+</main>
+
+<a href="#" id="go_back">
+    <p>&#8593;</p>
+</a>
+
+<footer>
+    <svg class="arrow" id="arrow" viewbox="0 0 512 512">
+        <polygon points="396.6,352 416,331.3 256,160 96,331.3 115.3,352 256,201.5 "/>
+    </svg>
+
+    <section class="footer-main">
+        <div class="about">
+            <h3>About</h3>
+            <p>
+                Як зрозуміло з назви - це просто чудовий сайт для перегляду відео, вам сподобається, обіцяю.
+            </p>
+
+        </div>
+
+        <div class="gap"></div>
+
+        <div class="social">
+            <h3>Social</h3>
+            <ul class="footer-links">
+                <li><a href="https://github.com/SoappGuy">github</a></li>
+                <li><a href="https://t.me/pencel_z_kavunom">telegram</a></li>
+                <li><a href="https://steamcommunity.com/profiles/76561199021955086/">steam</a></li>
+            </ul>
+        </div>
+    </section>
+
+    <hr class="limiter">
+
+    <section class="footer-copyright">
+        <p class="cp-text">
+            © No copyright 2024. dumbnerp inc. No rights reserved.
+        </p>
+    </section>
+
+</footer>
+</body>
+
+
+</html>
