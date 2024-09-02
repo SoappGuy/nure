@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "talp9k2NJiiM99/rMOvFE5Dqa1x+EtXkjLOHHMdUXZ66C3tbJOed7b4V63Hja9g8h056poUHrP5wvbRKVGWRHw==",
+  "dgSpecHash": "qCyU5BXkvddwuHcSlF/68Omdmy6NlvT5AjieqU/jOlvKTOxut03IaPcakbNVAf+vbRnMZPPFqrNvxd15Z9FEwg==",
   "success": true,
   "projectFilePath": "/home/dumbnerd/stuff/projects/nure/OOP/lab2/lab2/lab2.csproj",
   "expectedPackageFiles": [
@@ -34,7 +34,7 @@
     "/home/dumbnerd/.nuget/packages/microsoft.codeanalysis.csharp.scripting/3.8.0/microsoft.codeanalysis.csharp.scripting.3.8.0.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/microsoft.codeanalysis.scripting.common/3.8.0/microsoft.codeanalysis.scripting.common.3.8.0.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/microsoft.csharp/4.3.0/microsoft.csharp.4.3.0.nupkg.sha512",
-    "/home/dumbnerd/.nuget/packages/microsoft.net.illink.tasks/8.0.4/microsoft.net.illink.tasks.8.0.4.nupkg.sha512",
+    "/home/dumbnerd/.nuget/packages/microsoft.net.illink.tasks/8.0.5/microsoft.net.illink.tasks.8.0.5.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/microsoft.netcore.platforms/2.1.2/microsoft.netcore.platforms.2.1.2.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/reactiveui/18.3.1/reactiveui.18.3.1.nupkg.sha512",
@@ -78,7 +78,7 @@
     "/home/dumbnerd/.nuget/packages/system.threading.tasks/4.3.0/system.threading.tasks.4.3.0.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "/home/dumbnerd/.nuget/packages/tmds.dbus.protocol/0.15.0/tmds.dbus.protocol.0.15.0.nupkg.sha512",
-    "/home/dumbnerd/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.4/microsoft.aspnetcore.app.ref.8.0.4.nupkg.sha512"
+    "/home/dumbnerd/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.5/microsoft.aspnetcore.app.ref.8.0.5.nupkg.sha512"
   ],
   "logs": []
 }
