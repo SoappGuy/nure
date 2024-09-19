@@ -5,9 +5,7 @@ import (
 )
 
 func fib(n int, fibs map[int]int) int {
-	if value, exist := fibs[n]; exist {
-		return value
-	} else {
+	if _, exist := fibs[n]; !exist {
 		fibs[n] = fib(n-1, fibs) + fib(n-2, fibs)
 	}
 
