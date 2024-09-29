@@ -8,8 +8,11 @@ func main() {
 	var N int
 	fmt.Scanln(&N)
 
-	steps := map[int]int{1: 0}
-	prevs := map[int]int{1: 0}
+	steps := make([]int, N+1)
+	prevs := make([]int, N+1)
+
+	steps[1] = 0
+	prevs[1] = 0
 
 	for i := 2; i <= N; i++ {
 		steps[i] = steps[i-1] + 1
