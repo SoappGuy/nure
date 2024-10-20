@@ -6,9 +6,9 @@ import (
 
 const MOD = 1000000007
 
-func multiplication(matrix1 *[][]int, matrix2 *[][]int) *[][]int {
+func multiplication(matrix1 [][]int, matrix2 [][]int) [][]int {
 
-	size := len(*matrix1)
+	size := len(matrix1)
 
 	matrix_mult := make([][]int, size)
 	for i := range matrix_mult {
@@ -16,21 +16,28 @@ func multiplication(matrix1 *[][]int, matrix2 *[][]int) *[][]int {
 	}
 
 	for i := 0; i < size; i++ {
-		for j := 0; j < size; j++ {
-			sum := 0
-
-			for k := 0; k < size; k++ {
-				sum += (*matrix1)[i][k] * (*matrix2)[k][j]
-				sum %= MOD
+		for k := 0; k < size; k++ {
+			if matrix1[i][k] == 0 {
+				continue
 			}
-			matrix_mult[i][j] = sum
+			for j := 0; j < size; j++ {
+				matrix_mult[i][j] += matrix1[i][k] * matrix2[k][j] % MOD
+				if matrix_mult[i][j] >= MOD {
+					matrix_mult[i][j] -= MOD
+				}
+			}
 		}
 	}
-	return &matrix_mult
+
+	return matrix_mult
 }
 
-func power(matrix *[][]int, pow int) [][]int {
-	size := len(*matrix)
+func power(matrix [][]int, pow int) [][]int {
+	size := len(matrix)
+
+	if pow == 1 {
+		return matrix
+	}
 
 	matrix_pow := make([][]int, size)
 	for i := range matrix_pow {
@@ -39,11 +46,13 @@ func power(matrix *[][]int, pow int) [][]int {
 	}
 
 	for pow > 0 {
-		if pow%2 != 0 {
-			matrix_pow = *multiplication(&matrix_pow, matrix)
+		if pow%2 == 0 {
+			matrix = multiplication(matrix, matrix)
+			pow /= 2
+		} else {
+			matrix_pow = multiplication(matrix_pow, matrix)
+			pow--
 		}
-		matrix = multiplication(matrix, matrix)
-		pow /= 2
 	}
 	return matrix_pow
 }
@@ -63,7 +72,7 @@ func main() {
 		adj_matrix[a-1][b-1]++
 	}
 
-	matrix_pow_k := power(&adj_matrix, k)
+	matrix_pow_k := power(adj_matrix, k)
 
 	var result int
 	for i := 0; i < n; i++ {

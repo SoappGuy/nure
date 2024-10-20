@@ -18,7 +18,5 @@ func main() {
 		1: 1,
 	}
 
-	for i := 0; i < 90; i++ {
-		fmt.Println(fib(i, fibs))
-	}
+	fmt.Println(fib(90, fibs))
 }
