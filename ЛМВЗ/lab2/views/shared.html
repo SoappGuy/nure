@@ -1,0 +1,58 @@
+{{ block "main" .}}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Class Manager</title>
+    <link rel="icon" type="image/x-icon" href="/images/school.png">
+
+    <!-- htmx -->
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+
+    <!-- beer css -->
+    <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.css" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.js"></script>
+
+    <!-- other styles and scripts -->
+    <link href="css/shared.css" rel="stylesheet">
+</head>
+
+<body>
+    {{template "content" .}}
+</body>
+
+</html>
+{{ end }}
+
+{{ block "link" . }}
+<a {{if .Active}} class="link" {{end}} id="{{.Id}}" hx-swap-oob="true" hx-get="{{.Path}}" hx-push-url="true">
+    <i>{{.Icon}}</i>
+    <div>{{.Title}}</div>
+</a>
+{{ end }}
+
+{{ block "nav" . }}
+<nav class="left background" id="pages" hx-swap-oob="true">
+    {{ range .Links }}
+    {{ template "link" . }}
+    {{ end }}
+</nav>
+{{ end }}
+
+{{ block "content" . }}
+{{ template "nav" . }}
+{{ if eq .Title "Головна" }}
+{{ template "home-page" . }}
+{{ else if eq .Title "Учні" }}
+{{ template "students-page" . }}
+{{ else if eq .Title "Предмети" }}
+{{ template "subjects-page" . }}
+{{ else if eq .Title "Оцінки" }}
+{{ template "marks-page" . }}
+{{ else if eq .Title "Уроки" }}
+{{ template "lessons-page" . }}
+{{ end }}
+{{ end }}
