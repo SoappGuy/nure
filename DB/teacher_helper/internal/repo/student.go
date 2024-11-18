@@ -156,7 +156,7 @@ func (r *StudentRepo) Delete(id int) error {
 	}
 
 	if rows == 0 {
-		return fmt.Errorf("student with ID %d not found", id)
+		return fmt.Errorf("Student with ID %d not found", id)
 	}
 
 	return nil

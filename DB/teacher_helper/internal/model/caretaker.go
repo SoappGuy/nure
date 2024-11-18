@@ -1,7 +1,7 @@
 package model
 
 type Caretaker struct {
-	CaretakerID int    `db:"caretaker_ID"`
+	CaretakerID int64  `db:"caretaker_ID"`
 	Firstname   string `db:"firstname"`
 	Middlename  string `db:"middlename"`
 	Lastname    string `db:"lastname"`

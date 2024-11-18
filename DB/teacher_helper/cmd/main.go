@@ -56,9 +56,6 @@ func main() {
 	app.StudentHandler.RegisterRoutes(e)
 	app.CaretakerHandler.RegisterRoutes(e)
 
-	// e.POST("/students", app.StudentHandler.CreateStudent)
-	// e.GET("/lessons", app.LessonHandler.ListLessons)
-
 	log.Println("Started on :6969")
 	e.Start(":6969")
 }
@@ -75,16 +72,16 @@ type App struct {
 
 func NewApp(db *sqlx.DB) *App {
 	studentRepo := repo.NewStudentRepo(db)
-	// lessonRepo := repo.NewLessonRepo(db)
+	caretakerRepo := repo.NewCaretakerRepo(db)
 
 	studentHandler := handler.NewStudentHandler(studentRepo)
-	// lessonHandler := handler.NewLessonHandler(lessonRepo)
+	caretakerHandler := handler.NewCaretakerHandler(caretakerRepo)
 
 	return &App{
-		DB:          db,
-		StudentRepo: studentRepo,
-		// LessonRepo:     lessonRepo,
-		StudentHandler: studentHandler,
-		// LessonHandler:  lessonHandler,
+		DB:               db,
+		StudentRepo:      studentRepo,
+		StudentHandler:   studentHandler,
+		CaretakerRepo:    caretakerRepo,
+		CaretakerHandler: caretakerHandler,
 	}
 }

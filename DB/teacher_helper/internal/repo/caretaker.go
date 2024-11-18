@@ -55,6 +55,7 @@ func (r *CaretakerRepo) GetWithParams(params CaretakerParams) ([]model.Caretaker
 		}
 		caretakers = append(caretakers, caretaker)
 	}
+
 	return caretakers, nil
 }
 

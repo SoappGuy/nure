@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Class Manager</title>
+    <title>Teacher Helper</title>
     <link rel="icon" type="image/x-icon" href="/images/school.png">
 
     <!-- htmx -->
@@ -23,8 +23,24 @@
 </head>
 
 <body hx-ext="loading-states">
+    {{ template "nav" .Links }}
     {{ template "content" . }}
 </body>
 
 </html>
+{{ end }}
+
+{{ define "nav" }}
+<nav class="left background" id="pages">
+    {{ range . }}
+    {{ template "link" . }}
+    {{ end }}
+</nav>
+{{ end }}
+
+{{ define "link" }}
+<a {{ if .Active }}class="link" {{end}}id="{{.Id}}" href="{{.Path}}">
+    <i>{{.Icon}}</i>
+    <div>{{.Title}}</div>
+</a>
 {{ end }}
