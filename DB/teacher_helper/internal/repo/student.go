@@ -1,8 +1,10 @@
 package repo
 
 import (
-	"github.com/jmoiron/sqlx"
+	"fmt"
 	"teacher_helper/internal/model"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type StudentRepo struct {
@@ -11,6 +13,60 @@ type StudentRepo struct {
 
 func NewStudentRepo(db *sqlx.DB) *StudentRepo {
 	return &StudentRepo{db: db}
+}
+
+type StudentParams struct {
+	Query        string `db:"query"`
+	OrderBy      string `db:"order_by"`
+	IsDescending bool   `db:"is_descending"`
+}
+
+func (r *StudentRepo) GetWithParams(params StudentParams) ([]model.Student, error) {
+	query := `
+	SELECT 
+		* 
+	FROM 
+		Student 
+	WHERE
+		firstname LIKE :query OR
+		middlename LIKE :query OR
+		lastname LIKE :query OR
+		gender LIKE :query OR
+		birthday LIKE :query OR
+		form_of_education LIKE :query OR
+		personal_file_number LIKE :query
+	ORDER BY :order_by`
+	if params.IsDescending {
+		query += " DESC"
+	} else {
+		query += " ASC"
+	}
+
+	rows, err := r.db.NamedQuery(query, params)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var students []model.Student
+	for rows.Next() {
+		var student model.Student
+		err := rows.StructScan(&student)
+		if err != nil {
+			return nil, err
+		}
+		students = append(students, student)
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return students, nil
 }
 
 func (r *StudentRepo) GetAll() ([]model.Student, error) {
@@ -33,17 +89,29 @@ func (r *StudentRepo) Create(student model.Student) (int64, error) {
 			(:firstname, :middlename, :lastname, :gender, :birthday, :form_of_education, :personal_file_number, :note)`,
 		student,
 	)
-
 	if err != nil {
 		return -1, err
 	}
 
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return -1, err
+	}
+
+	if rows == 0 {
+		return -1, fmt.Errorf("Student not created")
+	}
+
 	id, err := result.LastInsertId()
-	return id, err
+	if err != nil {
+		return -1, err
+	}
+
+	return id, nil
 }
 
 func (r *StudentRepo) Update(student model.Student) error {
-	_, err := r.db.NamedExec(`
+	result, err := r.db.NamedExec(`
 		UPDATE Student
 		SET
 			firstname = :firstname,
@@ -59,10 +127,37 @@ func (r *StudentRepo) Update(student model.Student) error {
 		`,
 		student,
 	)
-	return err
+
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("Student not updated")
+	}
+
+	return nil
 }
 
 func (r *StudentRepo) Delete(id int) error {
-	_, err := r.db.Exec("DELETE FROM Student WHERE student_ID = $1", id)
-	return err
+	result, err := r.db.Exec("DELETE FROM Student WHERE student_ID = $1", id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("student with ID %d not found", id)
+	}
+
+	return nil
 }

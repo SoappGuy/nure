@@ -1,8 +1,10 @@
 package repo
 
 import (
-	"github.com/jmoiron/sqlx"
+	"fmt"
 	"teacher_helper/internal/model"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type FamilyConnectionRepo struct {
@@ -11,6 +13,47 @@ type FamilyConnectionRepo struct {
 
 func NewFamilyConnectionRepo(db *sqlx.DB) *FamilyConnectionRepo {
 	return &FamilyConnectionRepo{db: db}
+}
+
+type FamilyConnectionParams struct {
+	Query        string `db:"query"`
+	OrderBy      string `db:"order_by"`
+	IsDescending bool   `db:"is_descending"`
+}
+
+func (r *FamilyConnectionRepo) GetWithParams(params FamilyConnectionParams) ([]model.FamilyConnection, error) {
+	query := `
+	SELECT 
+		* 
+	FROM 
+		FamilyConnection 
+	WHERE
+		kinship LIKE :query OR
+		student_id LIKE :query OR
+		caretaker_id LIKE :query
+	ORDER BY :order_by`
+	if params.IsDescending {
+		query += " DESC"
+	} else {
+		query += " ASC"
+	}
+
+	rows, err := r.db.NamedQuery(query, params)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var familyConnections []model.FamilyConnection
+	for rows.Next() {
+		var familyConnection model.FamilyConnection
+		err := rows.StructScan(&familyConnection)
+		if err != nil {
+			return nil, err
+		}
+		familyConnections = append(familyConnections, familyConnection)
+	}
+	return familyConnections, nil
 }
 
 func (r *FamilyConnectionRepo) GetAll() ([]model.FamilyConnection, error) {
@@ -25,7 +68,7 @@ func (r *FamilyConnectionRepo) GetByID(id int) (model.FamilyConnection, error) {
 	return familyConnection, err
 }
 
-func (r *FamilyConnectionRepo) Create(familyConnection *model.FamilyConnection) (id int64, err error) {
+func (r *FamilyConnectionRepo) Create(familyConnection *model.FamilyConnection) (int64, error) {
 	result, err := r.db.NamedExec(
 		`INSERT INTO FamilyConnection 
 			(kinship, student_id, caretaker_id) 
@@ -34,17 +77,29 @@ func (r *FamilyConnectionRepo) Create(familyConnection *model.FamilyConnection) 
 		`,
 		familyConnection,
 	)
-
 	if err == nil {
 		return -1, err
 	}
 
-	id, err = result.LastInsertId()
-	return id, err
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return -1, err
+	}
+
+	if rows == 0 {
+		return -1, fmt.Errorf("FamilyConnection not created")
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+
+	return id, nil
 }
 
 func (r *FamilyConnectionRepo) Update(familyConnection *model.FamilyConnection) error {
-	_, err := r.db.NamedExec(
+	result, err := r.db.NamedExec(
 		`UPDATE FamilyConnection 
 		SET 
 			kinship = :kinship, 
@@ -55,10 +110,33 @@ func (r *FamilyConnectionRepo) Update(familyConnection *model.FamilyConnection) 
 		`,
 		familyConnection,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("FamilyConnection not updated")
+	}
+
+	return nil
 }
 
 func (r *FamilyConnectionRepo) Delete(id int) error {
-	_, err := r.db.Exec("DELETE FROM FamilyConnection WHERE family_connection_id = $1", id)
-	return err
+	result, err := r.db.Exec("DELETE FROM FamilyConnection WHERE family_connection_id = $1", id)
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("FamilyConnection with ID %d not found", id)
+	}
+
+	return nil
 }
