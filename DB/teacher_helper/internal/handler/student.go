@@ -20,6 +20,7 @@ func NewStudentHandler(studentRepo *repo.StudentRepo) *StudentHandler {
 
 func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/students", h.GetStudents)
+	e.GET("/students/search", h.SearchStudents)
 }
 
 type StudentsPage struct {
@@ -49,5 +50,33 @@ func (h *StudentHandler) GetStudents(c echo.Context) error {
 		Students: students,
 	}
 
-	return c.Render(http.StatusOK, "students.html", students_page)
+	return c.Render(http.StatusOK, "students.html/base", students_page)
+}
+
+func (h *StudentHandler) SearchStudents(c echo.Context) error {
+	query := c.FormValue("query")
+	orderBy := c.FormValue("orderBy")
+	isDescending := c.FormValue("isDescending")
+
+	if query == "" {
+		query = "%"
+	}
+
+	if orderBy == "" {
+		orderBy = "lastname"
+	}
+
+	query_params := repo.StudentParams{
+		Query:        query,
+		OrderBy:      orderBy,
+		IsDescending: isDescending == "on",
+	}
+
+	students, err := h.studentRepo.GetWithParams(query_params)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get students"})
+	}
+
+	return c.Render(http.StatusOK, "students.html/students", students)
 }

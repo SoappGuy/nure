@@ -2,8 +2,121 @@
 <main class="responsive" id="main_content">
     <h1 class="right-align middle-align">Учні</h1>
     <div class="grid">
+        {{ template "controls-row" . }}
         <div class="s12 grid" id="students">
         </div>
     </div>
 </main>
+{{ end }}
+
+{{ define "controls-row" }}
+<nav class="controls s12" id="controls_row">
+    <form class="row" hx-boost="true" hx-get="/students/search" hx-target="#students" autocomplete="off">
+        <div hx-get="/students/search" hx-trigger="load">
+        </div>
+
+        <button class="error circle" hx-get="/students/search">
+            <i>close</i>
+        </button>
+        <button type="submit">
+            <i>search</i>
+            <span>Застосувати</span>
+        </button>
+
+        <div class="field label border round small">
+            <input name="students-search">
+            <label>Пошук</label>
+        </div>
+        <div class="field label border round small">
+            <select name="students-order-by">
+                <option value="lastname">Ім'я</option>
+                <option value="birthday">Дата народження</option>
+                <option value="form_of_education">Форма навчання</option>
+                <option value="gender">Стать</option>
+                <option value="personal_file_number">Номер особової справи &#5760;</option>
+            </select>
+            <label>Сортувати за</label>
+        </div>
+        <label class="circle checkbox icon">
+            <input type="checkbox" class="circle" name="students-sort-direction">
+            <span>
+                <i>south</i>
+                <i>north</i>
+            </span>
+        </label>
+    </form>
+
+    <div class="max">
+    </div>
+
+    <button
+        _="on click add .active to <div.overlay/> in #add-student-dialog then add .active to <dialog/> in #add-student-dialog">
+        <i>add</i>
+        <span>Додати учня</span>
+    </button>
+</nav>
+{{ end }}
+
+{{ define "students" }}
+<div class="s12 grid" id="students" hx-swap-oob="true">
+    {{ range . }}
+    {{ template "student" . }}
+    {{ end }}
+</div>
+{{ end }}
+
+{{ define "student" }}
+<article id="student-{{.StudentID}}" class="no-padding round s12 m6 l4" data-loading-states>
+    <img class="responsive small top-round" src="/images/placeholder.png" />
+    <div class="padding">
+        <nav class="row">
+            <div>
+                <h6 style="text-wrap: nowrap;">
+                    <a class="link underline" hx-get="/students/{{.StudentID}}" hx-swap="none" hx-push-url="true"
+                        data-loading-disable>
+                        {{.Lastname}} {{initial .Firstname}}. {{initial .Middlename}}.
+                    </a>
+                </h6>
+                <div class="tooltip top">
+                    <b>
+                        {{.Lastname}} {{.Firstname}} {{.Middlename}}
+                    </b>
+                </div>
+            </div>
+            <div class="max"></div>
+            <i>
+                {{if eq .Gender "F"}}woman{{else}}man{{end}}
+            </i>
+        </nav>
+        <div class="grid">
+            <div class="s6">{{ .Birthday.Format "2006-01-02" }}</div>
+            <div class="s6">{{ .FormOfEducation }}</div>
+            <div class="s6">{{ .PersonalFileNumber }}</div>
+        </div>
+        <nav class="right-align">
+            <button class="circle error delete"
+                _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
+                data-loading-disable>
+                <i>delete</i>
+            </button>
+
+            <button class="confirm secondary" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>close</i>
+                <span>Скасувати</span>
+            </button>
+
+            <div class="max"></div>
+
+            <button class="error confirm" id="delete-{{.StudentID}}" data-loading-disable
+                hx-delete="/students/{{.StudentID}}" hx-target="#student-{{.StudentID}}" hx-swap="outerHTML"
+                hx-indicator="#i-{{.StudentID}}" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>check</i>
+                <span>Підтвердити</span>
+            </button>
+        </nav>
+        <progress id="i-{{.StudentID}}" class="htmx-indicator"></progress>
+    </div>
+</article>
 {{ end }}

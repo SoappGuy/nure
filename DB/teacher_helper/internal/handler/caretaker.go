@@ -49,5 +49,5 @@ func (h *CaretakerHandler) GetAllCaretakers(c echo.Context) error {
 		Caretakers: caretakers,
 	}
 
-	return c.Render(http.StatusOK, "caretakers.html", caretakers_page)
+	return c.Render(http.StatusOK, "caretakers.html/base", caretakers_page)
 }

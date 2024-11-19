@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Gender string
 
 const (

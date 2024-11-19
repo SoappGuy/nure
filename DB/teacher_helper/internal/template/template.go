@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -14,12 +15,19 @@ type Templates struct {
 }
 
 func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	tmpl, ok := t.templates[name]
+	split := strings.Split(name, "/")
+
+	category := split[0]
+	name = split[1]
+
+	tmpl, ok := t.templates[category]
 	if !ok {
-		err := fmt.Errorf("Template not found -> " + name)
+		err := fmt.Errorf("Template not found -> %s/%s", category, name)
 		return err
 	}
-	return tmpl.ExecuteTemplate(w, "base.html", data)
+
+	return tmpl.ExecuteTemplate(w, name, data)
+
 }
 
 func NewTemplates() *Templates {
@@ -38,7 +46,7 @@ func NewTemplates() *Templates {
 			if len(word) == 0 {
 				return ""
 			}
-			return string([]rune(word)[0]) + "."
+			return string([]rune(word)[0])
 		},
 		"version": func() string {
 			return string(time.Now().Unix())
@@ -46,8 +54,10 @@ func NewTemplates() *Templates {
 	}
 
 	templates := make(map[string]*template.Template)
-	templates["students.html"] = template.Must(template.New("students.html").Funcs(funcs).ParseFiles("templates/layout/base.html", "templates/pages/students.html"))
-	templates["caretakers.html"] = template.Must(template.New("caretakers.html").Funcs(funcs).ParseFiles("templates/layout/base.html", "templates/pages/caretakers.html"))
+
+	templates["students.html"] = template.Must(template.New("students.html").Funcs(funcs).ParseFiles("templates/base.html", "templates/pages/students.html"))
+
+	templates["caretakers.html"] = template.Must(template.New("caretakers.html").Funcs(funcs).ParseFiles("templates/base.html", "templates/pages/caretakers.html"))
 
 	return &Templates{
 		templates: templates,
