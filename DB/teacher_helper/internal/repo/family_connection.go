@@ -15,47 +15,6 @@ func NewFamilyConnectionRepo(db *sqlx.DB) *FamilyConnectionRepo {
 	return &FamilyConnectionRepo{db: db}
 }
 
-type FamilyConnectionParams struct {
-	Query        string `db:"query"`
-	OrderBy      string `db:"order_by"`
-	IsDescending bool   `db:"is_descending"`
-}
-
-func (r *FamilyConnectionRepo) GetWithParams(params FamilyConnectionParams) ([]model.FamilyConnection, error) {
-	query := `
-	SELECT 
-		* 
-	FROM 
-		FamilyConnection 
-	WHERE
-		kinship LIKE :query OR
-		student_id LIKE :query OR
-		caretaker_id LIKE :query
-	ORDER BY :order_by`
-	if params.IsDescending {
-		query += " DESC"
-	} else {
-		query += " ASC"
-	}
-
-	rows, err := r.db.NamedQuery(query, params)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var familyConnections []model.FamilyConnection
-	for rows.Next() {
-		var familyConnection model.FamilyConnection
-		err := rows.StructScan(&familyConnection)
-		if err != nil {
-			return nil, err
-		}
-		familyConnections = append(familyConnections, familyConnection)
-	}
-	return familyConnections, nil
-}
-
 func (r *FamilyConnectionRepo) GetAll() ([]model.FamilyConnection, error) {
 	var familyConnections []model.FamilyConnection
 	err := r.db.Select(&familyConnections, "SELECT * FROM FamilyConnection")

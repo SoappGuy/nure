@@ -22,7 +22,28 @@ type StudentParams struct {
 }
 
 func (r *StudentRepo) GetWithParams(params StudentParams) ([]model.Student, error) {
-	query := `
+	allowedColumns := map[string]bool{
+		"firstname":            true,
+		"middlename":           true,
+		"lastname":             true,
+		"gender":               true,
+		"birthday":             true,
+		"form_of_education":    true,
+		"personal_file_number": true,
+	}
+
+	if !allowedColumns[params.OrderBy] {
+		return nil, fmt.Errorf("Invalid order_by column: %s", params.OrderBy)
+	}
+
+	var order string
+	if params.IsDescending {
+		order = "DESC"
+	} else {
+		order = "ASC"
+	}
+
+	query := fmt.Sprintf(`
 	SELECT 
 		* 
 	FROM 
@@ -35,12 +56,7 @@ func (r *StudentRepo) GetWithParams(params StudentParams) ([]model.Student, erro
 		birthday LIKE :query OR
 		form_of_education LIKE :query OR
 		personal_file_number LIKE :query
-	ORDER BY :order_by`
-	if params.IsDescending {
-		query += " DESC"
-	} else {
-		query += " ASC"
-	}
+	ORDER BY %s %s`, params.OrderBy, order)
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {

@@ -60,6 +60,8 @@ func (h *StudentHandler) SearchStudents(c echo.Context) error {
 
 	if query == "" {
 		query = "%"
+	} else {
+		query = "%" + query + "%"
 	}
 
 	if orderBy == "" {
