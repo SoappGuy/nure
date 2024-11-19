@@ -15,25 +15,7 @@ func NewCaretakerRepo(db *sqlx.DB) *CaretakerRepo {
 	return &CaretakerRepo{db: db}
 }
 
-type CaretakerParams struct {
-	Query        string `db:"query"`
-	OrderBy      string `db:"order_by"`
-	IsDescending bool   `db:"is_descending"`
-}
-
-func (r *CaretakerRepo) GetWithParams(params CaretakerParams) ([]model.Caretaker, error) {
-	allowedColumns := map[string]bool{
-		"firstname":  true,
-		"middlename": true,
-		"lastname":   true,
-		"phone":      true,
-		"email":      true,
-	}
-
-	if !allowedColumns[params.OrderBy] {
-		return nil, fmt.Errorf("Invalid order_by column: %s", params.OrderBy)
-	}
-
+func (r *CaretakerRepo) GetWithParams(params QueryParams) ([]model.Caretaker, error) {
 	var order string
 	if params.IsDescending {
 		order = "DESC"
@@ -81,7 +63,7 @@ func (r *CaretakerRepo) GetAll() ([]model.Caretaker, error) {
 
 func (r *CaretakerRepo) GetByID(id int) (model.Caretaker, error) {
 	var caretaker model.Caretaker
-	err := r.db.Get(&caretaker, "SELECT * FROM Caretaker WHERE caretaker_ID = $1", id)
+	err := r.db.Get(&caretaker, "SELECT * FROM Caretaker WHERE caretaker_ID = ?", id)
 	return caretaker, err
 }
 
@@ -143,7 +125,7 @@ func (r *CaretakerRepo) Update(caretaker *model.Caretaker) error {
 }
 
 func (r *CaretakerRepo) Delete(id int) error {
-	result, err := r.db.Exec("DELETE FROM Caretaker WHERE caretaker_ID = $1", id)
+	result, err := r.db.Exec("DELETE FROM Caretaker WHERE caretaker_ID = ?", id)
 	if err != nil {
 		return err
 	}

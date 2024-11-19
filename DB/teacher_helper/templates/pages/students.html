@@ -6,6 +6,7 @@
         <div class="s12 grid" id="students">
         </div>
     </div>
+    {{ template "add-dialog" . }}
 </main>
 {{ end }}
 
@@ -28,7 +29,7 @@
             <label>Пошук</label>
         </div>
         <div class="field label border round small">
-            <select name="orderBy">
+            <select name="order_by">
                 <option value="lastname">Ім'я</option>
                 <option value="birthday">Дата народження</option>
                 <option value="form_of_education">Форма навчання</option>
@@ -38,7 +39,7 @@
             <label>Сортувати за</label>
         </div>
         <label class="circle checkbox icon">
-            <input type="checkbox" class="circle" name="isDescending">
+            <input type="checkbox" class="circle" name="is_descending" value="1">
             <span>
                 <i>south</i>
                 <i>north</i>
@@ -49,8 +50,7 @@
     <div class="max">
     </div>
 
-    <button
-        _="on click add .active to <div.overlay/> in #add-student-dialog then add .active to <dialog/> in #add-student-dialog">
+    <button _="on click add .active to <div.overlay/> in #addDialog then add .active to <dialog/> in #addDialog">
         <i>add</i>
         <span>Додати учня</span>
     </button>
@@ -119,4 +119,81 @@
         <progress id="i-{{.StudentID}}" class="htmx-indicator"></progress>
     </div>
 </article>
+{{ end }}
+
+{{ define "add-dialog" }}
+<div id="addDialog" _="
+    on closeDialog or htmx:afterOnLoad
+            remove .active from <div.overlay/> in #addDialog
+            then 
+            remove .active from <dialog/> in #addDialog 
+    end
+">
+    <div class="overlay blur" _="on click trigger closeDialog"></div>
+    <dialog>
+        <nav>
+            <h5>Додати учня</h5>
+            <div class="max"></div>
+            <button class="error circle small" data-loading-disable
+                _="on click trigger closeDialog"><i>close</i></button>
+        </nav>
+        <form hx-post="/students" hx-swap="afterbegin" hx-target="#students" autocomplete="false">
+            <fieldset class="round grid">
+                <div class="field label border small round s6">
+                    <input type="text" name="lastname" required>
+                    <label>Прізвище</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="firstname" required>
+                    <label>Ім'я</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="middlename" required>
+                    <label>По батькові</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <select name="gender" required>
+                        <option value="M">Хлопець</option>
+                        <option value="F">Дівчина</option>
+                    </select>
+                    <label>Стать</label>
+                    <i>arrow_drop_down</i>
+                </div>
+
+                <div class="field label border round small s6">
+                    <select name="form_of_education" required>
+                        <option value="Денна">Денна</option>
+                        <option value="Домашня">Домашня</option>
+                        <option value="Вечірня">Вечірня</option>
+                    </select>
+                    <label>Форма навчання</label>
+                    <i>arrow_drop_down</i>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="personal_file_number" required>
+                    <label>Особова справа</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input name="birthday" type="date" required>
+                    <label>День народження</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input type="text" name="note">
+                    <label>Примітка</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
 {{ end }}

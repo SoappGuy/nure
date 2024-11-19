@@ -55,9 +55,23 @@ func NewTemplates() *Templates {
 
 	templates := make(map[string]*template.Template)
 
-	templates["students.html"] = template.Must(template.New("students.html").Funcs(funcs).ParseFiles("templates/base.html", "templates/pages/students.html"))
+	templates["students.html"] = template.Must(
+		template.New("students.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/students.html"),
+	)
 
-	templates["caretakers.html"] = template.Must(template.New("caretakers.html").Funcs(funcs).ParseFiles("templates/base.html", "templates/pages/caretakers.html"))
+	templates["student.html"] = template.Must(
+		template.New("student.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/student.html"),
+	)
+
+	templates["caretakers.html"] = template.Must(
+		template.New("caretakers.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/caretakers.html"),
+	)
 
 	return &Templates{
 		templates: templates,

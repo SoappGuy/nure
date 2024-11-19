@@ -15,27 +15,7 @@ func NewStudentRepo(db *sqlx.DB) *StudentRepo {
 	return &StudentRepo{db: db}
 }
 
-type StudentParams struct {
-	Query        string `db:"query"`
-	OrderBy      string `db:"order_by"`
-	IsDescending bool   `db:"is_descending"`
-}
-
-func (r *StudentRepo) GetWithParams(params StudentParams) ([]model.Student, error) {
-	allowedColumns := map[string]bool{
-		"firstname":            true,
-		"middlename":           true,
-		"lastname":             true,
-		"gender":               true,
-		"birthday":             true,
-		"form_of_education":    true,
-		"personal_file_number": true,
-	}
-
-	if !allowedColumns[params.OrderBy] {
-		return nil, fmt.Errorf("Invalid order_by column: %s", params.OrderBy)
-	}
-
+func (r *StudentRepo) GetWithParams(params QueryParams) ([]model.Student, error) {
 	var order string
 	if params.IsDescending {
 		order = "DESC"
@@ -93,40 +73,42 @@ func (r *StudentRepo) GetAll() ([]model.Student, error) {
 
 func (r *StudentRepo) GetByID(id int) (model.Student, error) {
 	var student model.Student
-	err := r.db.Get(&student, "SELECT * FROM Student WHERE id = $1", id)
+	err := r.db.Get(&student, "SELECT * FROM Student WHERE student_ID = ?", id)
 	return student, err
 }
 
-func (r *StudentRepo) Create(student model.Student) (int64, error) {
+func (r *StudentRepo) Create(student *model.Student) error {
 	result, err := r.db.NamedExec(`
 		INSERT INTO Student 
-			(firstname, middlename, lastnamem, gender, birthday, form_of_education, personal_file_number, note)
+			(firstname, middlename, lastname, gender, birthday, form_of_education, personal_file_number, note)
 		VALUES
 			(:firstname, :middlename, :lastname, :gender, :birthday, :form_of_education, :personal_file_number, :note)`,
 		student,
 	)
 	if err != nil {
-		return -1, err
+		return err
 	}
 
 	rows, err := result.RowsAffected()
 	if err != nil {
-		return -1, err
+		return err
 	}
 
 	if rows == 0 {
-		return -1, fmt.Errorf("Student not created")
+		return fmt.Errorf("Student not created")
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return -1, err
+		return err
 	}
 
-	return id, nil
+	student.StudentID = id
+
+	return nil
 }
 
-func (r *StudentRepo) Update(student model.Student) error {
+func (r *StudentRepo) Update(student *model.Student) error {
 	result, err := r.db.NamedExec(`
 		UPDATE Student
 		SET
@@ -161,7 +143,7 @@ func (r *StudentRepo) Update(student model.Student) error {
 }
 
 func (r *StudentRepo) Delete(id int) error {
-	result, err := r.db.Exec("DELETE FROM Student WHERE student_ID = $1", id)
+	result, err := r.db.Exec("DELETE FROM Student WHERE student_ID = ?", id)
 	if err != nil {
 		return err
 	}

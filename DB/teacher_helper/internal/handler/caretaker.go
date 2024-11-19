@@ -29,7 +29,7 @@ type CaretakersPage struct {
 }
 
 func (h *CaretakerHandler) GetAllCaretakers(c echo.Context) error {
-	query_params := repo.CaretakerParams{
+	query_params := repo.QueryParams{
 		Query:        "%",
 		OrderBy:      "lastname",
 		IsDescending: false,

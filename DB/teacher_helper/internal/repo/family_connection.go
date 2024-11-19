@@ -23,7 +23,7 @@ func (r *FamilyConnectionRepo) GetAll() ([]model.FamilyConnection, error) {
 
 func (r *FamilyConnectionRepo) GetByID(id int) (model.FamilyConnection, error) {
 	var familyConnection model.FamilyConnection
-	err := r.db.Get(&familyConnection, "SELECT * FROM FamilyConnection WHERE family_connection_id = $1", id)
+	err := r.db.Get(&familyConnection, "SELECT * FROM FamilyConnection WHERE family_connection_id = ?", id)
 	return familyConnection, err
 }
 
@@ -86,7 +86,7 @@ func (r *FamilyConnectionRepo) Update(familyConnection *model.FamilyConnection) 
 }
 
 func (r *FamilyConnectionRepo) Delete(id int) error {
-	result, err := r.db.Exec("DELETE FROM FamilyConnection WHERE family_connection_id = $1", id)
+	result, err := r.db.Exec("DELETE FROM FamilyConnection WHERE family_connection_id = ?", id)
 
 	rows, err := result.RowsAffected()
 	if err != nil {
