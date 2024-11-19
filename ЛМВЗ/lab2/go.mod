@@ -1,4 +1,4 @@
-module class_manager
+module foodcourt
 
 go 1.23.2
 

@@ -1,0 +1,4 @@
+DELETE FROM Foodstuff;
+
+
+DROP TABLE IF EXISTS Foodstuff;

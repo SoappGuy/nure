@@ -33,6 +33,7 @@ const (
 
 type Foodstuff struct {
 	FoodstuffID int64    `json:"foodstuff_id"`
+	Frequency   int      `json:"frequency"`
 	Name        string   `json:"name"`
 	Price       float64  `json:"price"`
 	Type        FoodType `json:"type"`

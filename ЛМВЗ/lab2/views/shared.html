@@ -6,53 +6,328 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Class Manager</title>
+    <title>Foodcourt</title>
     <link rel="icon" type="image/x-icon" href="/images/school.png">
 
     <!-- htmx -->
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
 
     <!-- beer css -->
     <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.css" rel="stylesheet">
     <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.js"></script>
 
     <!-- other styles and scripts -->
-    <link href="css/shared.css" rel="stylesheet">
+    <link href="css/shared.css?v={{version}}" rel="stylesheet">
 </head>
 
-<body>
-    {{template "content" .}}
+<body class="light">
+    <main class="responsive">
+        <nav class="tabbed">
+            <a class="" hx-get="/page/var-1" hx-swap="outerHTML" hx-target="#content" _="on click remove .active from <a /> in closest
+                <nav /> then add .active to me then remove .active from
+                <div /> in closest
+                <main /> then add .active to <div#var-1 /> in closest
+                <main />">
+                <i>info</i>
+                <span>Варіант 1</span>
+            </a>
+            <a class="" hx-get="/page/var-2" hx-swap="outerHTML" hx-target="#content" _="on click remove .active from <a /> in closest
+                <nav /> then add .active to me then remove .active from
+                <div /> in closest
+                <main /> then add .active to <div#var-2 /> in closest
+                <main />">
+                <i>info</i>
+                <span>Варіант 2</span>
+            </a>
+            <a class="active" hx-get="/page/var-3" hx-swap="outerHTML" hx-target="#content"
+                _="on click remove .active from <a/> in closest <nav/> then add .active to me then remove .active from <div/> in closest <main/> then add .active to <div#var-3/> in closest <main/>">
+                <i>info</i>
+                <span>Варіант 3</span>
+            </a>
+        </nav>
+        {{ template "var-3" . }}
+    </main>
 </body>
 
 </html>
 {{ end }}
 
-{{ block "link" . }}
-<a {{if .Active}} class="link" {{end}} id="{{.Id}}" hx-swap-oob="true" hx-get="{{.Path}}" hx-push-url="true">
-    <i>{{.Icon}}</i>
-    <div>{{.Title}}</div>
-</a>
+{{ block "product" . }}
+<div class="card border small-width item padding"
+    style="background-color: #FFFFFF;background-image: url('/images/{{.Name}}.jpg');"
+    hx-get="/food/print/{{.FoodstuffID}}" hx-swap="beforeend" hx-target="#print">
+    <h6 class="absolute top left margin">{{.Name}}</h6>
+    <h6 class="absolute bottom left small margin">{{.Price}} грн./кг</h6>
+    <!-- <h6 class="absolute bottom right bold underline margin">{{.FoodstuffID}}</h6> -->
+</div>
 {{ end }}
 
-{{ block "nav" . }}
-<nav class="left background" id="pages" hx-swap-oob="true">
-    {{ range .Links }}
-    {{ template "link" . }}
-    {{ end }}
-</nav>
+{{ block "product_n" .}}
+<div class="card border small-width item padding"
+    style="background-color: #FFFFFF;background-image: url('/images/{{.Name}}.jpg');"
+    hx-get="/food/print/{{.FoodstuffID}}" hx-swap="beforeend" hx-target="#print">
+    <h6 class="absolute top left margin">{{.Name}}</h6>
+    <h6 class="absolute bottom left small margin">{{.Price}} грн./кг</h6>
+    <h6 class="absolute bottom right bold underline margin">{{.FoodstuffID}}</h6>
+</div>
 {{ end }}
 
-{{ block "content" . }}
-{{ template "nav" . }}
-{{ if eq .Title "Головна" }}
-{{ template "home-page" . }}
-{{ else if eq .Title "Учні" }}
-{{ template "students-page" . }}
-{{ else if eq .Title "Предмети" }}
-{{ template "subjects-page" . }}
-{{ else if eq .Title "Оцінки" }}
-{{ template "marks-page" . }}
-{{ else if eq .Title "Уроки" }}
-{{ template "lessons-page" . }}
+{{ block "foodstuff_n" . }}
+{{ range . }}
+{{ template "product_n" .}}
 {{ end }}
+{{ end }}
+
+{{ block "foodstuff" . }}
+{{ range . }}
+{{ template "product" .}}
+{{ end }}
+{{ end }}
+
+{{ block "foodstuff_print" . }}
+<div class="grid border small-round absolute bottom left padding surface-container-lowest"
+    style="cursor: pointer; z-index: 3;" _="on click remove me">
+    <h4 class="s12 underline">{{.Item.Name}}</h4>
+    <h6 class="s12 small">Адреса магазину: {{.ShopAddress}}</h6>
+    <h6 class="s12 small">Дата пакування: {{.DateOfPacking}}</h6>
+    <h6 class="s12 small">Дата вжити до: {{.DateToUse}}</h6>
+    <h6 class="s12 right-align">{{.Item.Price}} Грн./кг.</h6>
+    <h6 class="s12 right-align">Вага: {{.Weight}} кг.</h6>
+    <h4 class="s12 center-align">{{.Barcode}}</h4>
+    <h4 class="s12 bold">Ціна: {{.Price}} Грн.</h4>
+</div>
+{{ end }}
+
+{{ block "var-1" . }}
+<div class="page padding grid active" id="content">
+    <form class="screen">
+        <nav class="tabbed" style="margin-bottom: 10px;">
+            <a class="active"
+                _="on click remove .active from <a/> in closest <nav/> then add .active to me then remove .active from <div/> in closest <form/> then add .active to <div.vegetables/> in closest <form/>">
+                <!-- <i>info</i> -->
+                <span>Овочі</span>
+            </a>
+            <a
+                _="on click remove .active from <a/> in closest <nav/> then add .active to me then remove .active from <div/> in closest <form/> then add .active to <div.fruits/> in closest <form/>">
+                <!-- <i>info</i> -->
+                <span>Фрукти</span>
+            </a>
+            <a
+                _="on click remove .active from <a/> in closest <nav/> then add .active to me then remove .active from <div/> in closest <form/> then add .active to <div.candy/> in closest <form/>">
+                <!-- <i>info</i> -->
+                <span>Цукерки</span>
+            </a>
+            <a
+                _="on click remove .active from <a/> in closest <nav/> then add .active to me then remove .active from <div/> in closest <form/> then add .active to <div.cookie/> in closest <form/>">
+                <!-- <i>info</i> -->
+                <span>Печиво</span>
+            </a>
+            <h5 class="primary padding">Вага: 0.000кг</h5>
+        </nav>
+        <div class="active page small-round padding large-height secondary-container scroll vegetables container"
+            hx-trigger="revealed, every 3s" hx-get="/food/Овочі">
+        </div>
+        <div class="page small-round padding large-height secondary-container scroll fruits container"
+            hx-trigger="revealed, every 3s" hx-get="/food/Фрукти">
+            fruits
+        </div>
+        <div class="page small-round padding large-height secondary-container scroll candy container"
+            hx-trigger="revealed, every 3s" hx-get="/food/Цукерки">
+            candy
+        </div>
+        <div class="page small-round padding large-height secondary-container scroll cookie container"
+            hx-trigger="revealed, every 3s" hx-get="/food/Печиво">
+            cookie
+        </div>
+    </form>
+    <div class="print" id="print">
+        <img class="responsive" src="/images/scales_with_holder.png" style="object-fit: contain;">
+    </div>
+</div>
+{{ end }}
+
+{{ block "var-2" . }}
+<div class="active page padding" id="content">
+    <div class="screen grid space">
+        <div class="s8 active page small-round padding large-height secondary-container scroll vegetables container"
+            hx-trigger="revealed, every 3s" hx-get="/n/food/Всі" id="var2-container">
+        </div>
+        <div class="s4">
+            <h5 class="primary padding round" style="margin-bottom: 20px;">Вага: 0.000кг</h5>
+            <div class="numpad">
+                <div class="field round border fill">
+                    <input type="text" name="search" id="display" style="font-size: 32px;">
+                    <span>Введіть код товару...</span>
+                </div>
+
+                <div class="grid space">
+                    <nav class="row s12">
+                        <button class="extra" onclick="appendNumber(1)">
+                            <h4>1</h4>
+                        </button>
+                        <button class="extra" onclick="appendNumber(2)">
+                            <h4>2</h4>
+                        </button>
+                        <button class="extra" onclick="appendNumber(3)">
+                            <h4>3</h4>
+                        </button>
+                    </nav>
+                    <nav class="row s12">
+                        <button class="extra" onclick="appendNumber(4)">
+                            <h4>4</h4>
+                        </button>
+                        <button class="extra" onclick="appendNumber(5)">
+                            <h4>5</h4>
+                        </button>
+                        <button class="extra" onclick="appendNumber(6)">
+                            <h4>6</h4>
+                        </button>
+                    </nav>
+                    <nav class="row s12">
+                        <button class="extra" onclick="appendNumber(7)">
+                            <h4>7</h4>
+                        </button>
+                        <button class="extra" onclick="appendNumber(8)">
+                            <h4>8</h4>
+                        </button>
+                        <button class="extra" onclick="appendNumber(9)">
+                            <h4>9</h4>
+                        </button>
+                    </nav>
+                    <nav class="row s12">
+                        <button class="extra" onclick="appendNumber(0)">
+                            <h4>0</h4>
+                        </button>
+                        <button class="extra error" onclick="deleteLast()">
+                            <h4><i class="large">backspace</i></h4>
+                        </button>
+                        <button class="extra error" onclick="clearAll()">
+                            <h4>C</h4>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="print" id="print">
+        <img class="responsive" src="/images/scales_with_holder.png" style="object-fit: contain;">
+    </div>
+    <script>
+        var display = document.getElementById("display");
+
+        function appendNumber(number) {
+            display.value += number;
+            update();
+        }
+
+        function deleteLast() {
+            display.value = display.value.slice(0, -1) || "";
+            update();
+        }
+
+        function clearAll() {
+            display.value = "";
+            update();
+        }
+
+        function update() {
+            htmx.ajax("GET", "/food/Всі", {target: "#var2-container", values: {"id": display.value}});
+        }
+    </script>
+</div>
+{{ end }}
+
+{{ block "var-3" . }}
+<div class="active page padding" id="content">
+    <div class="print scales" id="print">
+        <div class="grid no-margin">
+            <div class="s12 space"></div>
+            <div class="s12 space"></div>
+            <div class="s12 space"></div>
+            <div class="s1"></div>
+            <nav class="grid s6">
+                <div class="s4 center-align">
+                    <h6>Вага (кг.):</h6>
+                    <div class="field round border fill">
+                        <input type="text" name="weight" id="weight" value="0.000" style="font-size: 32px;">
+                    </div>
+                </div>
+                <div class="s4"></div>
+                <div class="s4 center-align">
+                    <h6>Код товару:</h6>
+                    <div class="field round border fill">
+                        <input type="text" name="search" id="display" style="font-size: 32px;">
+                    </div>
+                </div>
+                <div class="s12 small-height"></div>
+            </nav>
+            <div class="grid space s5">
+                <nav class="row s12">
+                    <button class="extra inverse-surface" onclick="appendNumber(1)">
+                        <h4>1</h4>
+                    </button>
+                    <button class="extra inverse-surface" onclick="appendNumber(2)">
+                        <h4>2</h4>
+                    </button>
+                    <button class="extra inverse-surface" onclick="appendNumber(3)">
+                        <h4>3</h4>
+                    </button>
+                </nav>
+                <nav class="row s12">
+                    <button class="extra inverse-surface" onclick="appendNumber(4)">
+                        <h4>4</h4>
+                    </button>
+                    <button class="extra inverse-surface" onclick="appendNumber(5)">
+                        <h4>5</h4>
+                    </button>
+                    <button class="extra inverse-surface" onclick="appendNumber(6)">
+                        <h4>6</h4>
+                    </button>
+                </nav>
+                <nav class="row s12">
+                    <button class="extra inverse-surface" onclick="appendNumber(7)">
+                        <h4>7</h4>
+                    </button>
+                    <button class="extra inverse-surface" onclick="appendNumber(8)">
+                        <h4>8</h4>
+                    </button>
+                    <button class="extra inverse-surface" onclick="appendNumber(9)">
+                        <h4>9</h4>
+                    </button>
+                </nav>
+                <nav class="row s12">
+                    <button class="extra inverse-surface" onclick="appendNumber(0)">
+                        <h4>0</h4>
+                    </button>
+                    <button class="extra error" onclick="deleteLast()">
+                        <h4><i class="large">backspace</i></h4>
+                    </button>
+                    <button class="extra" onclick="print()">
+                        <i class="large">print</i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script>
+        var display = document.getElementById("display");
+
+        function appendNumber(number) {
+            display.value += number;
+        }
+
+        function deleteLast() {
+            display.value = display.value.slice(0, -1) || "";
+        }
+
+        function clearAll() {
+            display.value = "";
+        }
+
+        function print() {
+            htmx.ajax("GET", `/food/print/${display.value}`, {target: "#print", swap: "afterbegin"});
+        }
+    </script>
+</div>
 {{ end }}
