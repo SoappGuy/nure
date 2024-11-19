@@ -57,22 +57,20 @@ def median(data):
 
 def mode(data):
     sorted_data = sorted(data)
-    frequency = OrderedDict()
+    frequency = {}
 
     for value in sorted_data:
-        if value in frequency:
-            frequency[value] += 1
-        else:
-            frequency[value] = 1
+        if value not in frequency:
+            frequency[value] = 0
+        frequency[value] += 1
 
     max_count = max(frequency.values())
+    modes = [key for key, count in frequency.items() if count == max_count]
 
-    if list(frequency.values()).count(max_count) == 2:
-        for i in range(1, len(frequency.keys()) + 1):
-            if frequency[i] == frequency[i - 1]:
-                return (frequency[i] == frequency[i - 1]) / 2
-
-    return [k for k, v in frequency.items() if v == max_count]
+    if len(modes) == 2 and abs(modes[1] - modes[0]) == 1:
+        return [(modes[0] + modes[1]) / 2.0]
+    else:
+        return modes
 
 
 """
