@@ -21,7 +21,7 @@ type Student struct {
 	Middlename         string          `db:"middlename"`
 	Lastname           string          `db:"lastname"`
 	Gender             Gender          `db:"gender"`
-	Birthday           string          `db:"birthday"`
+	Birthday           time.Time       `db:"birthday"`
 	FormOfEducation    FormOfEducation `db:"form_of_education"`
 	PersonalFileNumber string          `db:"personal_file_number"`
 	Note               *string         `db:"note"`
