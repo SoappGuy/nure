@@ -1,0 +1,480 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="google" content="notranslate">
+    <meta name="htmx-config" content='{"htmx.config.defaultSwapDelay":"500ms"}'>
+
+    <title>Class Manager</title>
+    <!-- htmx -->
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+
+    <!-- beer css -->
+    <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.css" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.js"></script>
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+    <style>
+        :root,
+        body.dark {
+            --primary: #9ed75b;
+            --on-primary: #1e3700;
+            --primary-container: #2e4f00;
+            --on-primary-container: #b9f474;
+            --secondary: #bfcbad;
+            --on-secondary: #2a331e;
+            --secondary-container: #404a33;
+            --on-secondary-container: #dbe7c8;
+            --tertiary: #a0d0cc;
+            --on-tertiary: #003735;
+            --tertiary-container: #1f4e4b;
+            --on-tertiary-container: #bbece8;
+            --error: #ffb4ab;
+            --on-error: #690005;
+            --error-container: #93000a;
+            --on-error-container: #ffb4ab;
+            --background: #1b1c18;
+            --on-background: #e3e3db;
+            --surface: #121410;
+            --on-surface: #e3e3db;
+            --surface-variant: #44483d;
+            --on-surface-variant: #c5c8ba;
+            --outline: #8e9285;
+            --outline-variant: #44483d;
+            --shadow: #000000;
+            --scrim: #000000;
+            --inverse-surface: #e3e3db;
+            --inverse-on-surface: #30312c;
+            --inverse-primary: #3e6a00;
+            --surface-dim: #121410;
+            --surface-bright: #383a35;
+            --surface-container-lowest: #0d0f0b;
+            --surface-container-low: #1b1c18;
+            --surface-container: #1f201c;
+            --surface-container-high: #292a26;
+            --surface-container-highest: #343530;
+        }
+
+        body.light {
+            --primary: #3e6a00;
+            --on-primary: #ffffff;
+            --primary-container: #b9f474;
+            --on-primary-container: #0f2000;
+            --secondary: #576249;
+            --on-secondary: #ffffff;
+            --secondary-container: #dbe7c8;
+            --on-secondary-container: #151e0b;
+            --tertiary: #386663;
+            --on-tertiary: #ffffff;
+            --tertiary-container: #bbece8;
+            --on-tertiary-container: #00201e;
+            --error: #ba1a1a;
+            --on-error: #ffffff;
+            --error-container: #ffdad6;
+            --on-error-container: #410002;
+            --background: #fdfcf5;
+            --on-background: #1b1c18;
+            --surface: #fafaf2;
+            --on-surface: #1b1c18;
+            --surface-variant: #e1e4d5;
+            --on-surface-variant: #44483d;
+            --outline: #75796c;
+            --outline-variant: #c5c8ba;
+            --shadow: #000000;
+            --scrim: #000000;
+            --inverse-surface: #30312c;
+            --inverse-on-surface: #f2f1e9;
+            --inverse-primary: #9ed75b;
+            --surface-dim: #dbdad3;
+            --surface-bright: #fafaf2;
+            --surface-container-lowest: #ffffff;
+            --surface-container-low: #f5f4ec;
+            --surface-container: #efeee7;
+            --surface-container-high: #e9e8e1;
+            --surface-container-highest: #e3e3db;
+        }
+    </style>
+
+    <!-- data tables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <!-- other styles -->
+    <style>
+        td {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        td.htmx-swapping {
+            opacity: 0;
+        }
+
+        th.sortable {
+            text-wrap: nowrap;
+            transition: all 0.2s ease-in-out;
+        }
+
+        th.sortable:hover {
+            background: var(--primary);
+            color: var(--on-primary);
+            cursor: pointer;
+        }
+
+        .search-highlight {
+            color: var(--primary);
+            font-weight: 1000;
+        }
+    </style>
+
+    <!-- other scripts -->
+    <script>
+        let table;
+        class CoolTable {
+            constructor(container_id) {
+                this.container = document.getElementById(container_id);
+                this.table = this.container.querySelector('table');
+                this.thead = this.table.querySelector('thead');
+                this.tbody = this.table.querySelector('tbody');
+                this.headers = this.thead.querySelectorAll('th.sortable');
+                this.rows = Array.from(this.tbody.querySelectorAll('tr'));
+                this.search = this.container.querySelector('#students_table_search')
+
+                this.currentSort = {
+                    column: null,
+                    asc: true
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.headers.forEach((header, idx) => {
+                    header.addEventListener('click', () => this.sortColumn(idx));
+                });
+
+                this.search.addEventListener('input', () => this.searchTable(this.search.value));
+            }
+
+            sortColumn(idx) {
+                this.updateRows();
+
+                const isAsc = this.currentSort.column === idx ? !this.currentSort.asc : true;
+
+                this.headers.forEach(header => {
+                    const icon = header.querySelector('i');
+                    icon.textContent = 'swap_vert';
+                });
+
+                const currentIcon = this.headers[idx].querySelector('i');
+                currentIcon.textContent = isAsc ? 'north' : 'south';
+
+                const sortedRows = this.rows.sort((a, b) => {
+                    const aValue = a.cells[idx].textContent;
+                    const bValue = b.cells[idx].textContent;
+
+                    const aNum = parseFloat(aValue);
+                    const bNum = parseFloat(bValue);
+
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAsc ? aNum - bNum : bNum - aNum;
+                    }
+
+                    return isAsc
+                        ? aValue.localeCompare(bValue)
+                        : bValue.localeCompare(aValue);
+                });
+
+                this.tbody.append(...sortedRows);
+                this.currentSort = {column: idx, asc: isAsc};
+            }
+
+            searchTable(query) {
+                query = query.toLowerCase();
+
+                this.rows.forEach(row => {
+                    let found = false;
+                    Array.from(row.cells).slice(0, -1).forEach(cell => {
+                        const text = cell.textContent.toLowerCase();
+                        if (text.includes(query)) {
+                            found = true;
+                            cell.innerHTML = cell.textContent.replace(
+                                new RegExp(query, 'gi'),
+                                match => `<span class="search-highlight">${match}</span>`
+                            );
+                        }
+                    });
+
+                    row.style.display = found || query === '' ? '' : 'none';
+                });
+            }
+
+            updateRows() {
+                this.rows = Array.from(this.tbody.querySelectorAll('tr'));
+            }
+        }
+
+        function updateCheckAllBox() {
+            const checkedBoxes = document.querySelectorAll("input[name='student-selected']:checked");
+            const allBoxes = document.querySelectorAll("input[name='student-selected']");
+
+            const checkallBox = document.getElementById('check-all');
+
+            checkallBox.checked = checkedBoxes.length === allBoxes.length && allBoxes.length !== 0;
+        }
+
+        function updateDeleteButton() {
+            const checkedBoxes = document.querySelectorAll("input[name='student-selected']:checked");
+
+            const deleteBtn = document.getElementById('deleteBtn');
+
+            deleteBtn.disabled = checkedBoxes.length === 0;
+        }
+
+        function updateButtons() {
+            updateDeleteButton();
+            updateCheckAllBox();
+        }
+
+        function checkAll() {
+            const checkallBox = document.getElementById('check-all');
+            const checkboxes = document.querySelectorAll("input[name='student-selected']");
+
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = checkallBox.checked;
+            });
+
+            updatebuttons();
+        }
+
+        function toggleDialog(dialogID) {
+            let dialog_container = document.getElementById(dialogID)
+            let overlay = dialog_container.querySelector("div.overlay")
+            let dialog = dialog_container.querySelector("dialog")
+
+            if (!overlay.classList.contains("active")) {
+                overlay.classList.add("active")
+                dialog.classList.add("active")
+            } else {
+                overlay.classList.remove("active")
+                dialog.classList.remove("active")
+            }
+        }
+        document.addEventListener("DOMContentLoaded", (event) => {
+            document.body.addEventListener('htmx:beforeSwap', function (event) {
+                if ((event.detail.xhr.status === 404) ||
+                    (event.detail.xhr.status === 422)) {
+                    console.log(event.detail);
+                    event.detail.shouldSwap = true;
+                    event.detail, isError = false;
+                }
+            });
+
+            document.body.addEventListener('htmx:afterSwap', function (event) {
+                if ((event.detail.xhr.status === 200) && (event.detail.pathInfo.requestPath === "/students")) {
+                    table = new CoolTable('students_container');
+                }
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <nav class="left background">
+        <a class="link">
+            <i>groups</i>
+            <div>Учні</div>
+        </a>
+        <a>
+            <i>history_edu</i>
+            <div>Предмети</div>
+        </a>
+        <a>
+            <i>book</i>
+            <div>Уроки</div>
+        </a>
+        <a>
+            <i>hotel_class</i>
+            <div>Оцінки</div>
+        </a>
+    </nav>
+    <main class="responsive">
+        <h1 class="right-align middle-align ">Учні</h1>
+        <div class="grid" hx-trigger="revealed" hx-get="/students">
+        </div>
+        {{ template "add-student" .}}
+    </main>
+</body>
+
+</html>
+{{ end }}
+
+{{ block "students-empty" . }}
+<div class="s12" id="students_container">
+    <article class="medium middle-align center-align round">
+        <div>
+            <i class="extra">groups</i>
+            <h5>Записи про учнів відсутні</h5>
+            <p>Натисніть на кнопку щоб додати першого учня!</p>
+            <div class="space"></div>
+            <nav class="center-align">
+                <button onclick="toggleDialog('add-student-dialog')">+</button>
+            </nav>
+        </div>
+    </article>
+</div>
+{{ end }}
+
+{{ block "students-table" . }}
+<div class="s12" id="students_container">
+    <div class="controls row">
+        <div class="field label prefix border small round">
+            <i>search</i>
+            <input id="students_table_search" type="text">
+            <label>Пошук...</label>
+        </div>
+        <div class="max"></div>
+        <button onclick="toggleDialog('add-student-dialog')">
+            <i>add</i>
+            <span>Додати учня</span>
+        </button>
+        <button class="circle error" id="deleteBtn" hx-delete="/students" hx-include="input[name='student-selected']"
+            hx-swap="none" hx-on::after-swap="updateButtons()" disabled>
+            <i>delete</i>
+        </button>
+    </div>
+    <div class="sapce">
+        <div class="space"></div>
+        <hr>
+    </div>
+    <table class="border" id="students_table">
+        <thead>
+            <tr>
+                <th class="sortable"><i class="horizontal small">swap_vert</i>ПІБ</th>
+                <th class="sortable"><i class="horizontal small">swap_vert</i>Стать</th>
+                <th class="sortable"><i class="horizontal small">swap_vert</i>День народження</th>
+                <th class="sortable"><i class="horizontal small">swap_vert</i>Форма навчання</th>
+                <th class="sortable"><i class="horizontal small">swap_vert</i>Особова справа</th>
+                <th class="sortable"><i class="horizontal small">swap_vert</i>Примітка</th>
+                <th>
+                    <label class="checkbox small">
+                        <input type="checkbox" id="check-all" onchange="checkAll()">
+                        <span></span>
+                    </label>
+                </th>
+            </tr>
+        </thead>
+        {{ template "students-display" . }}
+    </table>
+</div>
+{{ end }}
+
+{{ block "students-display" .}}
+<tbody id="students-display">
+    {{ range . }}
+    {{ template "student" .}}
+    {{ end }}
+</tbody>
+{{ end }}
+
+{{ block "student" .}}
+<tr id="student-{{ .StudentID }}">
+    <td>{{ .Lastname }} {{ .Firstname }} {{ .Middlename }}</td>
+    <td>{{ .Gender }}</td>
+    <td>{{ .Birthday.Format " 2006-01-02" }}</td>
+    <td>{{ .FormOfEducation }}</td>
+    <td>{{ .PersonalFileNumber }}</td>
+    <td>{{ if .Note.Valid }}{{ .Note.String }}{{else}}---{{ end }}</td>
+    <td>
+        <label class="checkbox small">
+            <input type="checkbox" value="{{ .StudentID }}" name="student-selected" onchange="updateButtons()">
+            <span></span>
+        </label>
+    </td>
+</tr>
+{{ end }}
+
+{{ block "delete-students" . }}
+{{ range . }}<tr hx-swap-oob="delete" id="student-{{.}}"></tr>{{end}}
+{{ end }}
+
+{{ block "add-student" . }}
+<div id="add-student-dialog">
+    <div class="overlay blur"></div>
+    <dialog>
+        <nav>
+            <h5>Додати учня</h5>
+            <div class="max"></div>
+            <button class="error circle small" onclick="toggleDialog('add-student-dialog')"><i>close</i></button>
+        </nav>
+        <form hx-post="/students" hx-swap="none">
+            <fieldset class="round grid">
+                <div class="field label border small round s6">
+                    <input type="text" name="lastname" required>
+                    <label>Прізвище</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="firstname" required>
+                    <label>Ім'я</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="middlename" required>
+                    <label>По батькові</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <select name="gender">
+                        <option>Хлопець</option>
+                        <option>Дівчина</option>
+                    </select>
+                    <label>Стать</label>
+                    <i>arrow_drop_down</i>
+                </div>
+
+                <div class="field label border round small s6">
+                    <select name="education-form">
+                        <option>Денна</option>
+                        <option>Домашня</option>
+                    </select>
+                    <label>Форма навчання</label>
+                    <i>arrow_drop_down</i>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="personal-file" required>
+                    <label>Особова справа</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input name="birthday" type="date">
+                    <label>День народження</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input type="text" name="note" required>
+                    <label>Примітка</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
+{{ end }}
+
+{{ block "oob-student" . }}
+<tbody id="students-display" hx-swap-oob="afterbegin">
+    {{ template "student" .}}
+</tbody>
+{{ end }}
