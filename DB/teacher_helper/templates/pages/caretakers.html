@@ -2,8 +2,170 @@
 <main class="responsive" id="main_content">
     <h1 class="right-align middle-align">Опікуни</h1>
     <div class="grid">
+        {{ template "controls-row" . }}
         <div class="s12 grid" id="caretakers">
         </div>
     </div>
+    <div hx-get="/caretakers" hx-trigger="ResetContent from:body"></div>
+    {{ template "add-dialog" . }}
 </main>
+{{ end }}
+
+{{ define "controls-row" }}
+<nav class="controls s12" id="controls_row">
+    <form class="row" hx-boost="true" hx-get="/caretakers/search" hx-target="#caretakers" autocomplete="off">
+        <div hx-get="/caretakers/search" hx-trigger="load">
+        </div>
+
+        <button class="error circle" hx-get="/caretakers/search">
+            <i>close</i>
+        </button>
+        <button type="submit">
+            <i>search</i>
+            <span>Застосувати</span>
+        </button>
+
+        <div class="field label border round small">
+            <input name="query">
+            <label>Пошук</label>
+        </div>
+        <div class="field label border round small">
+            <select name="order_by">
+                <option value="lastname">Ім'я</option>
+                <option value="phone">Номер телефону</option>
+                <option value="email">Електронна пошта</option>
+            </select>
+            <label>Сортувати за</label>
+        </div>
+        <label class="circle checkbox icon">
+            <input type="checkbox" class="circle" name="is_descending" value="1">
+            <span>
+                <i>south</i>
+                <i>north</i>
+            </span>
+        </label>
+    </form>
+
+    <div class="max">
+    </div>
+
+    <button _="on click add .active to <div.overlay/> in #addDialog then add .active to <dialog/> in #addDialog">
+        <i>add</i>
+        <span>Додати опікуна</span>
+    </button>
+</nav>
+{{ end }}
+
+{{ define "caretakers" }}
+<div class="s12 grid" id="caretakers" hx-swap-oob="true">
+    {{ range . }}
+    {{ template "caretaker" . }}
+    {{ end }}
+</div>
+{{ end }}
+
+{{ define "caretaker" }}
+<article id="caretaker-{{.CaretakerID}}" class="no-padding round s12 m6 l4"
+    data-loading-states="caretaker-{{.CaretakerID}}">
+    <img class="responsive small top-round" src="/images/placeholder.png">
+    <div class="padding">
+        <nav class="row">
+            <div>
+                <h6 style="text-wrap: nowrap;">
+                    <a class="link underline" hx-get="/caretakers/{{.CaretakerID}}" hx-swap="none" hx-push-url="true"
+                        data-loading-disable>
+                        {{.Lastname}} {{initial .Firstname}} {{initial .Middlename}}
+                    </a>
+                </h6>
+                <div class="tooltip top">
+                    <b>
+                        {{.Lastname}} {{.Firstname}} {{.Middlename}}
+                    </b>
+                </div>
+            </div>
+            <div class="max"></div>
+        </nav>
+        <div class="grid">
+            <div class="s6">{{.Phone}}</div>
+            <div class="s6">{{.Email}}</div>
+        </div>
+        <nav class="right-align">
+            <button class="circle error delete"
+                _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
+                data-loading-disable>
+                <i>delete</i>
+            </button>
+
+            <button class="confirm secondary" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>close</i>
+                <span>Скасувати</span>
+            </button>
+
+            <div class="max"></div>
+
+            <button class="error confirm" id="delete-{{.CaretakerID}}" data-loading-disable
+                hx-delete="/caretakers/{{.CaretakerID}}" hx-target="#caretaker-{{.CaretakerID}}" hx-swap="outerHTML"
+                hx-indicator="#i-{{.CaretakerID}}" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>check</i>
+                <span>Підтвердити</span>
+            </button>
+        </nav>
+        <progress id="i-{{.CaretakerID}}" class="htmx-indicator"></progress>
+    </div>
+</article>
+{{ end }}
+
+{{ define "add-dialog" }}
+<div id="addDialog" _="
+    on closeDialog or htmx:afterOnLoad
+            remove .active from <div.overlay/> in #addDialog
+            then 
+            remove .active from <dialog/> in #addDialog 
+    end
+">
+    <div class="overlay blur" _="on click trigger closeDialog"></div>
+    <dialog>
+        <nav>
+            <h5>Додати опікуна</h5>
+            <div class="max"></div>
+            <button class="error circle small" data-loading-disable
+                _="on click trigger closeDialog"><i>close</i></button>
+        </nav>
+        <form hx-post="/caretakers" hx-swap="afterbegin" hx-target="#caretakers" autocomplete="false">
+            <fieldset class="round grid">
+                <div class="field label border small round s6">
+                    <input type="text" name="lastname" required>
+                    <label>Прізвище</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="firstname" required>
+                    <label>Ім'я</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="text" name="middlename" required>
+                    <label>По батькові</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input type="tel" name="phone" required>
+                    <label>Номер телефону</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input type="email" name="email" required>
+                    <label>Електронна пошта</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
 {{ end }}

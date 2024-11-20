@@ -5,6 +5,7 @@
         {{ template "student-health" .Student }}
         {{ template "parents" . }}
     </div>
+    <div hx-get="/students/{{.Student.StudentID}}" hx-trigger="ResetContent from:body"></div>
 </main>
 {{ end }}
 

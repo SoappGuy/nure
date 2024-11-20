@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -149,7 +148,7 @@ func (h *StudentHandler) CreateStudent(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't add student"})
 	}
 
-	return c.Render(http.StatusOK, "students.html/student", student)
+	return c.Render(http.StatusCreated, "students.html/student", student)
 }
 
 func (h *StudentHandler) DeleteStudent(c echo.Context) error {
@@ -158,28 +157,25 @@ func (h *StudentHandler) DeleteStudent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
 	}
 
-	err = h.studentRepo.Delete(id)
-	if err != nil {
+	if err = h.studentRepo.Delete(id); err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't delete student"})
 	}
 
-	return c.NoContent(http.StatusOK)
+	return c.NoContent(http.StatusAccepted)
 }
 
 func (h *StudentHandler) UpdateStudent(c echo.Context) error {
 	student := new(model.Student)
 	if err := c.Bind(student); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker data"})
 	}
 
-	fmt.Printf("\n%#v\n", student)
-
-	err := h.studentRepo.Update(student)
-	if err != nil {
+	if err := h.studentRepo.Update(student); err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update student"})
 	}
 
-	return c.Render(http.StatusOK, "student.html/student-info", student)
+	c.Response().Header().Set("HX-Trigger", "ResetContent")
+	return c.NoContent(http.StatusResetContent)
 }

@@ -67,31 +67,32 @@ func (r *CaretakerRepo) GetByID(id int) (model.Caretaker, error) {
 	return caretaker, err
 }
 
-func (r *CaretakerRepo) Create(caretaker *model.Caretaker) (id int64, err error) {
+func (r *CaretakerRepo) Create(caretaker *model.Caretaker) (err error) {
 	result, err := r.db.NamedExec(
 		`INSERT INTO Caretaker 
 			(firstname, middlename, lastname, phone, email) 
 		VALUES 
-			(:firstname, :middlename, :lastname, :phone, :email)", caretaker)
-		`,
+			(:firstname, :middlename, :lastname, :phone, :email)`,
 		caretaker,
 	)
 
 	row, err := result.RowsAffected()
 	if err != nil {
-		return -1, err
+		return err
 	}
 
 	if row == 0 {
-		return -1, fmt.Errorf("CareTaker not created")
+		return fmt.Errorf("CareTaker not created")
 	}
 
-	id, err = result.LastInsertId()
+	id, err := result.LastInsertId()
 	if err != nil {
-		return -1, err
+		return err
 	}
 
-	return id, nil
+	caretaker.CaretakerID = id
+
+	return nil
 }
 
 func (r *CaretakerRepo) Update(caretaker *model.Caretaker) error {

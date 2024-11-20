@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"teacher_helper/internal/model"
 	"teacher_helper/internal/repo"
@@ -20,12 +21,25 @@ func NewCaretakerHandler(caretakerRepo *repo.CaretakerRepo) *CaretakerHandler {
 
 func (h *CaretakerHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/caretakers", h.GetAllCaretakers)
+	e.GET("/caretakers/search", h.SearchCaretakers)
+	e.POST("/caretakers", h.CreateCaretaker)
+	e.DELETE("/caretakers/:id", h.DeleteCaretaker)
+	e.PUT("/caretakers/:id", h.UpdateCaretaker)
+
+	e.GET("/caretakers/:id", h.GetCaretaker)
+	e.GET("/caretakers/:id/info", h.CaretakerInfo)
+	e.GET("/caretakers/:id/edit", h.CaretakerInfoEdit)
 }
 
 type CaretakersPage struct {
 	Title      string
 	Links      []Link
 	Caretakers []model.Caretaker
+}
+
+type CaretakerPage struct {
+	Links     []Link
+	Caretaker model.Caretaker
 }
 
 func (h *CaretakerHandler) GetAllCaretakers(c echo.Context) error {
@@ -50,4 +64,117 @@ func (h *CaretakerHandler) GetAllCaretakers(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "caretakers.html/base", caretakers_page)
+}
+
+func (h *CaretakerHandler) GetCaretaker(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	caretaker, err := h.caretakerRepo.GetByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get caretaker"})
+	}
+
+	links := NewLinks(PageTypeCaretakers)
+
+	caretaker_page := CaretakerPage{
+		Links:     links,
+		Caretaker: caretaker,
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/base", caretaker_page)
+}
+
+func (h *CaretakerHandler) CaretakerInfoEdit(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	caretaker, err := h.caretakerRepo.GetByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get caretaker"})
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/caretaker-info-edit", caretaker)
+}
+
+func (h *CaretakerHandler) CaretakerInfo(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	caretaker, err := h.caretakerRepo.GetByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get caretaker"})
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/caretaker-info", caretaker)
+}
+
+func (h *CaretakerHandler) SearchCaretakers(c echo.Context) error {
+	query := new(repo.QueryParams)
+	if err := c.Bind(query); err != nil {
+		return err
+	}
+
+	if err := query.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	caretakers, err := h.caretakerRepo.GetWithParams(*query)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get caretakers"})
+	}
+
+	return c.Render(http.StatusOK, "caretakers.html/caretakers", caretakers)
+}
+
+func (h *CaretakerHandler) CreateCaretaker(c echo.Context) error {
+	caretaker := new(model.Caretaker)
+	if err := c.Bind(caretaker); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker data"})
+	}
+
+	if err := h.caretakerRepo.Create(caretaker); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create caretaker"})
+	}
+
+	return c.Render(http.StatusCreated, "caretakers.html/caretaker", caretaker)
+}
+
+func (h *CaretakerHandler) DeleteCaretaker(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	if err := h.caretakerRepo.Delete(id); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't delete caretaker"})
+	}
+
+	return c.NoContent(http.StatusAccepted)
+}
+
+func (h *CaretakerHandler) UpdateCaretaker(c echo.Context) error {
+	caretaker := new(model.Caretaker)
+	if err := c.Bind(caretaker); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker data"})
+	}
+
+	if err := h.caretakerRepo.Update(caretaker); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update caretaker"})
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/caretaker-info", caretaker)
 }
