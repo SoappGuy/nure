@@ -63,10 +63,7 @@ func main() {
 type App struct {
 	DB *sqlx.DB
 
-	StudentRepo    *repo.StudentRepo
-	StudentHandler *handler.StudentHandler
-
-	CaretakerRepo    *repo.CaretakerRepo
+	StudentHandler   *handler.StudentHandler
 	CaretakerHandler *handler.CaretakerHandler
 }
 
@@ -79,9 +76,7 @@ func NewApp(db *sqlx.DB) *App {
 
 	return &App{
 		DB:               db,
-		StudentRepo:      studentRepo,
 		StudentHandler:   studentHandler,
-		CaretakerRepo:    caretakerRepo,
 		CaretakerHandler: caretakerHandler,
 	}
 }

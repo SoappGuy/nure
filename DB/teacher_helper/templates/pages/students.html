@@ -197,3 +197,13 @@
     </dialog>
 </div>
 {{ end }}
+
+{{ define "students-select" }}
+<select name="student_ID" required>
+    {{ range .Students }}
+    <option {{ if eq .StudentID $.Selected.StudentID }}selected{{end}} value="{{.StudentID}}">
+        {{.Lastname}} {{initial .Firstname}}. {{initial .Middlename}}.
+    </option>
+    {{ end }}
+</select>
+{{ end }}

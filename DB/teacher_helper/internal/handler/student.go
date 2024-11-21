@@ -29,6 +29,8 @@ func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/students/:id", h.GetStudent)
 	e.GET("/students/:id/info", h.StudentInfo)
 	e.GET("/students/:id/edit", h.StudentInfoEdit)
+
+	e.GET("/students/select/:id", h.StudentsSelect)
 }
 
 type StudentsPage struct {
@@ -178,4 +180,37 @@ func (h *StudentHandler) UpdateStudent(c echo.Context) error {
 
 	c.Response().Header().Set("HX-Trigger", "ResetContent")
 	return c.NoContent(http.StatusResetContent)
+}
+
+func (h *StudentHandler) StudentsSelect(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	student := model.Student{}
+	if id != -1 {
+		student, err = h.studentRepo.GetByID(id)
+		if err != nil {
+			log.Error(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get student"})
+		}
+	}
+
+	students, err := h.studentRepo.GetWithParams(repo.QueryParams{
+		Query:        "%",
+		OrderBy:      "lastname",
+		IsDescending: false,
+	})
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get students"})
+	}
+
+	studentsSelect := map[any]any{
+		"Selected": student,
+		"Students": students,
+	}
+
+	return c.Render(http.StatusOK, "students.html/students-select", studentsSelect)
 }

@@ -29,6 +29,11 @@ func (h *CaretakerHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/caretakers/:id", h.GetCaretaker)
 	e.GET("/caretakers/:id/info", h.CaretakerInfo)
 	e.GET("/caretakers/:id/edit", h.CaretakerInfoEdit)
+
+	e.GET("/caretakers/familyconnections/:id/edit", h.EditConnection)
+	e.PUT("/caretakers/familyconnections/:id", h.UpdateConnection)
+	e.DELETE("/caretakers/familyconnections/:id", h.DeleteConnection)
+	e.POST("/caretakers/familyconnections", h.CreateConnection)
 }
 
 type CaretakersPage struct {
@@ -38,8 +43,9 @@ type CaretakersPage struct {
 }
 
 type CaretakerPage struct {
-	Links     []Link
-	Caretaker model.Caretaker
+	Links       []Link
+	Caretaker   model.Caretaker
+	Connections []model.FamilyConnection
 }
 
 func (h *CaretakerHandler) GetAllCaretakers(c echo.Context) error {
@@ -80,9 +86,12 @@ func (h *CaretakerHandler) GetCaretaker(c echo.Context) error {
 
 	links := NewLinks(PageTypeCaretakers)
 
+	connections, err := h.caretakerRepo.GetConnections(id)
+
 	caretaker_page := CaretakerPage{
-		Links:     links,
-		Caretaker: caretaker,
+		Links:       links,
+		Caretaker:   caretaker,
+		Connections: connections,
 	}
 
 	return c.Render(http.StatusOK, "caretaker.html/base", caretaker_page)
@@ -177,4 +186,68 @@ func (h *CaretakerHandler) UpdateCaretaker(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "caretaker.html/caretaker-info", caretaker)
+}
+
+func (h *CaretakerHandler) EditConnection(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	kid, err := h.caretakerRepo.GetConnectionByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get kid"})
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/connection-edit", kid)
+}
+
+func (h *CaretakerHandler) UpdateConnection(c echo.Context) error {
+	kid := new(model.FamilyConnectionWithIDs)
+	if err := c.Bind(kid); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid kid data"})
+	}
+
+	if err := h.caretakerRepo.UpdateConnection(kid); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update kid"})
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/connection", kid)
+}
+
+func (h *CaretakerHandler) DeleteConnection(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid kid ID"})
+	}
+
+	if err := h.caretakerRepo.DeleteConnection(id); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't delete kid"})
+	}
+
+	return c.NoContent(http.StatusAccepted)
+}
+
+func (h *CaretakerHandler) CreateConnection(c echo.Context) error {
+	kid := new(model.FamilyConnectionWithIDs)
+	if err := c.Bind(kid); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid kid data"})
+	}
+
+	id, err := h.caretakerRepo.CreateConnection(kid)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create kid"})
+	}
+
+	connection, err := h.caretakerRepo.GetConnectionByID(int(id))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get kid"})
+	}
+
+	return c.Render(http.StatusCreated, "caretaker.html/connection", connection)
 }

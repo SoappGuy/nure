@@ -1,6 +1,8 @@
 package repo
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var allowedColumns = map[string]bool{
 	"firstname":            true,

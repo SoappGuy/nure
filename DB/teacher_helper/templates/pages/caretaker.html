@@ -2,9 +2,9 @@
 <main class="responsive" id="main_content" hx-swap-oob="true">
     <div class="grid">
         {{ template "caretaker-info" .Caretaker }}
-        {{ template "kids" . }}
+        {{ template "connections" . }}
     </div>
-    <div hx-get="/caretakers/{{.Caretaker.CaretakerID}}" hx-trigger="ResetContent from:body"></div>
+    {{ template "add-connection-dialog" . }}
 </main>
 {{ end }}
 
@@ -110,5 +110,162 @@
 </article>
 {{ end }}
 
-{{ define "kids" }}
+{{ define "connections" }}
+<article class="round s6" id="kids">
+    <div class="grid">
+        <button class="button s6"
+            _="on click add .active to <div.overlay/> in #add-familyconnection-dialog then add .active to <dialog/> in #add-familyconnection-dialog">
+            <i>add</i>
+            <span>Додати зв'язок</span>
+        </button>
+        <h5 class="s6 right-align">
+            Пов'язані діти
+        </h5>
+        <hr class="s12">
+        <div class="s12 grid scroll no-round middle-height" id="familyconnections">
+            {{ range .Connections }}
+            {{ template "connection" . }}
+            {{ end }}
+        </div>
+    </div>
+</article>
+{{ end }}
+
+{{ define "connection" }}
+<div class="s12 grid" id="kid-info-{{.FamilyConnectionID}}">
+    <nav class="s12">
+        <h6>
+            {{ .Kinship }} для
+            <a hx-get="/students/{{.Student.StudentID}}" hx-push-url="true" class="link underline">
+                {{.Student.Lastname}} {{initial .Student.Firstname}}. {{initial .Student.Middlename}}.
+            </a>
+        </h6>
+        <div class="max"></div>
+        <nav class="right-align">
+            <button class="circle error delete"
+                _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
+                data-loading-disable>
+                <i>delete</i>
+            </button>
+
+            <button class="circle confirm secondary" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>close</i>
+            </button>
+
+            <button class="circle error confirm" id="delete-{{.FamilyConnectionID}}" data-loading-disable
+                hx-delete="/caretakers/familyconnections/{{.FamilyConnectionID}}"
+                hx-target="#kid-info-{{.FamilyConnectionID}}" hx-swap="outerHTML"
+                hx-indicator="#i-fc-{{.FamilyConnectionID}}" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>check</i>
+            </button>
+
+            <button class="button circle s12" hx-get="/caretakers/familyconnections/{{.FamilyConnectionID}}/edit"
+                hx-target="#kid-info-{{.FamilyConnectionID}}" hx-swap="outerHTML">
+                <i>edit</i>
+            </button>
+        </nav>
+    </nav>
+
+    <progress id="i-fc-{{.FamilyConnectionID}}" class="s12 htmx-indicator"></progress>
+    <hr class="s12">
+</div>
+{{ end }}
+
+{{ define "connection-edit" }}
+<div class="s12 grid" id="kid-info-{{.FamilyConnectionID}}">
+    <form class="s12 row" hx-put="/caretakers/familyconnections"
+        hx-vals='{"caretaker_ID": "{{.Caretaker.CaretakerID}}", "student_ID": "{{.Student.StudentID}}"}'
+        hx-target="#kid-info-{{.FamilyConnectionID}}" hx-swap="outerHTML">
+        <div class="field small no-margin s12 l5">
+            <select name="kinship" required>
+                <option value="Батько" {{ if eq .Kinship "Батько" }}selected{{end}}>Батько</option>
+                <option value="Мати" {{ if eq .Kinship "Мати" }}selected{{end}}>Мати</option>
+                <option value="Вітчим" {{ if eq .Kinship "Вітчим" }}selected{{end}}>Вітчим</option>
+                <option value="Мачуха" {{ if eq .Kinship "Мачуха" }}selected{{end}}>Мачуха</option>
+                <option value="Дядько" {{ if eq .Kinship "Дядько" }}selected{{end}}>Дядько</option>
+                <option value="Тітка" {{ if eq .Kinship "Тітка" }}selected{{end}}>Тітка</option>
+                <option value="Брат" {{ if eq .Kinship "Брат" }}selected{{end}}>Брат</option>
+                <option value="Сестра" {{ if eq .Kinship "Сестра" }}selected{{end}}>Сестра</option>
+                <option value="Дідусь" {{ if eq .Kinship "Дідусь" }}selected{{end}}>Дідусь</option>
+                <option value="Бабуся" {{ if eq .Kinship "Бабуся" }}selected{{end}}>Бабуся</option>
+                <option value="Інше" {{ if eq .Kinship "Інше" }}selected{{end}}>Інше</option>
+            </select>
+        </div>
+        для
+        <div class="field small no-margin s12 l5">
+            <div hx-get="/students/select/{{.Student.StudentID}}" hx-target="this" hx-swap="outerHTML"
+                hx-trigger="revealed"></div>
+        </div>
+        <div class="max"></div>
+
+        <nav class="right-align buttons row">
+            <div class="max"></div>
+            <button class="error button circle" hx-get="/caretakers/familyconnections/{{.FamilyConnectionID}}/info"
+                hx-target="#kid-info-{{.FamilyConnectionID}}" hx-swap="outerHTML">
+                <i>close</i>
+                <span>Відмінити</span>
+            </button>
+            <button class="button circle" submit>
+                <i>check</i>
+                <span>Застосувати</span>
+            </button>
+            <div class="max"></div>
+        </nav>
+    </form>
+    <hr class="s12">
+    </hr>
+</div>
+{{ end }}
+
+{{ define "add-connection-dialog" }}
+<div id="add-familyconnection-dialog" _="
+    on closeDialog or htmx:afterOnLoad
+            remove .active from <div.overlay/> in #add-familyconnection-dialog
+            then
+            remove .active from <dialog/> in #add-familyconnection-dialog 
+    end
+">
+    <div class="overlay blur" _="on click trigger closeDialog"></div>
+    <dialog>
+        <nav>
+            <h5>Додати зв'язок</h5>
+            <div class="max"></div>
+            <button class="error circle small" data-loading-disable
+                _="on click trigger closeDialog"><i>close</i></button>
+        </nav>
+        <form hx-post="/caretakers/familyconnections" hx-vals='{"caretaker_ID": "{{.Caretaker.CaretakerID}}"}'
+            hx-swap="afterbegin" hx-target="#familyconnections" autocomplete="false">
+            <fieldset class="round grid">
+                <div class="field label border small round s12">
+                    <select name="kinship" required>
+                        <option value="Батько">Батько</option>
+                        <option value="Мати">Мати</option>
+                        <option value="Вітчим">Вітчим</option>
+                        <option value="Мачуха">Мачуха</option>
+                        <option value="Дядько">Дядько</option>
+                        <option value="Тітка">Тітка</option>
+                        <option value="Брат">Брат</option>
+                        <option value="Сестра">Сестра</option>
+                        <option value="Дідусь">Дідусь</option>
+                        <option value="Бабуся">Бабуся</option>
+                        <option value="Інше">Інше</option>
+                    </select>
+                    <label>Роль</label>
+                </div>
+
+                <div class="field label border small round s12">
+                    <div hx-get="/students/select/-1" hx-target="this" hx-swap="outerHTML" hx-trigger="revealed"></div>
+                    <label>Учень</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
 {{ end }}
