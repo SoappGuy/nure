@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -20,6 +21,14 @@ func NewStudentHandler(studentRepo *repo.StudentRepo) *StudentHandler {
 }
 
 func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
+	e.GET("/students/familyconnections/:id/info", h.GetConnection)
+	e.GET("/students/familyconnections/:id/edit", h.EditConnection)
+	e.PUT("/students/familyconnections/:family_connection_ID", h.UpdateConnection)
+	e.DELETE("/students/familyconnections/:id", h.DeleteConnection)
+	e.POST("/students/familyconnections", h.CreateConnection)
+
+	e.GET("/students/select/:id", h.StudentsSelect)
+
 	e.GET("/students", h.GetStudents)
 	e.GET("/students/search", h.SearchStudents)
 	e.POST("/students", h.CreateStudent)
@@ -29,8 +38,6 @@ func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/students/:id", h.GetStudent)
 	e.GET("/students/:id/info", h.StudentInfo)
 	e.GET("/students/:id/edit", h.StudentInfoEdit)
-
-	e.GET("/students/select/:id", h.StudentsSelect)
 }
 
 type StudentsPage struct {
@@ -40,8 +47,9 @@ type StudentsPage struct {
 }
 
 type StudentPage struct {
-	Links   []Link
-	Student model.Student
+	Links       []Link
+	Student     model.Student
+	Connections []model.FamilyConnection
 }
 
 func (h *StudentHandler) GetStudents(c echo.Context) error {
@@ -82,9 +90,16 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 
 	links := NewLinks(PageTypeStudents)
 
+	connections, err := h.studentRepo.GetConnections(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get connections"})
+	}
+
 	student_page := StudentPage{
-		Links:   links,
-		Student: student,
+		Links:       links,
+		Student:     student,
+		Connections: connections,
 	}
 
 	return c.Render(http.StatusOK, "student.html/base", student_page)
@@ -178,8 +193,7 @@ func (h *StudentHandler) UpdateStudent(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update student"})
 	}
 
-	c.Response().Header().Set("HX-Trigger", "ResetContent")
-	return c.NoContent(http.StatusResetContent)
+	return c.Render(http.StatusOK, "student.html/student-info", student)
 }
 
 func (h *StudentHandler) StudentsSelect(c echo.Context) error {
@@ -213,4 +227,91 @@ func (h *StudentHandler) StudentsSelect(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "students.html/students-select", studentsSelect)
+}
+
+func (h *StudentHandler) GetConnection(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	parent, err := h.studentRepo.GetConnectionByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get parent"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/connection", parent)
+}
+
+func (h *StudentHandler) EditConnection(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	parent, err := h.studentRepo.GetConnectionByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get parent"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/connection-edit", parent)
+}
+
+func (h *StudentHandler) UpdateConnection(c echo.Context) error {
+	conenction := new(model.FamilyConnectionWithIDs)
+	if err := c.Bind(conenction); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid parent data"})
+	}
+
+	fmt.Printf("Parent: %+v\n", conenction)
+
+	if err := h.studentRepo.UpdateConnection(conenction); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update parent"})
+	}
+
+	parent, err := h.studentRepo.GetConnectionByID(int(conenction.FamilyConnectionID))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get parent"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/connection", parent)
+}
+
+func (h *StudentHandler) DeleteConnection(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid parent ID"})
+	}
+
+	if err := h.studentRepo.DeleteConnection(id); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't delete parent"})
+	}
+
+	return c.NoContent(http.StatusAccepted)
+}
+
+func (h *StudentHandler) CreateConnection(c echo.Context) error {
+	parent := new(model.FamilyConnectionWithIDs)
+	if err := c.Bind(parent); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid parent data"})
+	}
+
+	id, err := h.studentRepo.CreateConnection(parent)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create parent"})
+	}
+
+	connection, err := h.studentRepo.GetConnectionByID(int(id))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get parent"})
+	}
+
+	return c.Render(http.StatusCreated, "student.html/connection", connection)
 }

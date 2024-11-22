@@ -74,7 +74,7 @@
                 <h6 style="text-wrap: nowrap;">
                     <a class="link underline" hx-get="/caretakers/{{.CaretakerID}}" hx-swap="none" hx-push-url="true"
                         data-loading-disable>
-                        {{.Lastname}} {{initial .Firstname}} {{initial .Middlename}}
+                        {{.Lastname}} {{initial .Firstname}}. {{initial .Middlename}}.
                     </a>
                 </h6>
                 <div class="tooltip top">
@@ -168,4 +168,14 @@
         </form>
     </dialog>
 </div>
+{{ end }}
+
+{{ define "caretakers-select" }}
+<select name="caretaker_ID" required>
+    {{ range .Caretakers }}
+    <option {{ if eq .CaretakerID $.Selected.CaretakerID }}selected{{end}} value="{{.CaretakerID}}">
+        {{.Lastname}} {{initial .Firstname}}. {{initial .Middlename}}.
+    </option>
+    {{ end }}
+</select>
 {{ end }}

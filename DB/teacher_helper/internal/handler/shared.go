@@ -27,6 +27,8 @@ const (
 
 	PageTypeMarks PageType = "marks"
 	PageTypeMark  PageType = "mark"
+
+	PageTypeQuery PageType = "query"
 )
 
 func NewLink(id, title, icon string, path string, active bool) Link {
@@ -47,5 +49,6 @@ func NewLinks(active PageType) []Link {
 		NewLink("subjects_link", "Предмети", "history_edu", "/subjects", active == PageTypeSubjects),
 		NewLink("lessons_link", "Уроки", "book", "/lessons", active == PageTypeLessons),
 		NewLink("marks_link", "Оцінки", "hotel_class", "/marks", active == PageTypeMarks),
+		NewLink("query_link", "Query", "search", "/query", active == PageTypeQuery),
 	}
 }

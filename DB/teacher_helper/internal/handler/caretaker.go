@@ -20,6 +20,14 @@ func NewCaretakerHandler(caretakerRepo *repo.CaretakerRepo) *CaretakerHandler {
 }
 
 func (h *CaretakerHandler) RegisterRoutes(e *echo.Echo) {
+	e.GET("/caretakers/familyconnections/:id/info", h.GetConnection)
+	e.GET("/caretakers/familyconnections/:id/edit", h.EditConnection)
+	e.PUT("/caretakers/familyconnections/:family_connection_ID", h.UpdateConnection)
+	e.DELETE("/caretakers/familyconnections/:id", h.DeleteConnection)
+	e.POST("/caretakers/familyconnections", h.CreateConnection)
+
+	e.GET("/caretakers/select/:id", h.CaretakersSelect)
+
 	e.GET("/caretakers", h.GetAllCaretakers)
 	e.GET("/caretakers/search", h.SearchCaretakers)
 	e.POST("/caretakers", h.CreateCaretaker)
@@ -29,11 +37,6 @@ func (h *CaretakerHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/caretakers/:id", h.GetCaretaker)
 	e.GET("/caretakers/:id/info", h.CaretakerInfo)
 	e.GET("/caretakers/:id/edit", h.CaretakerInfoEdit)
-
-	e.GET("/caretakers/familyconnections/:id/edit", h.EditConnection)
-	e.PUT("/caretakers/familyconnections/:id", h.UpdateConnection)
-	e.DELETE("/caretakers/familyconnections/:id", h.DeleteConnection)
-	e.POST("/caretakers/familyconnections", h.CreateConnection)
 }
 
 type CaretakersPage struct {
@@ -87,6 +90,10 @@ func (h *CaretakerHandler) GetCaretaker(c echo.Context) error {
 	links := NewLinks(PageTypeCaretakers)
 
 	connections, err := h.caretakerRepo.GetConnections(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get connections"})
+	}
 
 	caretaker_page := CaretakerPage{
 		Links:       links,
@@ -188,6 +195,54 @@ func (h *CaretakerHandler) UpdateCaretaker(c echo.Context) error {
 	return c.Render(http.StatusOK, "caretaker.html/caretaker-info", caretaker)
 }
 
+func (h *CaretakerHandler) CaretakersSelect(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	caretaker := model.Caretaker{}
+	if id != -1 {
+		caretaker, err = h.caretakerRepo.GetByID(id)
+		if err != nil {
+			log.Error(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get caretaker"})
+		}
+	}
+
+	caretakers, err := h.caretakerRepo.GetWithParams(repo.QueryParams{
+		Query:        "%",
+		OrderBy:      "lastname",
+		IsDescending: false,
+	})
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get caretakers"})
+	}
+
+	caretakersSelect := map[any]any{
+		"Selected":   caretaker,
+		"Caretakers": caretakers,
+	}
+
+	return c.Render(http.StatusOK, "caretakers.html/caretakers-select", caretakersSelect)
+}
+
+func (h *CaretakerHandler) GetConnection(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+	}
+
+	parent, err := h.caretakerRepo.GetConnectionByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get kid"})
+	}
+
+	return c.Render(http.StatusOK, "caretaker.html/connection", parent)
+}
+
 func (h *CaretakerHandler) EditConnection(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -204,14 +259,20 @@ func (h *CaretakerHandler) EditConnection(c echo.Context) error {
 }
 
 func (h *CaretakerHandler) UpdateConnection(c echo.Context) error {
-	kid := new(model.FamilyConnectionWithIDs)
-	if err := c.Bind(kid); err != nil {
+	connection := new(model.FamilyConnectionWithIDs)
+	if err := c.Bind(connection); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid kid data"})
 	}
 
-	if err := h.caretakerRepo.UpdateConnection(kid); err != nil {
+	if err := h.caretakerRepo.UpdateConnection(connection); err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update kid"})
+	}
+
+	kid, err := h.caretakerRepo.GetConnectionByID(int(connection.FamilyConnectionID))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get kid"})
 	}
 
 	return c.Render(http.StatusOK, "caretaker.html/connection", kid)

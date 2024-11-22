@@ -1,0 +1,28 @@
+{{ define "content" }}
+<main class="responsive" id="main_content" hx-swap-oob="true">
+    <h1 class="right-align middle-align">Query</h1>
+    <div class="s12 grid">
+        <div class="field textarea border s12 small-height">
+            <textarea name="query" id="query" style="font-size: 24px;" class="small-height">SELECT * FROM
+                Student;</textarea>
+        </div>
+        <button id="updateButton" class="button s2">Виконати</button>
+    </div>
+    <article class="s12" id="table-container">
+        <div id="table"></div>
+    </article>
+</main>
+<script>
+    function updateTable() {
+        let query = document.getElementById("query").value;
+        table = new Tabulator("#table", {
+            height: "400px",
+            layout: "fitColumns",
+            autoColumns: "full",
+            ajaxURL: "/data",
+            ajaxParams: {query: query},
+        });
+    }
+    document.getElementById("updateButton").addEventListener("click", updateTable);
+</script>
+{{ end }}

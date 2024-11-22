@@ -111,7 +111,7 @@
 {{ end }}
 
 {{ define "connections" }}
-<article class="round s6" id="kids">
+<article class="round s12 l6" id="kids">
     <div class="grid">
         <button class="button s6"
             _="on click add .active to <div.overlay/> in #add-familyconnection-dialog then add .active to <dialog/> in #add-familyconnection-dialog">
@@ -136,7 +136,7 @@
     <nav class="s12">
         <h6>
             {{ .Kinship }} для
-            <a hx-get="/students/{{.Student.StudentID}}" hx-push-url="true" class="link underline">
+            <a href="/students/{{.Student.StudentID}}" class="link underline">
                 {{.Student.Lastname}} {{initial .Student.Firstname}}. {{initial .Student.Middlename}}.
             </a>
         </h6>
@@ -175,7 +175,7 @@
 
 {{ define "connection-edit" }}
 <div class="s12 grid" id="kid-info-{{.FamilyConnectionID}}">
-    <form class="s12 row" hx-put="/caretakers/familyconnections"
+    <form class="s12 row" hx-put="/caretakers/familyconnections/{{.FamilyConnectionID}}"
         hx-vals='{"caretaker_ID": "{{.Caretaker.CaretakerID}}", "student_ID": "{{.Student.StudentID}}"}'
         hx-target="#kid-info-{{.FamilyConnectionID}}" hx-swap="outerHTML">
         <div class="field small no-margin s12 l5">
