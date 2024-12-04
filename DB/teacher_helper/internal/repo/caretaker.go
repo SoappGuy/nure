@@ -137,7 +137,7 @@ func (r *CaretakerRepo) Delete(id int) error {
 	}
 
 	if rows == 0 {
-		return fmt.Errorf("CareTaker with id %d not found", id)
+		return fmt.Errorf("CareTaker with id %d not deleted", id)
 	}
 
 	return nil

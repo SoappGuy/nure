@@ -79,6 +79,18 @@ func NewTemplates() *Templates {
 			ParseFiles("templates/base.html", "templates/pages/caretaker.html"),
 	)
 
+	templates["subjects.html"] = template.Must(
+		template.New("subjects.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/subjects.html"),
+	)
+
+	templates["subject.html"] = template.Must(
+		template.New("subject.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/subject.html"),
+	)
+
 	templates["query.html"] = template.Must(
 		template.New("query.html").
 			Funcs(funcs).

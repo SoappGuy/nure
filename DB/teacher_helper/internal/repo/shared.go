@@ -14,6 +14,8 @@ var allowedColumns = map[string]bool{
 	"personal_file_number": true,
 	"phone":                true,
 	"email":                true,
+	"title":                true,
+	"number_of_hours":      true,
 	"":                     true,
 }
 
@@ -23,17 +25,26 @@ type QueryParams struct {
 	IsDescending bool   `db:"is_descending" param:"is_descending" query:"is_descending" form:"is_descending"`
 }
 
-func (q *QueryParams) Validate() error {
+func (q *QueryParams) Validate(params ...QueryParams) error {
+	defaults := params[0]
 	if !allowedColumns[q.OrderBy] {
 		return fmt.Errorf("Invalid order_by column: %s", q.OrderBy)
 	}
 
 	if q.OrderBy == "" {
-		q.OrderBy = "lastname"
+		if defaults.OrderBy != "" {
+			q.OrderBy = defaults.OrderBy
+		} else {
+			q.OrderBy = "lastname"
+		}
 	}
 
 	if q.Query == "" {
-		q.Query = "%"
+		if defaults.Query != "" {
+			q.Query = defaults.Query
+		} else {
+			q.Query = "%"
+		}
 	} else {
 		q.Query = "%" + q.Query + "%"
 	}

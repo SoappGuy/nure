@@ -1,0 +1,102 @@
+{{ define "content" }}
+<main class="responsive" id="main_content" hx-swap-oob="true">
+    <div class="grid">
+        {{ template "subject-info" .Subject }}
+    </div>
+</main>
+{{ end }}
+
+{{ define "subject-info" }}
+<article class="round s12" id="subject-info">
+    <div class="grid no-space">
+        <div class="s4 center-align">
+            <img class="round small-width small-height margin" src="/images/placeholder.png">
+            <div id="buttons" class="grid">
+                <button class="button s12" hx-get="/subjects/{{.SubjectID}}/edit" hx-target="#subject-info"
+                    hx-swap="outerHTML">
+                    <i>edit</i>
+                    <span>Редагувати</span>
+                </button>
+
+                <button class="error delete s12"
+                    _="on click hide <button.delete/> in closest <div/> then show <button.confirm/> in closest <div/>"
+                    data-loading-disable>
+                    <i>delete</i>
+                    <span>Видалити</span>
+                </button>
+
+                <button class="confirm secondary s6" style="display: none;"
+                    _="on click hide <button.confirm/> then show <button.delete/>">
+                    <i>close</i>
+                </button>
+
+                <button class="error confirm s6" id="delete-{{.SubjectID}}" data-loading-disable
+                    hx-delete="/subjects/{{.SubjectID}}" hx-swap="none" hx-indicator="#i-{{.SubjectID}}"
+                    style="display: none;"
+                    _="on click hide <button.confirm/>then show <button.delete/> end on htmx:afterRequest js history.back()">
+                    <i>check</i>
+                </button>
+            </div>
+
+            <progress id="i-{{.SubjectID}}" class="htmx-indicator"></progress>
+        </div>
+        <div class="s8 padding grid">
+            <h3 class="s12 right-align">
+                {{.Title}}
+            </h3>
+            <hr class="s12">
+            <h6 class="s12 row">Кількість годин <div class="max"></div> {{.NumberOfHours}}</h6>
+            <p class="s12" style="overflow-wrap: break-word;">
+                {{if .Description}}{{.Description}}{{else}}Опис відсутній{{end}}
+            </p>
+        </div>
+    </div>
+</article>
+{{ end }}
+
+{{ define "subject-info-edit"}}
+<article class="round s12" id="subject-info">
+    <form class="grid no-space" hx-put="/subjects/{{.SubjectID}}" hx-target="#subject-info" hx-swap="outerHTML"
+        hx-vals='{"subject_ID": "{{.SubjectID}}"}'>
+        <div class="s4 center-align">
+            <img class="round small-width small-height margin" src="/images/placeholder.png">
+
+            <nav class="buttons row">
+                <div class="max"></div>
+                <button class="error button circle" hx-get="/subjects/{{.SubjectID}}/info" hx-target="#subject-info"
+                    hx-swap="outerHTML">
+                    <i>close</i>
+                    <span>Відмінити</span>
+                </button>
+                <button class="button circle" submit>
+                    <i>check</i>
+                    <span>Застосувати</span>
+                </button>
+                <div class="max"></div>
+            </nav>
+        </div>
+        <div class="s8 padding grid" hx-target="this" hx-swap="outerHTML">
+            <div class="s12 grid">
+                <div class="field small no-margin s12 l4">
+                    <input type="text" value="{{.Title}}" name="title" required>
+                </div>
+            </div>
+            <hr class="s12">
+            </hr>
+            <h6 class="s12 grid">
+                <span class="s12 l7">
+                    Особова справа
+                </span>
+                <div class="field small no-margin s12 l5">
+                    <input type="text" value="{{.NumberOfHours}}" name="number_of_hours" required>
+                </div>
+            </h6>
+            <div class="field small no-margin s12">
+                <textarea name="note" class="wrap">{{if .Description}}{{.Description}}{{end}}</textarea>
+                <label>Опис</label>
+            </div>
+
+        </div>
+    </form>
+</article>
+{{ end }}

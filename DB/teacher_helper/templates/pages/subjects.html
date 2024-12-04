@@ -1,0 +1,163 @@
+{{ define "content" }}
+<main class="responsive" id="main_content">
+    <h1 class="right-align middle-align">Предмети</h1>
+    <div class="grid">
+        {{ template "controls-row" . }}
+        <div class="s12 grid" id="subjects">
+        </div>
+    </div>
+    <div hx-get="/subjects" hx-trigger="ResetContent from:body"></div>
+    {{ template "add-dialog" . }}
+</main>
+{{ end }}
+
+{{ define "controls-row" }}
+<nav class="controls s12" id="controls_row">
+    <form class="row" hx-boost="true" hx-get="/subjects/search" hx-target="#subjects" autocomplete="off">
+        <div hx-get="/subjects/search" hx-trigger="load">
+        </div>
+
+        <button class="error circle" hx-get="/subjects/search">
+            <i>close</i>
+        </button>
+        <button type="submit">
+            <i>search</i>
+            <span>Застосувати</span>
+        </button>
+
+        <div class="field label border round small">
+            <input name="query">
+            <label>Пошук</label>
+        </div>
+        <div class="field label border round small">
+            <select name="order_by">
+                <option value="title">Назва</option>
+                <option value="number_of_hours">Кількість годин</option>
+            </select>
+            <label>Сортувати за</label>
+        </div>
+        <label class="circle checkbox icon">
+            <input type="checkbox" class="circle" name="is_descending" value="1">
+            <span>
+                <i>south</i>
+                <i>north</i>
+            </span>
+        </label>
+    </form>
+
+    <div class="max">
+    </div>
+
+    <button _="on click add .active to <div.overlay/> in #addDialog then add .active to <dialog/> in #addDialog">
+        <i>add</i>
+        <span>Додати предмет</span>
+    </button>
+</nav>
+{{ end }}
+
+{{ define "subjects" }}
+<div class="s12 grid" id="subjects" hx-swap-oob="true">
+    {{ range . }}
+    {{ template "subject" . }}
+    {{ end }}
+</div>
+{{ end }}
+
+{{ define "subject" }}
+<article id="subject-{{.SubjectID}}" class="no-padding round s12 m6 l4" data-loading-states="subject-{{.SubjectID}}">
+    <img class="responsive small top-round" src="/images/placeholder.png">
+    <div class="padding">
+        <nav class="row">
+            <div>
+                <h6 style="text-wrap: nowrap;">
+                    <a class="link underline" hx-get="/subjects/{{.SubjectID}}" hx-swap="none" hx-push-url="true"
+                        data-loading-disable>
+                        {{.Title}}
+                    </a>
+                </h6>
+            </div>
+            <div class="max"></div>
+        </nav>
+        <div class="grid">
+            <div class="s6">{{.NumberOfHours}} годин</div>
+        </div>
+        <nav class="right-align">
+            <button class="circle error delete"
+                _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
+                data-loading-disable>
+                <i>delete</i>
+            </button>
+
+            <button class="confirm secondary" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>close</i>
+                <span>Скасувати</span>
+            </button>
+
+            <div class="max"></div>
+
+            <button class="error confirm" id="delete-{{.SubjectID}}" data-loading-disable
+                hx-delete="/subjects/{{.SubjectID}}" hx-target="#subject-{{.SubjectID}}" hx-swap="outerHTML"
+                hx-indicator="#i-{{.SubjectID}}" style="display: none;"
+                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                <i>check</i>
+                <span>Підтвердити</span>
+            </button>
+        </nav>
+        <progress id="i-{{.SubjectID}}" class="htmx-indicator"></progress>
+    </div>
+</article>
+{{ end }}
+
+{{ define "add-dialog" }}
+<div id="addDialog" _="
+    on closeDialog or htmx:afterOnLoad
+            remove .active from <div.overlay/> in #addDialog
+            then 
+            remove .active from <dialog/> in #addDialog 
+    end
+">
+    <div class="overlay blur" _="on click trigger closeDialog"></div>
+    <dialog>
+        <nav>
+            <h5>Додати предмет</h5>
+            <div class="max"></div>
+            <button class="error circle small" data-loading-disable
+                _="on click trigger closeDialog"><i>close</i></button>
+        </nav>
+        <form hx-post="/subjects" hx-swap="afterbegin" hx-target="#subjects" autocomplete="false">
+            <fieldset class="round grid">
+                <div class="field label border small round s6">
+                    <input type="text" name="title" required>
+                    <label>Назва</label>
+                </div>
+
+                <div class="field label border small round s6">
+                    <input type="number" name="number_of_hours" required>
+                    <label>Кількість годин</label>
+                </div>
+
+                <div class="field label border round small s6">
+                    <input type="text" name="note">
+                    <label>Примітка</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
+{{ end }}
+
+{{ define "subjects-select" }}
+<select name="subject_ID" required>
+    {{ range .Subjects }}
+    <option {{ if eq .SubjectID $.Selected.SubjectID }}selected{{end}} value="{{.SubjectID}}">
+        {{.Title}}
+    </option>
+    {{ end }}
+</select>
+{{ end }}
