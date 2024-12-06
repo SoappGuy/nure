@@ -2,23 +2,24 @@
 <main class="responsive" id="main_content" hx-swap-oob="true">
     <div class="grid">
         {{ template "student-info" .Student }}
-        {{ if .MedicalCard }}
-        {{ template "medical-card" .MedicalCard }}
-        {{ else }}
-        {{ template "medical-card-empty" }}
-        {{ end }}
+        {{ template "medical-card-control" .MedicalCard }}
         {{ template "connections" .Connections }}
+        {{ template "privileges" .Privileges }}
     </div>
     {{ template "add-connection-dialog" . }}
+    {{ template "add-privilege-dialog" . }}
 </main>
 {{ end }}
 
 {{ define "student-info" }}
-<article class="round s12 l8" id="student-info">
-    <div class="grid no-space">
-        <div class="s4 center-align">
-            <img class="round small-width small-height margin" src="/images/placeholder.png">
-            <div id="buttons" class="grid">
+<article class="no-padding round s12 l8" id="student-info">
+    <div class="grid large-space padding">
+        <div class="s4 grid">
+            <div class="s12 row center-align">
+                <img class="round small-width small-height" src="/images/placeholder.png">
+            </div>
+
+            <div id="buttons" class="s12 grid">
                 <button class="button s12" hx-get="/students/{{.StudentID}}/edit" hx-target="#student-info"
                     hx-swap="outerHTML">
                     <i>edit</i>
@@ -44,12 +45,12 @@
                 </button>
             </div>
 
-            <progress id="i-{{.StudentID}}" class="htmx-indicator"></progress>
+            <progress id="i-{{.StudentID}}" class="s12 htmx-indicator"></progress>
         </div>
-        <div class="s8 padding grid">
-            <h3 class="s12 right-align">
+        <div class="s8 grid no-space ">
+            <h5 class="s12 middle-align row">
                 {{.Lastname}} {{.Firstname}} {{.Middlename}}
-            </h3>
+            </h5>
             <hr class="s12">
             <h6 class="s12 row">Особова справа <div class="max"></div> {{.PersonalFileNumber}}</h6>
             <h6 class="s12 row">Форма навчання <div class="max"></div> {{.FormOfEducation}}</h6>
@@ -159,7 +160,7 @@
             <i>add</i>
             <span>Додати зв'язок</span>
         </button>
-        <h5 class="s6 right-align">
+        <h5 class="s6 right-align middle-align">
             Пов'язані опікуни
         </h5>
         <hr class="s12">
@@ -183,6 +184,8 @@
         </h6>
         <div class="max"></div>
         <nav class="right-align">
+            <progress id="i-fc-{{.FamilyConnectionID}}" class="s12 circle small htmx-indicator"></progress>
+
             <button class="circle error delete"
                 _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
                 data-loading-disable>
@@ -209,7 +212,6 @@
         </nav>
     </nav>
 
-    <progress id="i-fc-{{.FamilyConnectionID}}" class="s12 htmx-indicator"></progress>
     <hr class="s12">
 </div>
 {{ end }}
@@ -312,19 +314,28 @@
 </div>
 {{ end }}
 
+{{ define "medical-card-control" }}
+{{ if . }}
+{{ template "medical-card" . }}
+{{ else }}
+{{ template "medical-card-empty" }}
+{{ end }}
+{{ end }}
+
 {{ define "medical-card" }}
 <article id="medical-card" class="no-padding round s12 l4">
     <div class="grid padding">
-        <h3 class="s12 row">
+        <h5 class="s12 row">
             <button class="circle" hx-get="/medicalCard/{{.StudentID}}/edit" hx-target="#medical-card"
                 hx-swap="outerHTML"><i>edit</i></button>
             Медична Картка
-        </h3>
+        </h5>
         <hr class="s12">
         <h6 class="s12 row">Вага <div class="max"></div> {{.Weight}} кг.</h6>
         <h6 class="s12 row">Зріст <div class="max"></div> {{.Height}} см.</h6>
         <h6 class="s12 row">Група здоров'я <div class="max"></div> {{.HealthGroup}}</h6>
         <h6 class="s12 row">Група крові, Rh <div class="max"></div> {{.BloodGroup}}{{.RhFactor}}</h6>
+        <hr class="s12">
         <h6 class="s12 row">Медичні огляди:</h6>
         <h6 class="s12 row">Останній <div class="max"></div> {{.LastInspectionDate.Format "2006-01-02"}}</h6>
         <h6 class="s12 row">Наступний <div class="max"></div> {{.NextInspectionDate.Format "2006-01-02"}}</h6>
@@ -337,7 +348,6 @@
     <div>
         <i class="extra">medical_information</i>
         <h5>Учень ще не має медичної картки</h5>
-        <!-- <p>Натисніть на кнопку нижче, щоб створити медичну картку.</p> -->
         <div class="space"></div>
         <nav class="center-align">
             <button hx-post="/medicalCard">Створити</button>
@@ -395,6 +405,7 @@
                 </select>
             </div>
         </h6>
+        <hr class="s12">
         <h6 class="s12 row">Медичні огляди:</h6>
         <h6 class="s12 row">Останній <div class="max"></div>
             <div class="field small no-margin s12 l4">
@@ -410,4 +421,154 @@
         </h6>
     </form>
 </article>
+{{ end }}
+
+{{ define "privileges" }}
+<article class="round s12 l6">
+    <div class="grid">
+        <button class="button s6"
+            _="on click add .active to <div.overlay/> in #add-privilege-dialog then add .active to <dialog/> in #add-privilege-dialog">
+            <i>add</i>
+            <span>Додати пільгу</span>
+        </button>
+        <h5 class="s6 right-align middle-align">
+            Пільги
+        </h5>
+        <hr class="s12">
+        <div class="s12 grid scroll no-round middle-height" id="privileges">
+            {{ range . }}
+            {{ template "privilege" . }}
+            {{ end }}
+        </div>
+    </div>
+</article>
+{{ end }}
+
+{{ define "privilege" }}
+<div class="s12 grid" id="privilege-info-{{.PrivilegeID}}">
+    <details class="s12">
+        <summary class="none">
+            <nav>
+                <nav clas="row">
+                    <i>arrow_drop_down</i>
+                    <h6 class="">
+                        {{.Type}}
+                    </h6>
+                    <span>
+                        до {{.ExpirationDate.Format "2006-01-02"}}
+                    </span>
+                </nav>
+                <div class="max"></div>
+                <nav class="right-align">
+                    <progress id="i-p-{{.PrivilegeID}}" class="s12 circle small htmx-indicator"></progress>
+
+                    <button class="circle error delete"
+                        _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
+                        data-loading-disable>
+                        <i>delete</i>
+                    </button>
+
+                    <button class="circle confirm secondary" style="display: none;"
+                        _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                        <i>close</i>
+                    </button>
+
+                    <button class="circle error confirm" id="delete-{{.PrivilegeID}}" data-loading-disable
+                        hx-delete="/students/privileges/{{.PrivilegeID}}" hx-target="#privilege-info-{{.PrivilegeID}}"
+                        hx-swap="outerHTML" hx-indicator="#i-p-{{.PrivilegeID}}" style="display: none;"
+                        _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                        <i>check</i>
+                    </button>
+
+                    <button class="button circle s12" hx-get="/students/privileges/{{.PrivilegeID}}/edit"
+                        hx-target="#privilege-info-{{.PrivilegeID}}" hx-swap="outerHTML">
+                        <i>edit</i>
+                    </button>
+                </nav>
+            </nav>
+        </summary>
+        <nav class="left-margin large-margin">
+            {{.Description}}
+        </nav>
+    </details>
+    <hr class="s12" />
+</div>
+{{ end }}
+
+{{ define "privilege-edit" }}
+<div class="s12 grid" id="privilege-info-{{.PrivilegeID}}">
+    <form class="s12" hx-put="/students/privileges/{{.PrivilegeID}}"
+        hx-vals='{"privilege_ID": "{{.PrivilegeID}}", "student_ID": "{{.StudentID}}"}'
+        hx-target="#privilege-info-{{.PrivilegeID}}" hx-swap="outerHTML">
+        <div class="grid">
+            <div class="s6 field small no-margin">
+                <input type="text" name="type" value="{{.Type}}" required>
+            </div>
+            <div class="s6 field small no-margin">
+                <input type="date" name="expiration_date" value='{{.ExpirationDate.Format "2006-01-02"}}' required>
+            </div>
+            <div class="s12 field small no-margin">
+                <input type="text" name="description" value="{{.Description}}" required>
+            </div>
+        </div>
+
+        <div class="right-align buttons grid">
+            <button class="error button s6" hx-get="/students/privileges/{{.PrivilegeID}}/info"
+                hx-target="#privilege-info-{{.PrivilegeID}}" hx-swap="outerHTML">
+                <i>close</i>
+                <span>Відмінити</span>
+            </button>
+            <button class="button s6" submit>
+                <i>check</i>
+                <span>Застосувати</span>
+            </button>
+            <div class="max"></div>
+        </div>
+    </form>
+    <hr class="s12" />
+</div>
+{{ end}}
+
+{{ define "add-privilege-dialog" }}
+<div id="add-privilege-dialog" _="
+    on closeDialog or htmx:afterOnLoad
+            remove .active from <div.overlay/> in #add-privilege-dialog
+            then
+            remove .active from <dialog/> in #add-privilege-dialog 
+    end
+">
+    <div class="overlay blur" _="on click trigger closeDialog"></div>
+    <dialog>
+        <nav>
+            <h5>Додати пільгу</h5>
+            <div class="max"></div>
+            <button class="error circle small" data-loading-disable
+                _="on click trigger closeDialog"><i>close</i></button>
+        </nav>
+        <form hx-post="/students/privileges" hx-vals='{"student_ID": "{{.Student.StudentID}}"}' hx-swap="afterbegin"
+            hx-target="#privileges" autocomplete="false">
+            <fieldset class="round grid">
+                <div class="field label border small round s12">
+                    <input type="text" name="type" required>
+                    <label>Вид пільги</label>
+                </div>
+
+                <div class="field label border small round s12">
+                    <input type="date" name="expiration_date" required>
+                    <label>Дата завершення</label>
+                </div>
+
+                <div class="field label border small round s12">
+                    <input type="text" name="description" required>
+                    <label>Опис</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
 {{ end }}

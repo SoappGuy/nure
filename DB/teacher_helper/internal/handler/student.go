@@ -20,6 +20,12 @@ func NewStudentHandler(studentRepo *repo.StudentRepo) *StudentHandler {
 }
 
 func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
+	e.GET("/students/privileges/:id/info", h.GetPrivilege)
+	e.GET("/students/privileges/:id/edit", h.EditPrivilege)
+	e.PUT("/students/privileges/:privilege_ID", h.UpdatePrivilege)
+	e.DELETE("/students/privileges/:id", h.DeletePrivilege)
+	e.POST("/students/privileges", h.CreatePrivilege)
+
 	e.GET("/medicalCard/:id/info", h.GetMedicalCard)
 	e.GET("/medicalCard/:id/edit", h.EditMedicalCard)
 	e.PUT("/medicalCard/:id", h.UpdateMedicalCard)
@@ -55,6 +61,7 @@ type StudentPage struct {
 	Student     model.Student
 	MedicalCard model.MedicalCard
 	Connections []model.FamilyConnection
+	Privileges  []model.Privilege
 }
 
 func (h *StudentHandler) GetStudents(c echo.Context) error {
@@ -99,19 +106,26 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get medical card"})
 	}
 
-	links := NewLinks(PageTypeStudents)
-
 	connections, err := h.studentRepo.GetConnections(id)
 	if err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get connections"})
 	}
 
+	privileges, err := h.studentRepo.GetPrivileges(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get privileges"})
+	}
+
+	links := NewLinks(PageTypeStudents)
+
 	student_page := StudentPage{
 		Links:       links,
 		Student:     student,
 		MedicalCard: *medicalCard,
 		Connections: connections,
+		Privileges:  privileges,
 	}
 
 	return c.Render(http.StatusOK, "student.html/base", student_page)
@@ -241,6 +255,8 @@ func (h *StudentHandler) StudentsSelect(c echo.Context) error {
 	return c.Render(http.StatusOK, "students.html/students-select", studentsSelect)
 }
 
+// Connection
+
 func (h *StudentHandler) GetConnection(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -326,6 +342,8 @@ func (h *StudentHandler) CreateConnection(c echo.Context) error {
 	return c.Render(http.StatusCreated, "student.html/connection", connection)
 }
 
+// MedicalCard
+
 func (h *StudentHandler) GetMedicalCard(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -383,4 +401,91 @@ func (h *StudentHandler) CreateMedicalCard(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusCreated, "students.html/medical-card", medicalCard)
+}
+
+// Privilege
+
+func (h *StudentHandler) GetPrivilege(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	privilege, err := h.studentRepo.GetPrivilegeByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get Privilege"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/privilege", privilege)
+}
+
+func (h *StudentHandler) EditPrivilege(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	privilege, err := h.studentRepo.GetPrivilegeByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get privilege"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/privilege-edit", privilege)
+}
+
+func (h *StudentHandler) UpdatePrivilege(c echo.Context) error {
+	privilege := new(model.Privilege)
+	if err := c.Bind(privilege); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid privilege data"})
+	}
+
+	if err := h.studentRepo.UpdatePrivilege(privilege); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update privilege"})
+	}
+
+	privilege, err := h.studentRepo.GetPrivilegeByID(int(privilege.PrivilegeID))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get privilege"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/privilege", privilege)
+}
+
+func (h *StudentHandler) DeletePrivilege(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid privilege ID"})
+	}
+
+	if err := h.studentRepo.DeletePrivilege(id); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't delete privilege"})
+	}
+
+	return c.NoContent(http.StatusAccepted)
+}
+
+func (h *StudentHandler) CreatePrivilege(c echo.Context) error {
+	privilege := new(model.Privilege)
+	if err := c.Bind(privilege); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid parent data"})
+	}
+
+	id, err := h.studentRepo.CreatePrivilege(privilege)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create privilege"})
+	}
+
+	privilege, err = h.studentRepo.GetPrivilegeByID(int(id))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get parent"})
+	}
+
+	return c.Render(http.StatusCreated, "student.html/privilege", privilege)
 }
