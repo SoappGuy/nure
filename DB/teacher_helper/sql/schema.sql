@@ -1,5 +1,4 @@
 /* sql-formatter-disable */
-/* drop all tables  */
 DROP TABLE IF EXISTS StudentAdress;
 DROP TABLE IF EXISTS Adress;
 DROP TABLE IF EXISTS Privilege;

@@ -119,7 +119,7 @@ func (r *CaretakerRepo) Update(caretaker *model.Caretaker) error {
 	}
 
 	if rows == 0 {
-		return fmt.Errorf("CareTaker not updated")
+		return fmt.Errorf("Caretaker not updated")
 	}
 
 	return nil

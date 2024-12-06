@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,6 +20,11 @@ func NewStudentHandler(studentRepo *repo.StudentRepo) *StudentHandler {
 }
 
 func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
+	e.GET("/medicalCard/:id/info", h.GetMedicalCard)
+	e.GET("/medicalCard/:id/edit", h.EditMedicalCard)
+	e.PUT("/medicalCard/:id", h.UpdateMedicalCard)
+	e.POST("/medicalCard", h.CreateMedicalCard)
+
 	e.GET("/students/familyconnections/:id/info", h.GetConnection)
 	e.GET("/students/familyconnections/:id/edit", h.EditConnection)
 	e.PUT("/students/familyconnections/:family_connection_ID", h.UpdateConnection)
@@ -49,6 +53,7 @@ type StudentsPage struct {
 type StudentPage struct {
 	Links       []Link
 	Student     model.Student
+	MedicalCard model.MedicalCard
 	Connections []model.FamilyConnection
 }
 
@@ -88,6 +93,12 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get student"})
 	}
 
+	medicalCard, err := h.studentRepo.GetMedicalCard(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get medical card"})
+	}
+
 	links := NewLinks(PageTypeStudents)
 
 	connections, err := h.studentRepo.GetConnections(id)
@@ -99,6 +110,7 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 	student_page := StudentPage{
 		Links:       links,
 		Student:     student,
+		MedicalCard: *medicalCard,
 		Connections: connections,
 	}
 
@@ -265,8 +277,6 @@ func (h *StudentHandler) UpdateConnection(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid parent data"})
 	}
 
-	fmt.Printf("Parent: %+v\n", conenction)
-
 	if err := h.studentRepo.UpdateConnection(conenction); err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update parent"})
@@ -314,4 +324,63 @@ func (h *StudentHandler) CreateConnection(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusCreated, "student.html/connection", connection)
+}
+
+func (h *StudentHandler) GetMedicalCard(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	medicalCard, err := h.studentRepo.GetMedicalCard(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get MedicalCard"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/medical-card", medicalCard)
+}
+
+func (h *StudentHandler) EditMedicalCard(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	medicalCard, err := h.studentRepo.GetMedicalCard(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get MedicalCard"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/medical-card-edit", medicalCard)
+}
+
+func (h *StudentHandler) UpdateMedicalCard(c echo.Context) error {
+	medicalCard := new(model.MedicalCard)
+	if err := c.Bind(medicalCard); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid MedicalCard data"})
+	}
+
+	if err := h.studentRepo.UpdateMedicalCard(medicalCard); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't update MedicalCard"})
+	}
+
+	return c.Render(http.StatusOK, "student.html/medical-card", medicalCard)
+}
+
+func (h *StudentHandler) CreateMedicalCard(c echo.Context) error {
+	medicalCard := new(model.MedicalCard)
+	if err := c.Bind(medicalCard); err != nil {
+		return err
+	}
+
+	err := h.studentRepo.CreateMedicalCard(medicalCard)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't add MedicalCard"})
+	}
+
+	return c.Render(http.StatusCreated, "students.html/medical-card", medicalCard)
 }

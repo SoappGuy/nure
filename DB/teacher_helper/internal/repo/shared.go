@@ -26,7 +26,11 @@ type QueryParams struct {
 }
 
 func (q *QueryParams) Validate(params ...QueryParams) error {
-	defaults := params[0]
+	defaults := new(QueryParams)
+	if len(params) != 0 {
+		defaults = &params[0]
+	}
+
 	if !allowedColumns[q.OrderBy] {
 		return fmt.Errorf("Invalid order_by column: %s", q.OrderBy)
 	}

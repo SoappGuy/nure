@@ -2,8 +2,12 @@
 <main class="responsive" id="main_content" hx-swap-oob="true">
     <div class="grid">
         {{ template "student-info" .Student }}
-        {{ template "student-health" .Student }}
-        {{ template "connections" . }}
+        {{ if .MedicalCard }}
+        {{ template "medical-card" .MedicalCard }}
+        {{ else }}
+        {{ template "medical-card-empty" }}
+        {{ end }}
+        {{ template "connections" .Connections }}
     </div>
     {{ template "add-connection-dialog" . }}
 </main>
@@ -160,7 +164,7 @@
         </h5>
         <hr class="s12">
         <div class="s12 grid scroll no-round middle-height" id="familyconnections">
-            {{ range .Connections }}
+            {{ range . }}
             {{ template "connection" . }}
             {{ end }}
         </div>
@@ -308,11 +312,102 @@
 </div>
 {{ end }}
 
-{{ define "student-health" }}
-<article class="no-padding round s12 l4">
+{{ define "medical-card" }}
+<article id="medical-card" class="no-padding round s12 l4">
     <div class="grid padding">
-        <h3 class="s12 right-align">Медична Картка</h3>
+        <h3 class="s12 row">
+            <button class="circle" hx-get="/medicalCard/{{.StudentID}}/edit" hx-target="#medical-card"
+                hx-swap="outerHTML"><i>edit</i></button>
+            Медична Картка
+        </h3>
         <hr class="s12">
+        <h6 class="s12 row">Вага <div class="max"></div> {{.Weight}} кг.</h6>
+        <h6 class="s12 row">Зріст <div class="max"></div> {{.Height}} см.</h6>
+        <h6 class="s12 row">Група здоров'я <div class="max"></div> {{.HealthGroup}}</h6>
+        <h6 class="s12 row">Група крові, Rh <div class="max"></div> {{.BloodGroup}}{{.RhFactor}}</h6>
+        <h6 class="s12 row">Медичні огляди:</h6>
+        <h6 class="s12 row">Останній <div class="max"></div> {{.LastInspectionDate.Format "2006-01-02"}}</h6>
+        <h6 class="s12 row">Наступний <div class="max"></div> {{.NextInspectionDate.Format "2006-01-02"}}</h6>
     </div>
+</article>
+{{ end }}
+
+{{ define "medical-card-empty" }}
+<article id="medical-card" class="round middle-align center-align s12 l4">
+    <div>
+        <i class="extra">medical_information</i>
+        <h5>Учень ще не має медичної картки</h5>
+        <!-- <p>Натисніть на кнопку нижче, щоб створити медичну картку.</p> -->
+        <div class="space"></div>
+        <nav class="center-align">
+            <button hx-post="/medicalCard">Створити</button>
+        </nav>
+    </div>
+</article>
+{{ end }}
+
+{{ define "medical-card-edit" }}
+<article id="medical-card" class="no-padding round s12 l4">
+    <form class="grid padding" hx-put="/medicalCard/{{.StudentID}}" hx-target="#medical-card" hx-swap="outerHTML"
+        hx-vals='{"student_ID": "{{.StudentID}}", "medical_card_ID": "{{.MedicalCardID}}"}'>
+        <div class="s12 grid">
+            <button class="s6" submit><i>check</i></button>
+            <button class="s6 error" hx-get="/medicalCard/{{.StudentID}}/info" hx-target="#medical-card"
+                hx-swap="outerHTML"><i>close</i></button>
+        </div>
+        <hr class="s12" />
+        <h6 class="s12 row">Вага <div class="max"></div>
+            <div class="field small no-margin s12 l4">
+                <input class="small-width" type="number" value="{{.Weight}}" name="weight" required>
+            </div>
+            кг.
+        </h6>
+        <h6 class="s12 row">Зріст <div class="max"></div>
+            <div class="field small suffix no-margin s12 l4">
+                <input class="small-width" type="number" value="{{.Height}}" name="height" required>
+            </div>
+            кг.
+        </h6>
+        <h6 class="s12 row">Група здоров'я <div class="max"></div>
+            <div class="field small no-margin s12 l4">
+                <select name="health_group" required>
+                    <option value="1" {{if eq .HealthGroup "1" }}selected{{end}}>1</option>
+                    <option value="2" {{if eq .HealthGroup "2" }}selected{{end}}>2</option>
+                    <option value="3" {{if eq .HealthGroup "3" }}selected{{end}}>3</option>
+                    <option value="4" {{if eq .HealthGroup "4" }}selected{{end}}>4</option>
+                    <option value="5" {{if eq .HealthGroup "5" }}selected{{end}}>5</option>
+                </select>
+            </div>
+        </h6>
+        <h6 class="s12 row">Група крові, Rh <div class="max"></div>
+            <div class="field small no-margin s12 l4">
+                <select name="blood_group" required>
+                    <option value="I" {{if eq .BloodGroup "I" }}selected{{end}}>I</option>
+                    <option value="II" {{if eq .BloodGroup "II" }}selected{{end}}>II</option>
+                    <option value="III" {{if eq .BloodGroup "III" }}selected{{end}}>III</option>
+                    <option value="IV" {{if eq .BloodGroup "IV" }}selected{{end}}>IV</option>
+                </select>
+            </div>
+            <div class="field small no-margin s12 l4">
+                <select name="rh_factor" required>
+                    <option value="+" {{if eq .RhFactor "+" }}selected{{end}}>+</option>
+                    <option value="-" {{if eq .RhFactor "-" }}selected{{end}}>-</option>
+                </select>
+            </div>
+        </h6>
+        <h6 class="s12 row">Медичні огляди:</h6>
+        <h6 class="s12 row">Останній <div class="max"></div>
+            <div class="field small no-margin s12 l4">
+                <input type="date" value='{{.LastInspectionDate.Format "2006-01-02"}}' name="last_inspection_date"
+                    required>
+            </div>
+        </h6>
+        <h6 class="s12 row">Наступний <div class="max"></div>
+            <div class="field small no-margin s12 l4">
+                <input type="date" value='{{.NextInspectionDate.Format "2006-01-02"}}' name="next_inspection_date"
+                    required>
+            </div>
+        </h6>
+    </form>
 </article>
 {{ end }}
