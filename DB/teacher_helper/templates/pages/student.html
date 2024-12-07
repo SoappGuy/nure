@@ -51,13 +51,14 @@
             <h5 class="s12 middle-align row">
                 {{.Lastname}} {{.Firstname}} {{.Middlename}}
             </h5>
-            <hr class="s12">
+            <hr class="s12" />
             <h6 class="s12 row">Особова справа <div class="max"></div> {{.PersonalFileNumber}}</h6>
             <h6 class="s12 row">Форма навчання <div class="max"></div> {{.FormOfEducation}}</h6>
             <h6 class="s12 row">Народився <div class="max"></div> {{.Birthday.Format "02.01.2006"}}
             </h6>
             <h6 class="s12 row">Стать <div class="max"></div> {{if eq .Gender
                 "F"}}Дівчина{{else}}Хлопець{{end}} </h6>
+            <hr class="s12" />
             <p class="s12" style="overflow-wrap: break-word;">
                 {{if .Note}}{{.Note}}{{else}}Примітка відсутня{{end}}
             </p>
@@ -67,7 +68,7 @@
 {{ end }}
 
 {{ define "student-info-edit"}}
-<article class="round s12 l8" id="student-info">
+<article class="no-padding round s12 l8" id="student-info">
     <form class="grid no-space" hx-put="/students/{{.StudentID}}" hx-target="#student-info" hx-swap="outerHTML"
         hx-vals='{"student_ID": "{{.StudentID}}"}'>
         <div class="s4 center-align">
@@ -142,6 +143,7 @@
                     <i>arrow_drop_down</i>
                 </div>
             </h6>
+            <hr class="s12" />
             <div class="field small no-margin s12">
                 <textarea name="note" class="wrap">{{if .Note}}{{.Note}}{{end}}</textarea>
                 <label>Примітка</label>
@@ -328,6 +330,7 @@
         <h5 class="s12 row">
             <button class="circle" hx-get="/medicalCard/{{.StudentID}}/edit" hx-target="#medical-card"
                 hx-swap="outerHTML"><i>edit</i></button>
+            <div class="max"></div>
             Медична Картка
         </h5>
         <hr class="s12">

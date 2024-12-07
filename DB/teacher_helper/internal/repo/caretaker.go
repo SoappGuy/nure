@@ -75,6 +75,9 @@ func (r *CaretakerRepo) Create(caretaker *model.Caretaker) (err error) {
 			(:firstname, :middlename, :lastname, :phone, :email)`,
 		caretaker,
 	)
+	if err != nil {
+		return err
+	}
 
 	row, err := result.RowsAffected()
 	if err != nil {
@@ -165,10 +168,10 @@ func (r *CaretakerRepo) GetConnections(id int) ([]model.FamilyConnection, error)
 		Student.note
 	FROM
 		FamilyConnection
-	JOIN
-		Caretaker ON Caretaker.caretaker_ID = FamilyConnection.caretaker_ID
-	JOIN
-		Student ON Student.student_ID = FamilyConnection.student_ID
+		JOIN
+			Caretaker ON Caretaker.caretaker_ID = FamilyConnection.caretaker_ID
+		JOIN
+			Student ON Student.student_ID = FamilyConnection.student_ID
 	WHERE
 		FamilyConnection.caretaker_ID = ?`,
 		id,

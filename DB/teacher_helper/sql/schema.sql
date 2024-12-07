@@ -106,7 +106,6 @@ CREATE TABLE MedicalCard (
     rh_factor ENUM('+', '-') NOT NULL,
     last_inspection_date DATE NOT NULL,
     next_inspection_date DATE NOT NULL,
-    note TEXT,
     FOREIGN KEY (student_ID) REFERENCES Student (student_ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -118,26 +117,4 @@ CREATE TABLE Privilege (
     description TEXT,
     expiration_date DATE,
     FOREIGN KEY (student_ID) REFERENCES Student (student_ID) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-
-CREATE TABLE Adress (
-    adress_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    country VARCHAR(32) NOT NULL,
-    region VARCHAR(32) NOT NULL,
-    city VARCHAR(32) NOT NULL,
-    street VARCHAR(32) NOT NULL,
-    biulding VARCHAR(32) NOT NULL,
-    apartment VARCHAR(32) NOT NULL,
-    postal_code VARCHAR(32) NOT NULL
-);
-
-
-CREATE TABLE StudentAdress (
-    student_adress_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    student_ID INT NOT NULL,
-    adress_ID INT NOT NULL,
-    type ENUM('Постійна', 'Тимчасова', 'Реєстрації') NOT NULL,
-    FOREIGN KEY (student_ID) REFERENCES Student (student_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (adress_ID) REFERENCES Adress (adress_ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
