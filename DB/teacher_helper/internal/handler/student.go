@@ -39,15 +39,15 @@ func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
 
 	e.GET("/students/select/:id", h.StudentsSelect)
 
+	e.GET("/students/:id", h.GetStudent)
+	e.GET("/students/:id/info", h.StudentInfo)
+	e.GET("/students/:id/edit", h.StudentInfoEdit)
+
 	e.GET("/students", h.GetStudents)
 	e.GET("/students/search", h.SearchStudents)
 	e.POST("/students", h.CreateStudent)
 	e.DELETE("/students/:id", h.DeleteStudent)
 	e.PUT("/students/:id", h.UpdateStudent)
-
-	e.GET("/students/:id", h.GetStudent)
-	e.GET("/students/:id/info", h.StudentInfo)
-	e.GET("/students/:id/edit", h.StudentInfoEdit)
 }
 
 type StudentsPage struct {
@@ -79,13 +79,13 @@ func (h *StudentHandler) GetStudents(c echo.Context) error {
 
 	links := NewLinks(PageTypeStudents)
 
-	students_page := StudentsPage{
+	studentsPage := StudentsPage{
 		Title:    "Учні",
 		Links:    links,
 		Students: students,
 	}
 
-	return c.Render(http.StatusOK, "students.html/base", students_page)
+	return c.Render(http.StatusOK, "students.html/base", studentsPage)
 }
 
 func (h *StudentHandler) GetStudent(c echo.Context) error {

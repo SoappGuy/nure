@@ -10,9 +10,9 @@ const (
 type FormOfEducation string
 
 const (
-	Day     FormOfEducation = "Денна"
-	Evening FormOfEducation = "Вечірня"
-	Home    FormOfEducation = "Домашня"
+	DayForm     FormOfEducation = "Денна"
+	EveningForm FormOfEducation = "Вечірня"
+	HomeForm    FormOfEducation = "Домашня"
 )
 
 type Student struct {

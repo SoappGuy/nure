@@ -49,6 +49,7 @@ func main() {
 	app.CaretakerHandler.RegisterRoutes(e)
 	app.QueryHandler.RegisterRoutes(e)
 	app.SubjectHandler.RegisterRoutes(e)
+	app.LessonHandler.RegisterRoutes(e)
 
 	log.Println("Started on :6969")
 	e.Start(":6969")
@@ -61,6 +62,7 @@ type App struct {
 	CaretakerHandler *handler.CaretakerHandler
 	QueryHandler     *handler.QueryHandler
 	SubjectHandler   *handler.SubjectHandler
+	LessonHandler    *handler.LessonHandler
 }
 
 func NewApp(db *sqlx.DB) *App {
@@ -76,11 +78,15 @@ func NewApp(db *sqlx.DB) *App {
 	subjectRepo := repo.NewSubjectRepo(db)
 	subjectHandler := handler.NewSubjectHandler(subjectRepo)
 
+	lessonRepo := repo.NewLessonRepo(db)
+	lessonHandler := handler.NewLessonHandler(lessonRepo)
+
 	return &App{
 		DB:               db,
 		StudentHandler:   studentHandler,
 		CaretakerHandler: caretakerHandler,
 		QueryHandler:     queryHandler,
 		SubjectHandler:   subjectHandler,
+		LessonHandler:    lessonHandler,
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"teacher_helper/internal/service"
 )
 
 type Templates struct {
@@ -33,6 +34,8 @@ func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Co
 func NewTemplates() *Templates {
 	funcs := template.FuncMap{
 		"or":  func(a, b bool) bool { return a || b },
+		"and": func(a, b bool) bool { return a && b },
+		"not": func(a bool) bool { return !a },
 		"mod": func(a, b int) int { return a % b },
 		"add": func(a, b int) int { return a + b },
 		"seq": func(n int) []int {
@@ -50,6 +53,17 @@ func NewTemplates() *Templates {
 		},
 		"version": func() string {
 			return string(time.Now().Unix())
+		},
+		"day": func(day service.Day, month int) string {
+			if day.Selected {
+				return "primary"
+			} else {
+				if int(day.Month) == month {
+					return "primary-container"
+				} else {
+					return "secondary-border"
+				}
+			}
 		},
 	}
 
@@ -89,6 +103,12 @@ func NewTemplates() *Templates {
 		template.New("subject.html").
 			Funcs(funcs).
 			ParseFiles("templates/base.html", "templates/pages/subject.html"),
+	)
+
+	templates["lessons.html"] = template.Must(
+		template.New("lessons.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/lessons.html"),
 	)
 
 	templates["query.html"] = template.Must(

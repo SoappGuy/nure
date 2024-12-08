@@ -1,0 +1,207 @@
+{{ define "content" }}
+<main class="responsive" id="main_content">
+    <style>
+        #days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day {
+            aspect-ratio: 1 / 1 !important;
+            transition: background-color 0.3s;
+        }
+
+        .day:hover:not(.selected) {
+            background-color: var(--surface-bright) !important;
+            cursor: pointer;
+        }
+
+        .pin {
+            aspect-ratio: 1 / 1 !important;
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+            margin: 5px;
+        }
+
+        .lesson {
+            transition: background-color 0.3s;
+        }
+
+        .lesson:hover {
+            background-color: var(--surface-bright) !important;
+            cursor: pointer;
+        }
+    </style>
+    <h1 class="right-align middle-align">Уроки</h1>
+    <div class="grid">
+        {{ template "sidebar" . }}
+        {{ template "calendar" .Calendar }}
+    </div>
+    {{ template "add-lesson-dialog" . }}
+</main>
+{{ end }}
+
+{{ define "calendar" }}
+<article class="s8 grid" id="calendar">
+    <div class="grid s12">
+        <div class="s4"></div>
+        <div class="s8 grid">
+            <button class="s2 circle" hx-get="/lessons/{{.CurrentYear}}/{{.CurrentMonth}}/{{.CurrentDay}}/-1"
+                hx-target="body" hx-swap="outerHTML">
+                <i>arrow_upward</i>
+            </button>
+            <h3 class="s8 center-align">{{.CurrentMonthName}} - {{.CurrentYear}}</h3>
+            <button class="s2 circle" hx-get="/lessons/{{.CurrentYear}}/{{.CurrentMonth}}/{{.CurrentDay}}/1"
+                hx-target="body" hx-swap="outerHTML">
+                <i>arrow_downward</i>
+            </button>
+        </div>
+    </div>
+
+    <hr class="s12" />
+    <nav class="s12 row">
+        <h6 class="max center-align">Пн</h6>
+        <h6 class="max center-align">Вт</h6>
+        <h6 class="max center-align">Ср</h6>
+        <h6 class="max center-align">Чт</h6>
+        <h6 class="max center-align">Пт</h6>
+        <h6 class="max center-align">Сб</h6>
+        <h6 class="max center-align">Нд</h6>
+    </nav>
+
+    <hr class="s12" />
+    <div id="days" class="days s12">
+        {{ range .Days }}
+        <article id="day-{{.Month}}-{{.Day}}"
+            class="day no-margin {{day . $.CurrentMonth}} {{if .Selected}}selected{{end}} border center-align middle-align"
+            hx-get="/lessons/{{.Year}}/{{.Month}}/{{.Day}}/0" hx-target="body" hx-swap="outerHTML">
+            <h6>{{ .Day }}</h6>
+
+            {{ if and (ne (len .Lessons) 0) (not .Selected) }}
+            <div class="pin error absolute top right"></div>
+            {{ end }}
+        </article>
+        {{ end }}
+    </div>
+</article>
+{{ end }}
+
+{{ define "lessons" }}
+<div class="page padding active grid" id="lessons">
+    <nav class="row s12 bottom-margin">
+        <h5>{{.Calendar.CurrentMonthName}} {{.Calendar.CurrentDay}}</h5>
+        <div class="max"></div>
+        <button
+            _="on click add .active to <div.overlay/> in #add-lesson-dialog then add .active to <dialog/> in #add-lesson-dialog"
+            class="circle"><i>add</i></button>
+    </nav>
+    <hr class="s12" />
+    <div class="s12 grid top-padding" id="lessons-list" style="height: 100%;">
+        {{ range .Lessons }}
+        {{ template "lesson" . }}
+        {{ end }}
+    </div>
+</div>
+{{ end }}
+
+{{ define "lesson" }}
+<article class="s12 surface-variant lesson">
+    <div class="grid">
+        <div class="s3 vertical center-align middle-align">
+            <i>counter_{{.LessonNumber}}</i>
+            <span>{{.StartTime.Time.Format "15:04" }}</h4>
+        </div>
+        <h6 class="s9 left-align middle-align">{{.Subject.Title}}</h6>
+        <div class="tooltip"><b>{{.Topic}}</b></div>
+    </div>
+</article>
+{{ end }}
+
+{{ define "filters" }}
+<div class="page padding" id="filters">
+</div>
+{{ end }}
+
+{{ define "sidebar" }}
+<article class="s4" id="sidebar">
+    <div class="tabs">
+        <a _="on click 
+                remove .active from #lessons
+            then
+                add .active to #filters
+            then
+                remove .active from <a/> in closest <div/>
+            then
+                add .active to me
+            end">
+            <i>filter_alt</i>
+            <span>Фільтри</span>
+        </a>
+        <a _="on click 
+                remove .active from #filters
+            then
+                add .active to #lessons
+            then
+                remove .active from <a/> in closest <div/>
+            then
+                add .active to me
+            end" class="active">
+            <i>history_edu</i>
+            <span>Уроки</span>
+        </a>
+    </div>
+    {{ template "filters" . }}
+    {{ template "lessons" . }}
+</article>
+{{ end }}
+
+{{ define "add-lesson-dialog" }}
+<div id="add-lesson-dialog" _="
+    on closeDialog or htmx:afterOnLoad
+            remove .active from <div.overlay/> in #add-lesson-dialog
+            then
+            remove .active from <dialog/> in #add-lesson-dialog 
+    end
+">
+    <div class="overlay blur" _="on click trigger closeDialog"></div>
+    <dialog>
+        <nav>
+            <h5>Додати урок</h5>
+            <div class="max"></div>
+            <button class="error circle small" data-loading-disable
+                _="on click trigger closeDialog"><i>close</i></button>
+        </nav>
+        <form hx-post='/lessons/{{.Calendar.CurrentDate.Format "2006-01-02"}}' hx-swap="afterbegin"
+            hx-target="#lessons-list" autocomplete="false">
+            <fieldset class="round grid">
+                <div class="field label border small round s12">
+                    <div hx-get="/subjects/select/-1" hx-target="this" hx-swap="outerHTML" hx-trigger="revealed"></div>
+                    <label>Предмет</label>
+                </div>
+
+                <div class="field label border small round s12">
+                    <input type="number" name="lesson_number" value="1" min="0" max="9" required>
+                    <label>Номер уроку</label>
+                </div>
+
+                <div class="field label border small round s12">
+                    <input type="time" name="start_time" required>
+                    <label>Час початку</label>
+                </div>
+
+                <div class="field label border small round s12">
+                    <input type="text" name="topic" required>
+                    <label>Тема</label>
+                </div>
+
+                <nav class="row s12">
+                    <div class="max"></div>
+                    <button class="align-right" type="submit">Додати</button>
+                </nav>
+            </fieldset>
+        </form>
+    </dialog>
+</div>
+{{ end }}

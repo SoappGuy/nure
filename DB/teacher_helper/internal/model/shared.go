@@ -56,3 +56,36 @@ func (d *Date) Scan(value interface{}) error {
 func (d Date) Value() (driver.Value, error) {
 	return time.Time(d).Format(`2006-01-02`), nil
 }
+
+type NullTime struct {
+	Time  time.Time
+	Valid bool // Valid is true if Time is not NULL
+}
+
+func (nt *NullTime) UnmarshalParam(param string) error {
+	t, err := time.Parse(`15:04`, param)
+	if err != nil {
+		return err
+	}
+	(*nt).Time = t.AddDate(1, 0, 0)
+	(*nt).Valid = true
+	return nil
+}
+
+func (nt NullTime) MarshalParam() (string, error) {
+	return nt.Time.Format(`15:04`), nil
+}
+
+// Scan implements the Scanner interface.
+func (nt *NullTime) Scan(value interface{}) error {
+	nt.Time, nt.Valid = value.(time.Time)
+	return nil
+}
+
+// Value implements the driver Valuer interface.
+func (nt NullTime) Value() (driver.Value, error) {
+	if !nt.Valid {
+		return nil, nil
+	}
+	return nt.Time, nil
+}

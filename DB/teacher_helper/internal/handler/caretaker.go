@@ -156,6 +156,7 @@ func (h *CaretakerHandler) SearchCaretakers(c echo.Context) error {
 func (h *CaretakerHandler) CreateCaretaker(c echo.Context) error {
 	caretaker := new(model.Caretaker)
 	if err := c.Bind(caretaker); err != nil {
+		log.Error(err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker data"})
 	}
 
