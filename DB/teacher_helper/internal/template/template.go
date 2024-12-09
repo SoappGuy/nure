@@ -52,7 +52,7 @@ func NewTemplates() *Templates {
 			return string([]rune(word)[0])
 		},
 		"version": func() string {
-			return string(time.Now().Unix())
+			return fmt.Sprintf("%d", time.Now().Unix())
 		},
 		"day": func(day service.Day, month int) string {
 			if day.Selected {
@@ -109,6 +109,12 @@ func NewTemplates() *Templates {
 		template.New("lessons.html").
 			Funcs(funcs).
 			ParseFiles("templates/base.html", "templates/pages/lessons.html"),
+	)
+
+	templates["lesson.html"] = template.Must(
+		template.New("lesson.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/lesson.html"),
 	)
 
 	templates["query.html"] = template.Must(

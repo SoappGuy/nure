@@ -6,7 +6,6 @@
         <div class="s12 grid" id="caretakers">
         </div>
     </div>
-    <div hx-get="/caretakers" hx-trigger="ResetContent from:body"></div>
     {{ template "add-dialog" . }}
 </main>
 {{ end }}
@@ -14,8 +13,7 @@
 {{ define "controls-row" }}
 <nav class="controls s12" id="controls_row">
     <form class="row" hx-boost="true" hx-get="/caretakers/search" hx-target="#caretakers" autocomplete="off">
-        <div hx-get="/caretakers/search" hx-trigger="load">
-        </div>
+        <div hx-get="/caretakers/search" hx-trigger="load"></div>
 
         <button class="error circle" hx-get="/caretakers/search">
             <i>close</i>

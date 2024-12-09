@@ -1,0 +1,148 @@
+{{ define "content" }}
+<style>
+    .counter {
+        aspect-ratio: 1/1;
+        font-size: 50px;
+        padding: 5px;
+        width: fit-content;
+        height: fit-content;
+    }
+</style>
+<main class="responsive" id="main_content" hx-swap-oob="true">
+    <div class="grid">
+        {{ template "lesson-info" .Lesson }}
+        {{ template "details" . }}
+    </div>
+</main>
+{{ end }}
+
+{{ define "lesson-info" }}
+<article class="s5 grid" id="lesson-info">
+    <h5 class="s12 middle-align">
+        {{.Topic}}
+    </h5>
+    <hr class="s12" />
+    <h6 class="s12 row"> Предмет <div class="max"></div> <a class="link underline"
+            href="/subjects/{{.Subject.SubjectID}}">{{.Subject.Title}}
+        </a></h6>
+    <h6 class="s12 row">
+        Час початку
+        <div class="max"></div>
+        <i>counter_{{.LessonNumber}}</i>
+        {{.StartTime.Time.Format "15:04"}}
+    </h6>
+    <h6 class="s12 row"> Дата проведення <div class="max"></div> {{.StartDate.Format "2006-01-02"}} </h6>
+    <div id="buttons" class="s12 grid">
+        <button class="button s6" hx-get="/lesson/{{.LessonID}}/edit" hx-target="#lesson-info" hx-swap="outerHTML">
+            <i>edit</i>
+            <span>Редагувати</span>
+        </button>
+
+        <button class="error delete s6"
+            _="on click hide <button.delete/> in closest <div/> then show <button.confirm/> in closest <div/>"
+            data-loading-disable>
+            <i>delete</i>
+            <span>Видалити</span>
+        </button>
+
+        <button class="confirm secondary s3" style="display: none;"
+            _="on click hide <button.confirm/> then show <button.delete/>">
+            <i>close</i>
+        </button>
+
+        <button class="error confirm s3" id="delete-{{.LessonID}}" data-loading-disable
+            hx-delete="/lesson/{{.LessonID}}" hx-swap="none" hx-indicator="#i-{{.LessonID}}" style="display: none;"
+            _="on click hide <button.confirm/>then show <button.delete/> end on htmx:afterRequest js history.back() end">
+            <i>check</i>
+        </button>
+    </div>
+
+    <progress id="i-{{.LessonID}}" class="htmx-indicator"></progress>
+</article>
+{{ end }}
+
+{{ define "lesson-edit" }}
+<article class="s5 grid" id="lesson-info">
+    <form class="s12 grid" hx-put="/lesson/{{.LessonID}}" hx-target="#lesson-info" hx-swap="outerHTML"
+        hx-vals='{"lesson_ID": "{{.LessonID}}"}'>
+        <div class="s12 grid">
+            <div class="field small no-margin s12">
+                <input type="text" value="{{.Topic}}" name="topic" required>
+            </div>
+        </div>
+
+        <div class="s12 grid">
+            <div class="prefix field border small round s3">
+                <i>tag</i>
+                <select name="lesson_number" required>
+                    <option {{if eq .LessonNumber 1 }}selected{{end}} value="1">1</option>
+                    <option {{if eq .LessonNumber 2 }}selected{{end}} value="2">2</option>
+                    <option {{if eq .LessonNumber 3 }}selected{{end}} value="3">3</option>
+                    <option {{if eq .LessonNumber 4 }}selected{{end}} value="4">4</option>
+                    <option {{if eq .LessonNumber 5 }}selected{{end}} value="5">5</option>
+                    <option {{if eq .LessonNumber 6 }}selected{{end}} value="6">6</option>
+                    <option {{if eq .LessonNumber 7 }}selected{{end}} value="7">7</option>
+                    <option {{if eq .LessonNumber 8 }}selected{{end}} value="8">8</option>
+                    <option {{if eq .LessonNumber 9 }}selected{{end}} value="9">9</option>
+                </select>
+            </div>
+
+            <div class="s9">
+                <div class="prefix field border small round">
+                    <i>schedule</i>
+                    <input type="time" name="start_time" value='{{.StartTime.Time.Format "15:04"}}' required>
+                </div>
+            </div>
+        </div>
+
+        <div class="s12">
+            <div class="field label border small round s12">
+                <input type="date" name="start_date" value='{{.StartDate.Format "2006-01-02"}}' required>
+                <label>Дата проведення</label>
+            </div>
+        </div>
+
+        <div class="s12">
+            <div class="field label border small round s12">
+                <div hx-get="/subjects/select/{{.Subject.SubjectID}}" hx-target="this" hx-swap="outerHTML"
+                    hx-trigger="revealed"></div>
+                <label>Предмет</label>
+            </div>
+        </div>
+
+        <button class="s6 error button" hx-get="/lesson/{{.LessonID}}/info" hx-target="#lesson-info"
+            hx-swap="outerHTML">
+            <i>close</i>
+            <span>Відмінити</span>
+        </button>
+        <button class="s6 button" submit>
+            <i>check</i>
+            <span>Застосувати</span>
+        </button>
+    </form>
+</article>
+{{ end }}
+
+{{ define "details" }}
+<article class="s12 scroll large-height" id="details">
+    <table class="border">
+        <thead class="fixed">
+            <tr>
+                <th>Учень</th>
+                <th class="min">Відвідуваність</th>
+                <th>Оцінки</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</article>
+{{ end }}
+
+{{ define "student" }}
+<tr>
+    <td class="min">{{.Lastname}} {{.Firstname}} {{.Middlename}}</td>
+    <td class="min"></td>
+    <td>Cell</td>
+</tr>
+{{ end }}

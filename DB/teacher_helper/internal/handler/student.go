@@ -59,7 +59,7 @@ type StudentsPage struct {
 type StudentPage struct {
 	Links       []Link
 	Student     model.Student
-	MedicalCard model.MedicalCard
+	MedicalCard *model.MedicalCard
 	Connections []model.FamilyConnection
 	Privileges  []model.Privilege
 }
@@ -103,19 +103,16 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 	medicalCard, err := h.studentRepo.GetMedicalCard(id)
 	if err != nil {
 		log.Error(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get medical card"})
 	}
 
 	connections, err := h.studentRepo.GetConnections(id)
 	if err != nil {
 		log.Error(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get connections"})
 	}
 
 	privileges, err := h.studentRepo.GetPrivileges(id)
 	if err != nil {
 		log.Error(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get privileges"})
 	}
 
 	links := NewLinks(PageTypeStudents)
@@ -123,7 +120,7 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 	student_page := StudentPage{
 		Links:       links,
 		Student:     student,
-		MedicalCard: *medicalCard,
+		MedicalCard: medicalCard,
 		Connections: connections,
 		Privileges:  privileges,
 	}
@@ -394,13 +391,14 @@ func (h *StudentHandler) CreateMedicalCard(c echo.Context) error {
 		return err
 	}
 
+	medicalCard.WithDefauls()
 	err := h.studentRepo.CreateMedicalCard(medicalCard)
 	if err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't add MedicalCard"})
 	}
 
-	return c.Render(http.StatusCreated, "students.html/medical-card", medicalCard)
+	return c.Render(http.StatusCreated, "student.html/medical-card", medicalCard)
 }
 
 // Privilege

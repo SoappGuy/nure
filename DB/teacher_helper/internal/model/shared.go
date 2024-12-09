@@ -78,8 +78,32 @@ func (nt NullTime) MarshalParam() (string, error) {
 
 // Scan implements the Scanner interface.
 func (nt *NullTime) Scan(value interface{}) error {
-	nt.Time, nt.Valid = value.(time.Time)
-	return nil
+	switch v := value.(type) {
+	case time.Time:
+		(*nt).Time = v
+		(*nt).Valid = true
+		return nil
+
+	case string:
+		t, err := time.Parse(`15:04:05`, v)
+		if err != nil {
+			return fmt.Errorf("failed to parse Time from string: %w", err)
+		}
+		(*nt).Time = t
+		(*nt).Valid = true
+		return nil
+
+	case []byte:
+		t, err := time.Parse(`15:04:05`, string(v))
+		if err != nil {
+			return fmt.Errorf("failed to parse Time from bytes: %w", err)
+		}
+		(*nt).Time = t
+		(*nt).Valid = true
+		return nil
+	default:
+		return fmt.Errorf("unsupported type for Time: %T", value)
+	}
 }
 
 // Value implements the driver Valuer interface.

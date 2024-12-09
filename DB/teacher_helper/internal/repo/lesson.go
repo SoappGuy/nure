@@ -26,7 +26,8 @@ func (r *LessonRepo) GetLessonsAtDate(year int, month time.Month, day int) ([]mo
 			Lesson, Subject 
 		WHERE 
 			Lesson.subject_ID = Subject.subject_ID 
-			AND start_date = ?`,
+			AND start_date = ?
+		ORDER BY lesson_number ASC, start_time ASC`,
 		fmt.Sprintf("%d-%d-%d", year, month, day),
 	)
 	return lessons, err
@@ -75,4 +76,52 @@ func (r *LessonRepo) CreateLesson(lesson *model.LessonWithIDs) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (r *LessonRepo) DeleteLesson(id int) error {
+	result, err := r.db.Exec("DELETE FROM Lesson WHERE lesson_ID = ?", id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("Lesson with id %d not found", id)
+	}
+
+	return nil
+}
+
+func (r *LessonRepo) UpdateLesson(LessonWithIDs *model.LessonWithIDs) error {
+	result, err := r.db.NamedExec(
+		`UPDATE Lesson
+		SET 
+			topic = :topic,
+			start_date = :start_date,
+			start_time = :start_time,
+			lesson_number = :lesson_number,
+			subject_ID = :subject_ID
+		WHERE 
+			lesson_ID = :lesson_ID
+		`,
+		LessonWithIDs,
+	)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("Lesson not updated")
+	}
+
+	return nil
 }

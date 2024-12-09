@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 //	type Caretaker struct {
 //		CaretakerID int64  `db:"caretaker_ID" param:"caretaker_ID" query:"caretaker_ID" form:"caretaker_ID"`
 //		Firstname   string `db:"firstname" param:"firstname" query:"firstname" form:"firstname"`
@@ -61,4 +63,29 @@ type MedicalCard struct {
 	LastInspectionDate Date        `db:"last_inspection_date" param:"last_inspection_date" query:"last_inspection_date" form:"last_inspection_date"`
 	NextInspectionDate Date        `db:"next_inspection_date" param:"next_inspection_date" query:"next_inspection_date" form:"next_inspection_date"`
 	Note               *string     `db:"note" param:"note" query:"note" form:"note"`
+}
+
+func (mc *MedicalCard) WithDefauls() {
+	if mc.HealthGroup == "" {
+		mc.HealthGroup = FirstHealthGroup
+	}
+
+	if mc.BloodGroup == "" {
+		mc.BloodGroup = FirstBloodGroup
+	}
+
+	if mc.RhFactor == "" {
+		mc.RhFactor = PositiveRhFactor
+	}
+
+	zeroTime := Date(time.Time{})
+	today := Date(time.Now())
+	if mc.LastInspectionDate == zeroTime {
+		mc.LastInspectionDate = today
+	}
+
+	if mc.NextInspectionDate == zeroTime {
+		mc.NextInspectionDate = today
+	}
+
 }

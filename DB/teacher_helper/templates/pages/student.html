@@ -2,7 +2,7 @@
 <main class="responsive" id="main_content" hx-swap-oob="true">
     <div class="grid">
         {{ template "student-info" .Student }}
-        {{ template "medical-card-control" .MedicalCard }}
+        {{ template "medical-card-control" . }}
         {{ template "connections" .Connections }}
         {{ template "privileges" .Privileges }}
     </div>
@@ -317,10 +317,10 @@
 {{ end }}
 
 {{ define "medical-card-control" }}
-{{ if . }}
-{{ template "medical-card" . }}
+{{ if .MedicalCard }}
+{{ template "medical-card" .MedicalCard }}
 {{ else }}
-{{ template "medical-card-empty" }}
+{{ template "medical-card-empty" . }}
 {{ end }}
 {{ end }}
 
@@ -353,7 +353,8 @@
         <h5>Учень ще не має медичної картки</h5>
         <div class="space"></div>
         <nav class="center-align">
-            <button hx-post="/medicalCard">Створити</button>
+            <button hx-post="/medicalCard" hx-vals='{"student_ID": "{{.Student.StudentID}}"}' hx-swap="outerHTML"
+                hx-target="#medical-card">Створити</button>
         </nav>
     </div>
 </article>

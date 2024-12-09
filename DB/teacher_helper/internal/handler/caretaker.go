@@ -171,7 +171,7 @@ func (h *CaretakerHandler) CreateCaretaker(c echo.Context) error {
 func (h *CaretakerHandler) DeleteCaretaker(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid caretaker ID"})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Caretaker ID"})
 	}
 
 	if err := h.caretakerRepo.Delete(id); err != nil {
