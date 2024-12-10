@@ -117,6 +117,7 @@ func (h *LessonHandler) GetCallendar(c echo.Context) error {
 	}
 
 	today := time.Date(year, month, currDay, 0, 0, 0, 0, time.UTC)
+
 	calendar, err := service.NewCalendar(today, *h.lessonRepo)
 	if err != nil {
 		log.Error(err)

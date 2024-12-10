@@ -25,7 +25,6 @@ type Calendar struct {
 
 func NewCalendar(now time.Time, repo repo.LessonRepo) (*Calendar, error) {
 	year, _ := now.ISOWeek()
-	// weekday := now.Weekday()
 	today := now.Day()
 	month := now.Month()
 
@@ -39,7 +38,6 @@ func NewCalendar(now time.Time, repo repo.LessonRepo) (*Calendar, error) {
 		previousMonthDays = daysInMonth(previousMonthNumber, year)
 	}
 
-	// startDaysFrom := now.Day() - int(weekday+6)
 	startDaysFrom := startDaysFrom(now)
 
 	days := make([]Day, 42)

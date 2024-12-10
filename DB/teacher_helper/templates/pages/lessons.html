@@ -168,7 +168,7 @@
 {{ end }}
 
 {{ define "add-lesson-dialog" }}
-<div id="add-lesson-dialog" _="
+<div id="add-lesson-dialog" hx-swap-oob="outerHTML" _="
     on closeDialog or htmx:afterOnLoad
             remove .active from <div.overlay/> in #add-lesson-dialog
             then
@@ -230,4 +230,5 @@
 {{ define "oob-content" }}
 {{ template "lessons" . }}
 {{ template "calendar" .Calendar }}
+{{ template "add-lesson-dialog" . }}
 {{ end }}

@@ -185,35 +185,38 @@ func (r *LessonRepo) GetAttendanceForStudentAtLesson(studentID, lessonID int64) 
 }
 
 func (r *LessonRepo) CreateAttendanceOnDemand(studentID, lessonID int64) (*model.Attendance, error) {
+	defaultReason := "без уточнень"
+
 	result, err := r.db.Exec(
 		`INSERT INTO Attendance
 			(attendance, reason, student_ID, lesson_ID)
 		VALUES
-			(?, 'без уточнень', ?, ?)`,
+			(?, ?, ?, ?)`,
 		model.Present,
+		defaultReason,
 		studentID,
 		lessonID,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to insert attendance: %w", err)
 	}
 
-	rows, err := result.RowsAffected()
+	id, err := result.LastInsertId()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve last insert ID: %w", err)
 	}
 
-	if rows == 0 {
-		return nil, fmt.Errorf("Attendance not created")
+	reasonPtr := &defaultReason
+
+	attendance := &model.Attendance{
+		AttendanceID: id,
+		Attendance:   model.Present,
+		Reason:       reasonPtr,
+		StudentID:    studentID,
+		LessonID:     lessonID,
 	}
 
-	attendance := model.Attendance{
-		Attendance: model.Present,
-		StudentID:  studentID,
-		LessonID:   lessonID,
-	}
-
-	return &attendance, nil
+	return attendance, nil
 }
 
 func (r *LessonRepo) CreateMark(mark *model.Mark) error {
