@@ -30,6 +30,14 @@ func (h *LessonHandler) RegisterRoutes(e *echo.Echo) {
 	e.GET("/lesson/:id/info", h.LessonInfo)
 	e.GET("/lesson/:id/edit", h.LessonInfoEdit)
 	e.PUT("/lesson/:id", h.UpdateLesson)
+
+	e.DELETE("/mark/:id", h.DeleteMark)
+	e.POST("/mark/:lesson_id/:student_id", h.CreateMark)
+
+	e.PUT("/attendance/:id/flip", h.FlipAttendance)
+	e.GET("/attendance/:id/edit", h.AttendanceInfoEdit)
+	e.GET("/attendance/:id/info", h.AttendanceInfo)
+	e.PUT("/attendance/:attendance_ID", h.UpdateAttendance)
 }
 
 type LessonsPage struct {
@@ -40,9 +48,10 @@ type LessonsPage struct {
 }
 
 type LessonPage struct {
-	Title  string
-	Links  []Link
-	Lesson model.Lesson
+	Title   string
+	Links   []Link
+	Lesson  model.Lesson
+	Details []service.StudentAtLesson
 }
 
 func (h *LessonHandler) GetLessons(c echo.Context) error {
@@ -171,12 +180,19 @@ func (h *LessonHandler) GetLesson(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get lesson"})
 	}
 
+	details, err := service.GetLessonDetails(int64(id), h.lessonRepo)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get lesson details"})
+	}
+
 	links := NewLinks(PageTypeLessons)
 
 	lessonPage := LessonPage{
-		Title:  "Уроки",
-		Links:  links,
-		Lesson: lesson,
+		Title:   "Уроки",
+		Links:   links,
+		Lesson:  lesson,
+		Details: details,
 	}
 	return c.Render(http.StatusOK, "lesson.html/base", lessonPage)
 }
@@ -244,4 +260,110 @@ func (h *LessonHandler) UpdateLesson(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "lesson.html/lesson-info", lesson)
+}
+
+func (h *LessonHandler) CreateMark(c echo.Context) error {
+	mark := new(model.Mark)
+	if err := c.Bind(mark); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid mark data"})
+	}
+
+	err := h.lessonRepo.CreateMark(mark)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create mark"})
+	}
+
+	return c.Render(http.StatusCreated, "lesson.html/mark", mark)
+}
+
+func (h *LessonHandler) DeleteMark(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Mark ID"})
+	}
+
+	if err := h.lessonRepo.DeleteMark(id); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't delete Mark"})
+	}
+
+	return c.NoContent(http.StatusAccepted)
+}
+
+func (h *LessonHandler) FlipAttendance(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Attendance id"})
+	}
+
+	attendance, err := h.lessonRepo.FlipAttendanceWithID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Can't flip Attendance with given id"})
+	}
+
+	if attendance.Attendance == model.Absent {
+		return c.Render(http.StatusOK, "lesson.html/attendance-absent", attendance)
+	} else {
+		return c.Render(http.StatusOK, "lesson.html/attendance-present", attendance)
+	}
+}
+
+func (h *LessonHandler) AttendanceInfo(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Attendance id"})
+	}
+
+	attendance, err := h.lessonRepo.GetAttendanceByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Can't get Attendance with given ID"})
+	}
+
+	if attendance.Attendance == model.Absent {
+		return c.Render(http.StatusOK, "lesson.html/attendance-absent", attendance)
+	} else {
+		return c.Render(http.StatusOK, "lesson.html/attendance-present", attendance)
+	}
+}
+
+func (h *LessonHandler) AttendanceInfoEdit(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Attendance id"})
+	}
+
+	attendance, err := h.lessonRepo.GetAttendanceByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Can't get Attendance with given ID"})
+	}
+
+	return c.Render(http.StatusOK, "lesson.html/attendance-edit", attendance)
+}
+
+func (h *LessonHandler) UpdateAttendance(c echo.Context) error {
+	attendance := new(model.Attendance)
+	if err := c.Bind(attendance); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Attendance data"})
+	}
+
+	if err := h.lessonRepo.UpdateAttendance(attendance); err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Can't update Attendance"})
+	}
+
+	if attendance.Attendance == model.Absent {
+		return c.Render(http.StatusOK, "lesson.html/attendance-absent", attendance)
+	} else {
+		return c.Render(http.StatusOK, "lesson.html/attendance-present", attendance)
+	}
 }

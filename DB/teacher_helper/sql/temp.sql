@@ -1,6 +1,1 @@
-SELECT
-    *
-FROM
-    Student
-WHERE
-    student_ID = 7
+DELETE FROM Attendance;

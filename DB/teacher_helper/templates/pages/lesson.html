@@ -1,13 +1,4 @@
 {{ define "content" }}
-<style>
-    .counter {
-        aspect-ratio: 1/1;
-        font-size: 50px;
-        padding: 5px;
-        width: fit-content;
-        height: fit-content;
-    }
-</style>
 <main class="responsive" id="main_content" hx-swap-oob="true">
     <div class="grid">
         {{ template "lesson-info" .Lesson }}
@@ -124,25 +115,133 @@
 {{ end }}
 
 {{ define "details" }}
-<article class="s12 scroll large-height" id="details">
-    <table class="border">
+<article class="s12 scroll large-height no-padding" id="details">
+    <table class="border padding">
         <thead class="fixed">
             <tr>
                 <th>Учень</th>
-                <th class="min">Відвідуваність</th>
+                <th>Відвідуваність</th>
                 <th>Оцінки</th>
             </tr>
         </thead>
         <tbody>
+            {{ range .Details }}
+            {{ template "student-info" . }}
+            {{ end }}
         </tbody>
     </table>
 </article>
 {{ end }}
 
-{{ define "student" }}
+{{ define "student-info" }}
 <tr>
-    <td class="min">{{.Lastname}} {{.Firstname}} {{.Middlename}}</td>
-    <td class="min"></td>
-    <td>Cell</td>
+    <td class="min">
+        <h5 class="small">
+            <a href="/students/{{.Student.StudentID}}" class="link underline">
+                {{.Student.Lastname}} {{.Student.Firstname}} {{.Student.Middlename}}
+            </a>
+        </h5>
+    </td>
+    <td class="min" style="width: fit-content;">
+        {{ template "attendance" . }}
+    </td>
+    <td class="scroll">
+        <nav class="row" id="marks-{{.StudentID}}">
+            {{ range .Marks }}
+            {{ template "mark" . }}
+            {{ end }}
+            <div class="max"></div>
+            {{template "add-mark" .}}
+            <button class="circle chip add-mark" _="
+                on click hide <button.add-mark/> in closest <nav/>
+                then show <form.add-mark/> in closest <nav/>
+                end">
+                <i>add</i></button>
+        </nav>
+    </td>
 </tr>
+{{ end }}
+
+{{ define "mark" }}
+<button class="chip medium mark round" hx-delete="/mark/{{.MarkID}}" hx-swap="outerHTML">
+    <h5 class="small"> {{.Mark}} </h5>
+    <i>close</i>
+</button>
+{{ end }}
+
+{{ define "add-mark" }}
+<form class="row add-mark" hx-post="/mark/{{.LessonID}}/{{.StudentID}}" hx-target="#marks-{{.StudentID}}"
+    hx-swap="afterbegin" _="on load hide me">
+    <label class="slider large">
+        <input type="range" value="1" min="1" max="12" name="mark">
+        <span></span>
+        <div class="tooltip"></div>
+    </label>
+    <button class="chip round" _="
+        on click hide <form.add-mark/> in closest <nav/>
+        then show <button.add-mark/> in closest <nav/>
+        end" type="button">
+        <i>close</i>
+    </button>
+    <button class="chip fill round" submit _="
+        on click hide <form.add-mark/> in closest <nav/>
+        then show <button.add-mark/> in closest <nav/>
+        end">
+        <i class="primary-text">done</i>
+    </button>
+</form>
+{{ end }}
+
+{{ define "attendance" }}
+{{ if eq .Attendance.Attendance "Присутній" }}
+{{ template "attendance-present" .Attendance }}
+{{ else }}
+{{ template "attendance-absent" .Attendance }}
+{{ end }}
+{{ end }}
+
+{{ define "attendance-present" }}
+<nav class="row" id="attendance-{{.AttendanceID}}">
+    <button hx-put="/attendance/{{.AttendanceID}}/flip" hx-target="#attendance-{{.AttendanceID}}" hx-swap="outerHTML"
+        class="circle chip">
+        <i class="primary-text">flip_camera_android</i>
+    </button>
+    <h5 class="small">{{.Attendance}}</h5>
+</nav>
+{{ end }}
+
+{{ define "attendance-absent" }}
+<nav class="row" id="attendance-{{.AttendanceID}}" style="width: fit-content;">
+    <button hx-put="/attendance/{{.AttendanceID}}/flip" hx-target="#attendance-{{.AttendanceID}}" hx-swap="outerHTML"
+        class="circle chip">
+        <i class="primary-text">flip_camera_android</i>
+    </button>
+    <h5 class="small">{{.Attendance}}</h5>
+    -
+    <p>
+        {{.Reason}}
+        <button class="circle chip" hx-get="/attendance/{{.AttendanceID}}/edit"
+            hx-target="#attendance-{{.AttendanceID}}" hx-swap="outerHTML">
+            <i class="primary-text">edit</i>
+        </button>
+    </p>
+</nav>
+{{ end }}
+
+{{ define "attendance-edit" }}
+<form hx-put="/attendance/{{.AttendanceID}}" class="row" id="attendance-{{.AttendanceID}}"
+    hx-vals='{"attendance": "{{.Attendance}}"}'>
+    <button class="circle error small" hx-get="/attendance/{{.AttendanceID}}/info"
+        hx-target="#attendance-{{.AttendanceID}}" hx-swap="outerHTML">
+        <i>close</i>
+    </button>
+    <h5 class="small">{{.Attendance}}</h5>
+    -
+    <div class="field small no-margin s12 l4">
+        <input type="text" name="reason" value="{{.Reason}}">
+    </div>
+    <button class="circle small" submit>
+        <i>check</i>
+    </button>
+</form>
 {{ end }}

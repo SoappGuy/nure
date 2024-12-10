@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"teacher_helper/internal/model"
 	"time"
@@ -121,6 +123,213 @@ func (r *LessonRepo) UpdateLesson(LessonWithIDs *model.LessonWithIDs) error {
 
 	if rows == 0 {
 		return fmt.Errorf("Lesson not updated")
+	}
+
+	return nil
+}
+
+func (r *LessonRepo) GetAllStudents() ([]model.Student, error) {
+	var students []model.Student
+	err := r.db.Select(&students, "SELECT * FROM Student ORDER BY lastname ASC, firstname ASC, middlename ASC")
+	return students, err
+}
+
+func (r *LessonRepo) GetMarksForStudentAtLesson(studentID, lessonID int64) ([]model.Mark, error) {
+	var marks []model.Mark
+	err := r.db.Select(
+		&marks,
+		`SELECT
+			*
+		FROM
+			Mark
+		WHERE
+			student_ID = ?
+			AND lesson_ID = ?`,
+		studentID,
+		lessonID,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []model.Mark{}, nil
+		}
+		return nil, err
+	}
+	return marks, err
+}
+
+func (r *LessonRepo) GetAttendanceForStudentAtLesson(studentID, lessonID int64) (*model.Attendance, error) {
+	var attendance model.Attendance
+	err := r.db.Get(
+		&attendance,
+		`SELECT
+			*
+		FROM
+			Attendance
+		WHERE
+			student_ID = ?
+			AND lesson_ID = ?`,
+		studentID,
+		lessonID,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			attendance, err := r.CreateAttendanceOnDemand(studentID, lessonID)
+			if err != nil {
+				return nil, err
+			}
+			return attendance, nil
+		}
+		return nil, err
+	}
+	return &attendance, nil
+}
+
+func (r *LessonRepo) CreateAttendanceOnDemand(studentID, lessonID int64) (*model.Attendance, error) {
+	result, err := r.db.Exec(
+		`INSERT INTO Attendance
+			(attendance, reason, student_ID, lesson_ID)
+		VALUES
+			(?, 'без уточнень', ?, ?)`,
+		model.Present,
+		studentID,
+		lessonID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	if rows == 0 {
+		return nil, fmt.Errorf("Attendance not created")
+	}
+
+	attendance := model.Attendance{
+		Attendance: model.Present,
+		StudentID:  studentID,
+		LessonID:   lessonID,
+	}
+
+	return &attendance, nil
+}
+
+func (r *LessonRepo) CreateMark(mark *model.Mark) error {
+	result, err := r.db.NamedExec(
+		`INSERT INTO Mark
+			(mark, student_ID, lesson_ID)
+		VALUES
+			(:mark, :student_ID, :lesson_ID)`,
+		mark,
+	)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("Mark not created")
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	mark.MarkID = id
+	return nil
+}
+
+func (r *LessonRepo) DeleteMark(id int) error {
+	result, err := r.db.Exec("DELETE FROM Mark WHERE mark_ID = ?", id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("Mark with id %d not found", id)
+	}
+
+	return nil
+}
+
+func (r *LessonRepo) FlipAttendanceWithID(id int) (*model.Attendance, error) {
+	_, err := r.db.Exec(
+		`
+		UPDATE Attendance
+		SET
+			attendance = CASE
+				WHEN attendance = 'Відсутній' THEN 'Присутній'
+				WHEN attendance = 'Присутній' THEN 'Відсутній'
+			END
+		WHERE
+			attendance_ID = ?;
+		`,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var attendance model.Attendance
+	err = r.db.Get(
+		&attendance,
+		`
+		SELECT
+			*
+		FROM
+			Attendance
+		WHERE
+			attendance_ID = ?;
+		`,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &attendance, nil
+}
+
+func (r *LessonRepo) GetAttendanceByID(id int) (*model.Attendance, error) {
+	attendance := new(model.Attendance)
+	err := r.db.Get(attendance, `SELECT * FROM Attendance WHERE attendance_ID = ?`, id)
+	return attendance, err
+}
+
+func (r *LessonRepo) UpdateAttendance(attendance *model.Attendance) error {
+	result, err := r.db.NamedExec(
+		`
+		UPDATE Attendance
+		SET
+			reason = :reason
+		WHERE
+			attendance_ID = :attendance_ID
+		`,
+		attendance,
+	)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("Attendance not updated")
 	}
 
 	return nil
