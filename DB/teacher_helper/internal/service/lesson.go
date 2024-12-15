@@ -21,6 +21,7 @@ type Calendar struct {
 	CurrentDay       int
 	CurrentDate      model.Date
 	Days             []Day
+	Lessons          []model.Lesson
 }
 
 func NewCalendar(now time.Time, repo repo.LessonRepo, filters repo.Filters) (*Calendar, error) {
@@ -41,6 +42,7 @@ func NewCalendar(now time.Time, repo repo.LessonRepo, filters repo.Filters) (*Ca
 	startDaysFrom := startDaysFrom(now)
 
 	days := make([]Day, 42)
+	total_lessons := make([]model.Lesson, 0)
 
 	for i := 0; i < 42; i++ {
 		dayNumber := startDaysFrom + i
@@ -59,6 +61,8 @@ func NewCalendar(now time.Time, repo repo.LessonRepo, filters repo.Filters) (*Ca
 			return nil, err
 		}
 
+		total_lessons = append(total_lessons, lessons...)
+
 		days[i] = Day{
 			Year:     year,
 			Month:    int(dayMonth),
@@ -75,6 +79,7 @@ func NewCalendar(now time.Time, repo repo.LessonRepo, filters repo.Filters) (*Ca
 		CurrentDay:       today,
 		CurrentDate:      model.Date(now),
 		Days:             days,
+		Lessons:          total_lessons,
 	}, nil
 }
 
