@@ -5,6 +5,7 @@
         {{ template "medical-card-control" . }}
         {{ template "connections" .Connections }}
         {{ template "privileges" .Privileges }}
+        {{ template "stats" .Stats }}
     </div>
     {{ template "add-connection-dialog" . }}
     {{ template "add-privilege-dialog" . }}
@@ -12,83 +13,54 @@
 {{ end }}
 
 {{ define "student-info" }}
-<article class="no-padding round s12 l8" id="student-info">
-    <div class="grid large-space padding">
-        <div class="s4 grid">
-            <div class="s12 row center-align">
-                <img class="round small-width small-height" src="/images/placeholder.png">
-            </div>
+<article class="round s12 l8 grid" id="student-info">
+    <h5 class="s12 middle-align row">
+        {{.Lastname}} {{.Firstname}} {{.Middlename}}
+    </h5>
+    <hr class="s12" />
+    <h6 class="s12 row">Особова справа <div class="max"></div> {{.PersonalFileNumber}}</h6>
+    <h6 class="s12 row">Форма навчання <div class="max"></div> {{.FormOfEducation}}</h6>
+    <h6 class="s12 row">Народився <div class="max"></div> {{.Birthday.Format "02.01.2006"}}
+    </h6>
+    <h6 class="s12 row">Стать <div class="max"></div> {{if eq .Gender
+        "F"}}Дівчина{{else}}Хлопець{{end}} </h6>
+    <hr class="s12" />
+    <p class="s12" style="overflow-wrap: break-word;">
+        {{if .Note}}{{.Note}}{{else}}Примітка відсутня{{end}}
+    </p>
 
-            <div id="buttons" class="s12 grid">
-                <button class="button s12" hx-get="/students/{{.StudentID}}/edit" hx-target="#student-info"
-                    hx-swap="outerHTML">
-                    <i>edit</i>
-                    <span>Редагувати</span>
-                </button>
+    <div id="buttons" class="s12 grid">
+        <button class="button s6" hx-get="/students/{{.StudentID}}/edit" hx-target="#student-info" hx-swap="outerHTML">
+            <i>edit</i>
+            <span>Редагувати</span>
+        </button>
 
-                <button class="error delete s12" _="on click hide <button.delete/>  then show <button.confirm/>"
-                    data-loading-disable>
-                    <i>delete</i>
-                    <span>Видалити</span>
-                </button>
+        <button class="error delete s6"
+            _="on click hide <button/> in closest <div/> then show <button.confirm/> in closest <div/>"
+            data-loading-disable>
+            <i>delete</i>
+            <span>Видалити</span>
+        </button>
 
-                <button class="confirm secondary s6" style="display: none;"
-                    _="on click hide <button.confirm/> then show <button.delete/>">
-                    <i>close</i>
-                </button>
+        <button class="confirm secondary s6" style="display: none;"
+            _="on click show <button/> in closest <div/> then hide <button.confirm/> in closest <div/>">
+            <i>close</i>
+        </button>
 
-                <button class="error confirm s6" id="delete-{{.StudentID}}" data-loading-disable
-                    hx-delete="/students/{{.StudentID}}" hx-swap="none" hx-indicator="#i-{{.StudentID}}"
-                    style="display: none;"
-                    _="on click hide <button.confirm/>then show <button.delete/> end on htmx:afterRequest js history.back()">
-                    <i>check</i>
-                </button>
-            </div>
-
-            <progress id="i-{{.StudentID}}" class="s12 htmx-indicator"></progress>
-        </div>
-        <div class="s8 grid no-space ">
-            <h5 class="s12 middle-align row">
-                {{.Lastname}} {{.Firstname}} {{.Middlename}}
-            </h5>
-            <hr class="s12" />
-            <h6 class="s12 row">Особова справа <div class="max"></div> {{.PersonalFileNumber}}</h6>
-            <h6 class="s12 row">Форма навчання <div class="max"></div> {{.FormOfEducation}}</h6>
-            <h6 class="s12 row">Народився <div class="max"></div> {{.Birthday.Format "02.01.2006"}}
-            </h6>
-            <h6 class="s12 row">Стать <div class="max"></div> {{if eq .Gender
-                "F"}}Дівчина{{else}}Хлопець{{end}} </h6>
-            <hr class="s12" />
-            <p class="s12" style="overflow-wrap: break-word;">
-                {{if .Note}}{{.Note}}{{else}}Примітка відсутня{{end}}
-            </p>
-        </div>
+        <button class="error confirm s6" id="delete-{{.StudentID}}" data-loading-disable
+            hx-delete="/students/{{.StudentID}}" hx-swap="none" hx-indicator="#i-{{.StudentID}}" style="display: none;"
+            _="on click hide <button.confirm/>then show <button.delete/> end on htmx:afterRequest js history.back()">
+            <i>check</i>
+        </button>
     </div>
 </article>
 {{ end }}
 
 {{ define "student-info-edit"}}
-<article class="no-padding round s12 l8" id="student-info">
-    <form class="grid no-space" hx-put="/students/{{.StudentID}}" hx-target="#student-info" hx-swap="outerHTML"
+<article class="round s12 l8" id="student-info">
+    <form class="grid" hx-put="/students/{{.StudentID}}" hx-target="#student-info" hx-swap="outerHTML"
         hx-vals='{"student_ID": "{{.StudentID}}"}'>
-        <div class="s4 center-align">
-            <img class="round small-width small-height margin" src="/images/placeholder.png">
-
-            <nav class="buttons row">
-                <div class="max"></div>
-                <button class="error button circle" hx-get="/students/{{.StudentID}}/info" hx-target="#student-info"
-                    hx-swap="outerHTML">
-                    <i>close</i>
-                    <span>Відмінити</span>
-                </button>
-                <button class="button circle" submit>
-                    <i>check</i>
-                    <span>Застосувати</span>
-                </button>
-                <div class="max"></div>
-            </nav>
-        </div>
-        <div class="s8 padding grid" hx-target="this" hx-swap="outerHTML">
+        <div class="s12 padding grid" hx-target="this" hx-swap="outerHTML">
             <div class="s12 grid">
                 <div class="field small no-margin s12 l4">
                     <input type="text" value="{{.Lastname}}" name="lastname" required>
@@ -149,6 +121,18 @@
                 <label>Примітка</label>
             </div>
 
+        </div>
+
+        <div class="buttons grid s12">
+            <button class="s6 error button" hx-get="/students/{{.StudentID}}/info" hx-target="#student-info"
+                hx-swap="outerHTML">
+                <i>close</i>
+                <span>Відмінити</span>
+            </button>
+            <button class="s6 button" submit>
+                <i>check</i>
+                <span>Застосувати</span>
+            </button>
         </div>
     </form>
 </article>
@@ -458,9 +442,6 @@
                     <h6 class="">
                         {{.Type}}
                     </h6>
-                    <span>
-                        до {{.ExpirationDate.Format "2006-01-02"}}
-                    </span>
                 </nav>
                 <div class="max"></div>
                 <nav class="right-align">
@@ -491,9 +472,11 @@
                 </nav>
             </nav>
         </summary>
-        <nav class="left-margin large-margin">
+        <p class="left-margin large-margin">
+            до {{.ExpirationDate.Format "2006-01-02"}}
+            <br>
             {{.Description}}
-        </nav>
+        </p>
     </details>
     <hr class="s12" />
 </div>
@@ -575,4 +558,36 @@
         </form>
     </dialog>
 </div>
+{{ end }}
+
+{{ define "stats" }}
+<article class="s12">
+    <table class="border">
+        <thead>
+            <tr>
+                <th>
+                    <h6 class="small bold">Предмет</h6>
+                </th>
+                <th>
+                    <h6 class="small bold">Всього занять</h6>
+                </th>
+                <th>
+                    <h6 class="small bold">Занять відвідано</h6>
+                </th>
+                <th>
+                    <h6 class="small bold">Підсумкова оцінка</h6>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range . }}
+            <tr>
+                <td><a href="/subjects/{{.SubjectID}}" class="link active underline">{{.SubjectTitle}}</a></td>
+                <td>{{.TotalLessons}}</td>
+                <td>{{.Visits}}</td>
+                <td>{{.Grade}}</td>
+                {{ end }}
+        </tbody>
+    </table>
+</article>
 {{ end }}

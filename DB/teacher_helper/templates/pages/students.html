@@ -66,57 +66,48 @@
 {{ end }}
 
 {{ define "student" }}
-<article id="student-{{.StudentID}}" class="no-padding round s12 m6 l4" data-loading-states>
-    <img class="responsive small top-round" src="/images/placeholder.png" />
-    <div class="padding">
+<article id="student-{{.StudentID}}" class="round s12 m6 l4" data-loading-states>
+    <div>
         <nav class="row">
-            <div>
-                <h6 style="text-wrap: nowrap;">
-                    <a class="link underline" hx-get="/students/{{.StudentID}}" hx-swap="none" hx-push-url="true"
-                        data-loading-disable>
-                        {{.Lastname}} {{initial .Firstname}}. {{initial .Middlename}}.
-                    </a>
-                </h6>
-                <div class="tooltip top">
-                    <b>
-                        {{.Lastname}} {{.Firstname}} {{.Middlename}}
-                    </b>
-                </div>
-            </div>
-            <div class="max"></div>
-            <i>
-                {{if eq .Gender "F"}}woman{{else}}man{{end}}
-            </i>
+            <h6 style="text-wrap: nowrap;">
+                <a class="link underline" hx-get="/students/{{.StudentID}}" hx-swap="none" hx-push-url="true"
+                    data-loading-disable>
+                    {{.Lastname}} {{initial .Firstname}}. {{initial .Middlename}}.
+                </a>
+            </h6>
         </nav>
         <div class="grid">
-            <div class="s6">{{ .Birthday.Format "2006-01-02" }}</div>
-            <div class="s6">{{ .FormOfEducation }}</div>
+            <div class="s5">{{ .Birthday.Format "2006-01-02" }}</div>
+            <div class="s5">{{ .FormOfEducation }}</div>
+            <i class="s2">
+                {{if eq .Gender "F"}}woman{{else}}man{{end}}
+            </i>
             <div class="s6">{{ .PersonalFileNumber }}</div>
+            <nav class="s6 right-align">
+                <button class="circle error delete"
+                    _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
+                    data-loading-disable>
+                    <i>delete</i>
+                </button>
+
+                <button class="confirm secondary circle" style="display: none;"
+                    _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                    <i>close</i>
+                </button>
+
+                <button class="error confirm circle" id="delete-{{.StudentID}}" data-loading-disable
+                    hx-delete="/students/{{.StudentID}}" hx-target="#student-{{.StudentID}}" hx-swap="outerHTML"
+                    hx-indicator="#i-{{.StudentID}}" style="display: none;"
+                    _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
+                    <i>check</i>
+                </button>
+            </nav>
         </div>
-        <nav class="right-align">
-            <button class="circle error delete"
-                _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
-                data-loading-disable>
-                <i>delete</i>
-            </button>
-
-            <button class="confirm secondary" style="display: none;"
-                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
-                <i>close</i>
-                <span>Скасувати</span>
-            </button>
-
-            <div class="max"></div>
-
-            <button class="error confirm" id="delete-{{.StudentID}}" data-loading-disable
-                hx-delete="/students/{{.StudentID}}" hx-target="#student-{{.StudentID}}" hx-swap="outerHTML"
-                hx-indicator="#i-{{.StudentID}}" style="display: none;"
-                _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
-                <i>check</i>
-                <span>Підтвердити</span>
-            </button>
-        </nav>
-        <progress id="i-{{.StudentID}}" class="htmx-indicator"></progress>
+    </div>
+    <div class="tooltip top">
+        <b>
+            {{.Lastname}} {{.Firstname}} {{.Middlename}}
+        </b>
     </div>
 </article>
 {{ end }}

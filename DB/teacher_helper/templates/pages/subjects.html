@@ -64,23 +64,16 @@
 {{ end }}
 
 {{ define "subject" }}
-<article id="subject-{{.SubjectID}}" class="no-padding round s12 m6 l4" data-loading-states="subject-{{.SubjectID}}">
-    <img class="responsive small top-round" src="/images/placeholder.png">
-    <div class="padding">
-        <nav class="row">
-            <div>
-                <h6 style="text-wrap: nowrap;">
-                    <a class="link underline" hx-get="/subjects/{{.SubjectID}}" hx-swap="none" hx-push-url="true"
-                        data-loading-disable>
-                        {{.Title}}
-                    </a>
-                </h6>
-            </div>
-            <div class="max"></div>
-        </nav>
-        <div class="grid">
-            <div class="s6">{{.NumberOfHours}} годин</div>
-        </div>
+<article id="subject-{{.SubjectID}}" class="round s12 m6 l4" data-loading-states="subject-{{.SubjectID}}">
+    <nav class="row">
+        <h6 style="text-wrap: nowrap;">
+            <a class="link underline" hx-get="/subjects/{{.SubjectID}}" hx-swap="none" hx-push-url="true"
+                data-loading-disable>
+                {{.Title}}
+            </a>
+        </h6>
+
+        <div class="max"></div>
         <nav class="right-align">
             <button class="circle error delete"
                 _="on click hide <button.delete/> in closest <nav/> then show <button.confirm/> in closest <nav/>"
@@ -88,24 +81,22 @@
                 <i>delete</i>
             </button>
 
-            <button class="confirm secondary" style="display: none;"
+            <button class="confirm secondary circle" style="display: none;"
                 _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
                 <i>close</i>
-                <span>Скасувати</span>
             </button>
 
-            <div class="max"></div>
-
-            <button class="error confirm" id="delete-{{.SubjectID}}" data-loading-disable
+            <button class="error confirm circle" id="delete-{{.SubjectID}}" data-loading-disable
                 hx-delete="/subjects/{{.SubjectID}}" hx-target="#subject-{{.SubjectID}}" hx-swap="outerHTML"
                 hx-indicator="#i-{{.SubjectID}}" style="display: none;"
                 _="on click hide <button.confirm/> in closest <nav/> then show <button.delete/> in closest <nav/>">
                 <i>check</i>
-                <span>Підтвердити</span>
             </button>
         </nav>
-        <progress id="i-{{.SubjectID}}" class="htmx-indicator"></progress>
-    </div>
+    </nav>
+    <nav class="row">
+        {{.NumberOfHours}} годин
+    </nav>
 </article>
 {{ end }}
 

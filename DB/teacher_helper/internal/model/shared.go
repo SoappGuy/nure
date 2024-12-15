@@ -47,6 +47,9 @@ func (d *Date) Scan(value interface{}) error {
 		}
 		*d = Date(t)
 		return nil
+	case nil:
+		*d = Date(time.Now().AddDate(100, 0, 0))
+		return nil
 	default:
 		return fmt.Errorf("unsupported type for Date: %T", value)
 	}

@@ -387,3 +387,59 @@ func (r *StudentRepo) CreateConnection(parent *model.FamilyConnectionWithIDs) (i
 
 	return id, nil
 }
+
+func (r *StudentRepo) GetStatsForStudent(id int) ([]model.StudentStats, error) {
+	rows, err := r.db.NamedQuery(`
+		SELECT
+			s.student_ID,
+			subj.subject_ID,
+			subj.title as subject_title,
+			COUNT(DISTINCT l.lesson_ID) AS total_lessons,
+			COUNT(
+				DISTINCT CASE
+					WHEN a.attendance = 'Відсутній' THEN l.lesson_ID
+				END
+			) AS visits,
+			IFNULL(AVG(m.mark), 0) AS grade
+		FROM
+			Student s
+			CROSS JOIN Lesson l
+			LEFT JOIN Subject subj ON l.subject_ID = subj.subject_ID
+			LEFT JOIN Attendance a ON s.student_ID = a.student_ID
+			AND l.lesson_ID = a.lesson_ID
+			LEFT JOIN Mark m ON s.student_ID = m.student_ID
+			AND l.lesson_ID = m.lesson_ID
+		WHERE
+		s.student_ID = :student_ID
+		GROUP BY
+			s.student_ID,
+			subj.subject_ID
+		ORDER BY
+			subj.title
+		`,
+		map[string]interface{}{"student_ID": id},
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var stats []model.StudentStats
+	for rows.Next() {
+		var i model.StudentStats
+		if err := rows.StructScan(&i); err != nil {
+			return nil, err
+		}
+		stats = append(stats, i)
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return stats, nil
+}

@@ -62,6 +62,7 @@ type StudentPage struct {
 	MedicalCard *model.MedicalCard
 	Connections []model.FamilyConnection
 	Privileges  []model.Privilege
+	Stats       []model.StudentStats
 }
 
 func (h *StudentHandler) GetStudents(c echo.Context) error {
@@ -115,6 +116,11 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 		log.Error(err)
 	}
 
+	stats, err := h.studentRepo.GetStatsForStudent(id)
+	if err != nil {
+		log.Error(err)
+	}
+
 	links := NewLinks(PageTypeStudents)
 
 	student_page := StudentPage{
@@ -123,6 +129,7 @@ func (h *StudentHandler) GetStudent(c echo.Context) error {
 		MedicalCard: medicalCard,
 		Connections: connections,
 		Privileges:  privileges,
+		Stats:       stats,
 	}
 
 	return c.Render(http.StatusOK, "student.html/base", student_page)
