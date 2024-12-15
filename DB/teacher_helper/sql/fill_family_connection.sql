@@ -1,24 +1,26 @@
-/* sql-formatter-disable */
-SET @caretaker_1 = ( SELECT caretaker_ID FROM Caretaker WHERE lastname = 'Коваленко');
-SET @caretaker_2 = ( SELECT caretaker_ID FROM Caretaker WHERE lastname = 'Шевченко');
-SET @caretaker_3 = ( SELECT caretaker_ID FROM Caretaker WHERE lastname = 'Бондаренко');
-SET @caretaker_4 = ( SELECT caretaker_ID FROM Caretaker WHERE lastname = 'Ткаченко');
-SET @caretaker_5 = ( SELECT caretaker_ID FROM Caretaker WHERE lastname = 'Мельник');
-
-SET @student_1 = ( SELECT student_ID FROM Student WHERE lastname = 'Коваленко');
-SET @student_2 = ( SELECT student_ID FROM Student WHERE lastname = 'Шевченко');
-SET @student_3 = ( SELECT student_ID FROM Student WHERE lastname = 'Бондаренко');
-SET @student_4 = ( SELECT student_ID FROM Student WHERE lastname = 'Ткаченко');
-SET @student_5 = ( SELECT student_ID FROM Student WHERE lastname = 'Мельник');
-/* sql-formatter-enable */
 DELETE FROM FamilyConnection;
 
 
 INSERT INTO
     FamilyConnection (kinship, caretaker_ID, student_ID)
 VALUES
-    ('Батько', @caretaker_1, @student_1),
-    ('Мати', @caretaker_2, @student_2),
-    ('Вітчим', @caretaker_3, @student_3),
-    ('Брат', @caretaker_4, @student_4),
-    ('Дідусь', @caretaker_5, @student_5);
+    ('Батько', 1, 1),
+    ('Мати', 2, 1),
+    ('Батько', 3, 2),
+    ('Мати', 4, 2),
+    ('Батько', 5, 3),
+    ('Мати', 6, 3),
+    ('Батько', 7, 4),
+    ('Мати', 8, 4),
+    ('Батько', 9, 5),
+    ('Мати', 10, 5),
+    ('Дідусь', 11, 6),
+    ('Бабуся', 12, 6),
+    ('Батько', 13, 7),
+    ('Мати', 14, 7),
+    ('Батько', 15, 8),
+    ('Мати', 16, 8),
+    ('Батько', 17, 9),
+    ('Мати', 18, 9),
+    ('Батько', 19, 10),
+    ('Мати', 20, 10);

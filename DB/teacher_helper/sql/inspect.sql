@@ -1,5 +1,6 @@
 /* sql-formatter-disable */
-SET @temp = 1;
+SET @temp = 95;
+/* SELECT * FROM Lesson WHERE lesson_ID = @temp; */
 
 DESCRIBE class_manager.Student;
 Select * from Student;
@@ -13,10 +14,10 @@ DESCRIBE class_manager.Lesson;
 Select * from Lesson;
 DESCRIBE class_manager.Mark;
 Select * from Mark;
-/* DESCRIBE Subject; */
-/* SELECT * FROM Subject; */
-/* DESCRIBE class_manager.Lesson; */
-/* SELECT * FROM Lesson; */
-/* DESCRIBE class_manager.Mark; */
-/* SELECT * FROM Mark; */
+DESCRIBE Subject;
+SELECT * FROM Subject;
+DESCRIBE class_manager.Lesson;
+SELECT * FROM Lesson;
+DESCRIBE class_manager.Mark;
+SELECT * FROM Mark;
 /* sql-formatter-enable */
