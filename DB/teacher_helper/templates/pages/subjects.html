@@ -161,3 +161,12 @@
     {{ end }}
 </select>
 {{ end }}
+
+{{ define "subjects-multiselect" }}
+{{ range .Subjects }}
+<label class="checkbox">
+    <input type="checkbox" name="subject_ID" value="{{.SubjectID}}" onclick="onChange()">
+    <span>{{.Title}}</span>
+</label>
+{{ end }}
+{{ end }}

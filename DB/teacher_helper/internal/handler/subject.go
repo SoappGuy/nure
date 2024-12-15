@@ -26,6 +26,7 @@ func (h *SubjectHandler) RegisterRoutes(e *echo.Echo) {
 	e.PUT("/subjects/:id", h.UpdateSubject)
 
 	e.GET("/subjects/select/:id", h.SubjectsSelect)
+	e.GET("/subjects/multiselect", h.SubjectsMultiSelect)
 
 	e.GET("/subjects/search", h.SearchSubjects)
 	e.POST("/subjects", h.CreateSubject)
@@ -218,4 +219,23 @@ func (h *SubjectHandler) SubjectsSelect(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "subjects.html/subjects-select", subjectsSelect)
+}
+
+func (h *SubjectHandler) SubjectsMultiSelect(c echo.Context) error {
+	subjects, err := h.subjectRepo.GetWithParams(repo.QueryParams{
+		Query:        "%",
+		OrderBy:      "title",
+		IsDescending: false,
+	})
+
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get subjects"})
+	}
+
+	subjectsSelect := map[any]any{
+		"Subjects": subjects,
+	}
+
+	return c.Render(http.StatusOK, "subjects.html/subjects-multiselect", subjectsSelect)
 }

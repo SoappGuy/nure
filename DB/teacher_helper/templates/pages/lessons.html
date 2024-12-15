@@ -1,5 +1,5 @@
 {{ define "content" }}
-<main class="responsive" id="main_content" hx-boost="true">
+<main class="responsive row" id="main_content" hx-boost="true">
     <style>
         #days {
             display: grid;
@@ -34,54 +34,35 @@
             cursor: pointer;
         }
     </style>
-    <h1 class="right-align middle-align">Уроки</h1>
 
     <div hx-get="/lessons/{{.Calendar.CurrentYear}}/{{.Calendar.CurrentMonth}}/{{.Calendar.CurrentDay}}/0"
         hx-trigger="load" hx-swap="outerHTML"></div>
 
-    <div class="grid">
-        <article class="s4" id="sidebar">
-            <div class="tabs">
-                <a _="
+    <article style="width: 33%; height: 100%;" id="sidebar">
+        <div class="tabs">
+            <a _="
                     on click 
-                        remove .active from #lessons
+                        toggle .active on #filters
                     then
-                        add .active to #filters
-                    then
-                        remove .active from <a/> in closest <div/>
-                    then
-                        add .active to me
+                        toggle .active on me
                     end
                     ">
-                    <i>filter_alt</i>
-                    <span>Фільтри</span>
-                </a>
-                <a class="active" _="
-                    on click 
-                        remove .active from #filters
-                    then
-                        add .active to #lessons
-                    then
-                        remove .active from <a/> in closest <div/>
-                    then
-                        add .active to me
-                    end
-                    ">
-                    <i>history_edu</i>
-                    <span>Уроки</span>
-                </a>
-            </div>
-            {{ template "filters" . }}
-            <div class="page padding active grid" id="lessons" hx-swap-oob="outerHTML"></div>
-        </article>
-        <article class="s8 grid" id="calendar" hx-swap-oob="outerHTML"></article>
-    </div>
+                <i>filter_alt</i>
+                <span>Фільтри</span>
+                <i>keyboard_arrow_down</i>
+            </a>
+        </div>
+        {{ template "filters" .Calendar }}
+        <div class="page padding active grid" id="lessons" hx-include="#filters" hx-swap-oob="outerHTML"></div>
+    </article>
+    <article class="s8 grid" id="calendar" hx-swap-oob="outerHTML"></article>
     {{ template "add-lesson-dialog" . }}
 </main>
 {{ end }}
 
 {{ define "calendar" }}
-<article class="s8 grid" id="calendar" hx-swap-oob="outerHTML">
+<!-- <article class="s8 grid" id="calendar" hx-swap-oob="outerHTML"> -->
+<article class="grid" style="width: 66%;" id="calendar" hx-swap-oob="outerHTML">
     <div class="grid s12">
         <div class="s4"></div>
         <div class="s8 grid">
@@ -113,7 +94,7 @@
         {{ range .Days }}
         <article id="day-{{.Month}}-{{.Day}}"
             class="day no-margin {{day . $.CurrentMonth}} {{if .Selected}}selected{{end}} border center-align middle-align"
-            hx-get="/lessons/{{.Year}}/{{.Month}}/{{.Day}}/0" hx-swap="none" hx-push-url="true">
+            hx-get="/lessons/{{.Year}}/{{.Month}}/{{.Day}}/0" hx-include="#filters" hx-swap="none" hx-push-url="true">
             <h6>{{ .Day }}</h6>
 
             {{ if and (ne (len .Lessons) 0) (not .Selected) }}
@@ -122,6 +103,8 @@
         </article>
         {{ end }}
     </div>
+
+    <div style="height: 100%;"></div>
 </article>
 {{ end }}
 
@@ -163,8 +146,50 @@
 {{ end }}
 
 {{ define "filters" }}
-<div class="page padding" id="filters">
-</div>
+<script id="filters_path" hx-swap-oob="outerHTML">
+</script>
+<script>
+    // Функція для зміни стану всіх чекбоксів
+    function onChangeAll() {
+        const allSubjectsCheckbox = document.getElementById('all_subjects');
+        const subjectCheckboxes = document.querySelectorAll('#subject_list input[type="checkbox"]');
+        const isChecked = allSubjectsCheckbox.checked;
+
+        subjectCheckboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+    }
+
+    // Скидання стану "Всі", якщо інший чекбокс змінено
+    function onChange() {
+        const allSubjectsCheckbox = document.getElementById('all_subjects');
+        const subjectCheckboxes = document.querySelectorAll('#subject_list input[type="checkbox"]');
+        const everyChecked = Array.from(subjectCheckboxes).every(cb => cb.checked);
+        const everyUnchecked = Array.from(subjectCheckboxes).every(cb => !cb.checked);
+        console.log(everyChecked, everyUnchecked);
+        if (!this.checked) {
+            allSubjectsCheckbox.checked = false;
+        }
+
+        if (everyChecked || everyUnchecked) {
+            allSubjectsCheckbox.checked = true;
+        }
+    }
+</script>
+<form hx-get="/lessons/{{.CurrentYear}}/{{.CurrentMonth}}/{{.CurrentDay}}/0" hx-include="#filters" hx-swap="none"
+    hx-trigger="change" class="page padding grid" id="filters" autocomplete="off">
+    <fieldset>
+        <legend>Оберіть один або більше</legend>
+        <nav class="vertical">
+            <label class="checkbox">
+                <input type="checkbox" name="subject_ID" id="all_subjects" value="-1" checked onclick="onChangeAll()">
+                <span>Всі</span>
+            </label>
+            <hr />
+            <div id="subject_list" hx-get="/subjects/multiselect" hx-swap="innerHTML" hx-trigger="intersect once"></div>
+        </nav>
+    </fieldset>
+</form>
 {{ end }}
 
 {{ define "add-lesson-dialog" }}
@@ -228,6 +253,11 @@
 {{ end }}
 
 {{ define "oob-content" }}
+<script id="filters_path" hx-swap-oob="outerHTML">
+    var form = document.querySelector('form#filters');
+    form.setAttribute('hx-get', `/lessons/{{.Calendar.CurrentYear}}/{{.Calendar.CurrentMonth}}/{{.Calendar.CurrentDay}}/0`);
+    htmx.process(form);
+</script>
 {{ template "lessons" . }}
 {{ template "calendar" .Calendar }}
 {{ template "add-lesson-dialog" . }}

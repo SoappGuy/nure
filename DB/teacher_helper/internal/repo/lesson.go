@@ -18,18 +18,28 @@ func NewLessonRepo(db *sqlx.DB) *LessonRepo {
 	return &LessonRepo{db: db}
 }
 
-func (r *LessonRepo) GetLessonsAtDate(year int, month time.Month, day int) ([]model.Lesson, error) {
+type Filters struct {
+	SubjectIDs string
+}
+
+func (r *LessonRepo) GetLessonsAtDate(year int, month time.Month, day int, filters Filters) ([]model.Lesson, error) {
+	query :=
+		`SELECT
+			*
+		FROM
+			Lesson, Subject
+		WHERE
+			Lesson.subject_ID = Subject.subject_ID
+			AND start_date = ?`
+	if filters.SubjectIDs != "" {
+		query += " AND Lesson.subject_ID IN (" + filters.SubjectIDs + ")"
+	}
+	query += " ORDER BY lesson_number ASC, start_time ASC"
+
 	var lessons []model.Lesson
 	err := r.db.Select(
 		&lessons,
-		`SELECT 
-			* 
-		FROM 
-			Lesson, Subject 
-		WHERE 
-			Lesson.subject_ID = Subject.subject_ID 
-			AND start_date = ?
-		ORDER BY lesson_number ASC, start_time ASC`,
+		query,
 		fmt.Sprintf("%d-%d-%d", year, month, day),
 	)
 	return lessons, err

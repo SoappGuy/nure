@@ -2,7 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"slices"
 	"strconv"
+	"strings"
 	"teacher_helper/internal/model"
 	"teacher_helper/internal/repo"
 	"teacher_helper/internal/service"
@@ -40,29 +42,17 @@ func (h *LessonHandler) RegisterRoutes(e *echo.Echo) {
 	e.PUT("/attendance/:attendance_ID", h.UpdateAttendance)
 }
 
-type LessonsPage struct {
-	Title    string
-	Links    []Link
-	Calendar service.Calendar
-	Lessons  []model.Lesson
-}
-
-type LessonPage struct {
-	Title   string
-	Links   []Link
-	Lesson  model.Lesson
-	Details []service.StudentAtLesson
-}
-
 func (h *LessonHandler) GetLessons(c echo.Context) error {
+	filters := repo.Filters{}
+
 	today := time.Now()
-	calendar, err := service.NewCalendar(today, *h.lessonRepo)
+	calendar, err := service.NewCalendar(today, *h.lessonRepo, filters)
 	if err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	lessons, err := h.lessonRepo.GetLessonsAtDate(today.Year(), today.Month(), today.Day())
+	lessons, err := h.lessonRepo.GetLessonsAtDate(today.Year(), today.Month(), today.Day(), filters)
 	if err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
@@ -75,6 +65,10 @@ func (h *LessonHandler) GetLessons(c echo.Context) error {
 		Links:    links,
 		Calendar: *calendar,
 		Lessons:  lessons,
+	}
+
+	if c.Request().Header.Get("HX-Request") == "true" && !(c.Request().Header.Get("HX-History-Restore-Request") == "true") {
+		return c.Render(http.StatusOK, "lessons.html/oob-content", lessonsPage)
 	}
 
 	return c.Render(http.StatusOK, "lessons.html/base", lessonsPage)
@@ -118,13 +112,25 @@ func (h *LessonHandler) GetCallendar(c echo.Context) error {
 
 	today := time.Date(year, month, currDay, 0, 0, 0, 0, time.UTC)
 
-	calendar, err := service.NewCalendar(today, *h.lessonRepo)
+	filters := repo.Filters{}
+	params := c.QueryParams()
+	if len(params) > 0 {
+		if subjectIDs, exist := params["subject_ID"]; exist {
+			if slices.Contains(subjectIDs, "-1") {
+				filters.SubjectIDs = ""
+			} else {
+				filters.SubjectIDs = strings.Join(subjectIDs, ",")
+			}
+		}
+	}
+
+	calendar, err := service.NewCalendar(today, *h.lessonRepo, filters)
 	if err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	lessons, err := h.lessonRepo.GetLessonsAtDate(today.Year(), today.Month(), today.Day())
+	lessons, err := h.lessonRepo.GetLessonsAtDate(today.Year(), today.Month(), today.Day(), filters)
 	if err != nil {
 		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
@@ -139,7 +145,10 @@ func (h *LessonHandler) GetCallendar(c echo.Context) error {
 		Lessons:  lessons,
 	}
 
-	if c.Request().Header.Get("HX-Request") == "true" && !(c.Request().Header.Get("HX-History-Restore-Request") == "true") {
+	isHtmx := c.Request().Header.Get("HX-Request") == "true"
+	isHistoryRestore := c.Request().Header.Get("HX-History-Restore-Request") == "true"
+
+	if isHtmx && !isHistoryRestore {
 		return c.Render(http.StatusOK, "lessons.html/oob-content", lessonsPage)
 	}
 
@@ -367,4 +376,18 @@ func (h *LessonHandler) UpdateAttendance(c echo.Context) error {
 	} else {
 		return c.Render(http.StatusOK, "lesson.html/attendance-present", attendance)
 	}
+}
+
+type LessonsPage struct {
+	Title    string
+	Links    []Link
+	Calendar service.Calendar
+	Lessons  []model.Lesson
+}
+
+type LessonPage struct {
+	Title   string
+	Links   []Link
+	Lesson  model.Lesson
+	Details []service.StudentAtLesson
 }

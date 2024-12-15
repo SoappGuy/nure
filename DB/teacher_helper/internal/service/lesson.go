@@ -23,7 +23,7 @@ type Calendar struct {
 	Days             []Day
 }
 
-func NewCalendar(now time.Time, repo repo.LessonRepo) (*Calendar, error) {
+func NewCalendar(now time.Time, repo repo.LessonRepo, filters repo.Filters) (*Calendar, error) {
 	year, _ := now.ISOWeek()
 	today := now.Day()
 	month := now.Month()
@@ -54,7 +54,7 @@ func NewCalendar(now time.Time, repo repo.LessonRepo) (*Calendar, error) {
 			dayMonth = month + 1
 		}
 
-		lessons, err := repo.GetLessonsAtDate(year, dayMonth, dayNumber)
+		lessons, err := repo.GetLessonsAtDate(year, dayMonth, dayNumber, filters)
 		if err != nil {
 			return nil, err
 		}
