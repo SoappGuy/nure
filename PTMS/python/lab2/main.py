@@ -1,10 +1,11 @@
 from math import sqrt
 
 data = {
-    "150-200": [6.3, 5.6, 7.2, 4.7, 5.2],  # тис. грн
-    "200-250": [6.9, 5.7, 6.8, 6.5, 6.3],  # тис. грн
-    "250-300": [6.8, 7.1, 7.0, 6.5, 6.9],  # тис. грн
-    "300-400": [6.7, 7.3, 6.9, 6.6, 7.1],  # тис. грн
+    1: [6.3, 6.9, 6.8, 6.7],
+    2: [5.6, 5.7, 7.1, 7.3],
+    3: [7.2, 6.8, 7.0, 6.9],
+    4: [4.7, 6.5, 6.5, 6.6],
+    5: [5.2, 6.3, 6.9, 7.1]
 }
 a = 0.05
 
@@ -33,10 +34,10 @@ def grand_mean(data):
 # 3. Обчислення ступенів свободи
 def degrees_of_freedom(data):
     n = len(data)  # Кількість груп
-    group_n = len(data["150-200"])  # Кількість спостережень у кожній групі
+    group_n = len(data[1])  # Кількість спостережень у кожній групі
 
-    df_between = group_n - 1
-    df_within = n * group_n - group_n
+    df_between = n - 1
+    df_within = n * group_n - n
 
     return df_between, df_within
 
@@ -71,9 +72,12 @@ def f_observed(ms_between, ms_within):
     return ms_between / ms_within
 
 
-# 7. Обчислення критичного значення F розподілу для заданих ступенів свободи та рівня значущості.
-def f_critical(df1, df2, alpha):
-    return (1 / alpha) ** (1 / df1) + (1 / (2 * df2)) - (1 / (2 * sqrt(df1 * df2)))
+def check_hypothesis(f_observed, f_critical):
+    if f_observed > f_critical:
+        print("Нульова гіпотеза відхиляється")
+    else:
+        print("Нульова гіпотеза приймається")
+
 
 
 if __name__ == "__main__":
@@ -83,7 +87,7 @@ if __name__ == "__main__":
     ss_between, ss_within, ss_total = sum_of_squares(data)
     ms_between, ms_within = mean_squares(ss_between, ss_within, df_between, df_within)
     f_observed_value = f_observed(ms_between, ms_within)
-    f_critical_value = f_critical(df_between, df_within, a)
+    f_critical_value = 3.06
 
     for key, value in means.items():
         print(f"Середнє значення для групи {key}: {value:0.2f}")
@@ -107,7 +111,4 @@ if __name__ == "__main__":
     print(f"Критичне значення F: {f_critical_value:0.2f}")
     print()
 
-    if f_observed_value > f_critical_value:
-        print("Нульова гіпотеза відхиляється")
-    else:
-        print("Нульова гіпотеза приймається")
+    check_hypothesis(f_observed_value, f_critical_value)
