@@ -38,8 +38,7 @@
     <div class="s12" hx-get="/lessons/{{.Calendar.CurrentYear}}/{{.Calendar.CurrentMonth}}/{{.Calendar.CurrentDay}}/0"
         hx-trigger="load" hx-swap="outerHTML"></div>
 
-    <h3 class="s12">Уроки</h3>
-    <div class="s12 tabs">
+    <div class="s12 tabs" id="tabs">
         <a class="active"
             _="on click toggle .active on <a/> in closest <div/> then toggle .active on .page in closest <main/>">Календар</a>
         <a
@@ -77,8 +76,10 @@
                         <td><a hx-get="/subjects/{{.Subject.SubjectID}}"
                                 class="link active underline">{{.Subject.Title}}</a></td>
                         <td><a hx-get="/lesson/{{.LessonID}}" class="link active underline">{{.Topic}}</a></td>
-                        <td><a hx-get='/lessons/{{.StartDate.Format "2006/01/02"}}/0'
-                                class="link active underline">{{.StartDate.Format "2006-01-02"}}</a></td>
+                        <td><a hx-get='/lessons/{{.StartDate.Format "2006/01/02"}}/0' hx-swap="none"
+                                class="link active underline"
+                                _="on click toggle .active on <a/> in <div#tabs/> then toggle .active on .page in closest <main/>">{{.StartDate.Format
+                                "2006-01-02"}}</a></td>
                         <td>{{.StartTime.Time.Format "15:04"}}</td>
                         <td>{{.LessonNumber}}</td>
                     </tr>

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	"teacher_helper/internal/model"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -23,12 +24,13 @@ func (r *StudentRepo) GetWithParams(params QueryParams) ([]model.Student, error)
 		order = "ASC"
 	}
 
-	query := fmt.Sprintf(`
+	query := `
 	SELECT 
 		* 
 	FROM 
 		Student 
 	WHERE
+		(
 		firstname LIKE :query OR
 		middlename LIKE :query OR
 		lastname LIKE :query OR
@@ -36,7 +38,28 @@ func (r *StudentRepo) GetWithParams(params QueryParams) ([]model.Student, error)
 		birthday LIKE :query OR
 		form_of_education LIKE :query OR
 		personal_file_number LIKE :query
-	ORDER BY %s %s`, params.OrderBy, order)
+		)
+	`
+
+	if params.BirthdayFrom != model.Date(time.Time{}) {
+		query += " AND birthday >= :birthday_from"
+	}
+
+	if params.BirthdayTo != model.Date(time.Time{}) {
+		query += " AND birthday <= :birthday_to"
+	}
+
+	if params.Gender != "" {
+		query += fmt.Sprintf(" AND gender = '%s'", params.Gender)
+	}
+
+	if params.FormOfEducation != "" {
+		query += fmt.Sprintf(" AND form_of_education = '%s'", params.FormOfEducation)
+	}
+
+	query += fmt.Sprintf(" ORDER BY %s %s", params.OrderBy, order)
+
+	fmt.Printf("\n\n%s\n\n", query)
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
@@ -442,4 +465,53 @@ func (r *StudentRepo) GetStatsForStudent(id int) ([]model.StudentStats, error) {
 	}
 
 	return stats, nil
+}
+
+func (r *StudentRepo) GetCaretakers(id int) ([]model.Caretaker, error) {
+	rows, err := r.db.Query(`
+	SELECT
+		Caretaker.caretaker_ID,
+		firstname,
+		middlename,
+		lastname,
+		phone,
+		email
+	FROM
+		Caretaker
+	JOIN
+		FamilyConnection ON Caretaker.caretaker_ID = FamilyConnection.caretaker_ID
+	WHERE
+		FamilyConnection.student_ID = ?`,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var caretakers []model.Caretaker
+	for rows.Next() {
+		var caretaker model.Caretaker
+		if err := rows.Scan(
+			&caretaker.CaretakerID,
+			&caretaker.Firstname,
+			&caretaker.Middlename,
+			&caretaker.Lastname,
+			&caretaker.Phone,
+			&caretaker.Email,
+		); err != nil {
+			return nil, err
+		}
+		caretakers = append(caretakers, caretaker)
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return caretakers, nil
 }

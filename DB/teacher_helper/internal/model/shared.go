@@ -22,7 +22,15 @@ func (d Date) MarshalParam() (string, error) {
 }
 
 func (d Date) Format(format string) string {
-	return time.Time(d).Format(format)
+	t := time.Time(d)
+	if t.IsZero() {
+		return "Безстроково"
+	}
+	return t.Format(format)
+}
+
+func (d Date) Sub(other Date) time.Duration {
+	return time.Time(d).Sub(time.Time(other))
 }
 
 // Scan: Implement the Scanner interface for reading from the database
@@ -48,7 +56,7 @@ func (d *Date) Scan(value interface{}) error {
 		*d = Date(t)
 		return nil
 	case nil:
-		*d = Date(time.Now().AddDate(100, 0, 0))
+		// *d = Date(time.Now().AddDate(100, 0, 0))
 		return nil
 	default:
 		return fmt.Errorf("unsupported type for Date: %T", value)

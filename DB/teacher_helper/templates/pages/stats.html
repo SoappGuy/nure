@@ -1,0 +1,155 @@
+{{ define "content" }}
+<main class="padding" id="main_content" hx-swap-oob="true">
+    <article class="s6 grid">
+        <h4 class="s12">Учнівський рейтинг</h4>
+        <hr class="s12" />
+        <table class="stripes s12">
+            <thead>
+                <tr>
+                    <th class="min">П.І.Б.</th>
+                    <th class="min">Середній бал</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .StudentsRating }}
+                <tr>
+                    <td><a class="link underline active" href="/students/{{.StudentID}}">{{.Fullname}}</a></td>
+                    <td>{{ printf "%.1f" .AvgMark }}</td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </article>
+
+    <article class="s6 grid">
+        <h4 class="s12">Статистика учнів</h4>
+        <hr class="s12" />
+        <nav class="s4 vertical">
+            <div style="width: 100%;">
+                <h6 class="center-align">Кількість учнів по статі</h6>
+                <table class="border center-align">
+                    <thead>
+                        <tr>
+                            <th class="min">Стать</th>
+                            <th class="min">Кількість</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ range .GenderCount }}
+                        <tr>
+                            <td>{{ if eq .Gender "M" }}Хлопець{{else}}Дівчина{{end}}</td>
+                            <td>{{ .Count }}</td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+            <div style="width: 100%;">
+                <h6 class="center-align">Кількість учнів за формою навчання</h6>
+                <table class="border center-align">
+                    <thead>
+                        <tr>
+                            <th class="min">Форма</th>
+                            <th class="min">Кількість</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ range .FormOfEducationCount }}
+                        <tr>
+                            <td>{{ .FormOfEducation }}</td>
+                            <td>{{ .Count }}</td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </nav>
+        <div class="s8">
+            <h6 class="center-align">Список учнівських пільг</h6>
+            <table class="stripes">
+                <thead>
+                    <tr>
+                        <th class="min">Учень</th>
+                        <th class="min">Пільга</th>
+                        <th class="min">Дата завершення</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .PrivilegeSchedule }}
+                    <tr>
+                        <td><a class="link underline active" href="/students/{{.StudentID}}">{{.Fullname}}</a></td>
+                        <td>{{ .PrivilegeType }}</td>
+                        <td>{{ .PrivilegeExpirationDate.Format "2006-01-02" }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="s12 grid">
+        <h4 class="s12">Статистика здоров'я</h4>
+        <hr class="s12" />
+        <nav class="s4 vertical">
+            <div style="width: 100%;">
+                <h6 class="center-align">Групи крові</h6>
+                <table class="border center-align">
+                    <thead>
+                        <tr>
+                            <th class="min">Група крові</th>
+                            <th class="min">Кількість учнів</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ range .BloodGroupCount }}
+                        <tr>
+                            <td>{{ .BloodGroup }}{{ .RhFactor }}</td>
+                            <td>{{ .Count }}</td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+            <hr class="s12" />
+            <div style="width: 100%;">
+                <h6 class="center-align">Групи здоров'я</h6>
+                <table class="border center-align">
+                    <thead>
+                        <tr>
+                            <th class="min">Група здоров'я</th>
+                            <th class="min">Кількість учнів</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ range .HealthGroupCount }}
+                        <tr>
+                            <td>{{ .HealthGroup }}</td>
+                            <td>{{ .Count }}</td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </nav>
+        <div class="s8">
+            <h6 class="center-align">Розклад медичних оглядів</h6>
+            <table class="stripes">
+                <thead>
+                    <tr>
+                        <th class="min">Учень</th>
+                        <th class="min">Дата наступного огляду</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .NextMedCheck }}
+                    <tr>
+                        <td><a class="link underline active" href="/students/{{.StudentID}}">{{.Fullname}}</a></td>
+                        <td>{{ .NextInspectionDate.Format "2006-01-01" }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</main>
+{{ end }}

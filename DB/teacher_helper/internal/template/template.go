@@ -65,9 +65,18 @@ func NewTemplates() *Templates {
 				}
 			}
 		},
+		"now": func() time.Time {
+			return time.Now()
+		},
 	}
 
 	templates := make(map[string]*template.Template)
+
+	templates["main.html"] = template.Must(
+		template.New("main.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/main.html"),
+	)
 
 	templates["students.html"] = template.Must(
 		template.New("students.html").
@@ -115,6 +124,12 @@ func NewTemplates() *Templates {
 		template.New("lesson.html").
 			Funcs(funcs).
 			ParseFiles("templates/base.html", "templates/pages/lesson.html"),
+	)
+
+	templates["stats.html"] = template.Must(
+		template.New("query.html").
+			Funcs(funcs).
+			ParseFiles("templates/base.html", "templates/pages/stats.html"),
 	)
 
 	templates["query.html"] = template.Must(

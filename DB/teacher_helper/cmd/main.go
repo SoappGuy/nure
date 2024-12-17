@@ -45,11 +45,15 @@ func main() {
 	e.Static("/scripts", "static/js")
 	e.Static("/dist", "static/dist")
 
+	e.GET("/", func(c echo.Context) error {
+		return c.Render(200, "main.html/base", nil)
+	})
 	app.StudentHandler.RegisterRoutes(e)
 	app.CaretakerHandler.RegisterRoutes(e)
 	app.QueryHandler.RegisterRoutes(e)
 	app.SubjectHandler.RegisterRoutes(e)
 	app.LessonHandler.RegisterRoutes(e)
+	app.StatsHandler.RegisterRoutes(e)
 
 	log.Println("Started on :6969")
 	e.Start(":6969")
@@ -63,6 +67,7 @@ type App struct {
 	QueryHandler     *handler.QueryHandler
 	SubjectHandler   *handler.SubjectHandler
 	LessonHandler    *handler.LessonHandler
+	StatsHandler     *handler.StatsHandler
 }
 
 func NewApp(db *sqlx.DB) *App {
@@ -81,6 +86,9 @@ func NewApp(db *sqlx.DB) *App {
 	lessonRepo := repo.NewLessonRepo(db)
 	lessonHandler := handler.NewLessonHandler(lessonRepo)
 
+	statsRepo := repo.NewStatsRepo(db)
+	statsHandler := handler.NewStatsHandler(statsRepo)
+
 	return &App{
 		DB:               db,
 		StudentHandler:   studentHandler,
@@ -88,5 +96,6 @@ func NewApp(db *sqlx.DB) *App {
 		QueryHandler:     queryHandler,
 		SubjectHandler:   subjectHandler,
 		LessonHandler:    lessonHandler,
+		StatsHandler:     statsHandler,
 	}
 }

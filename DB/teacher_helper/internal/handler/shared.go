@@ -25,8 +25,7 @@ const (
 	PageTypeLessons PageType = "lessons"
 	PageTypeLesson  PageType = "lesson"
 
-	PageTypeMarks PageType = "marks"
-	PageTypeMark  PageType = "mark"
+	PageTypeStats PageType = "stats"
 
 	PageTypeQuery PageType = "query"
 )
@@ -48,7 +47,7 @@ func NewLinks(active PageType) []Link {
 		NewLink("caretakers_link", "Опікуни", "family_restroom", "/caretakers", active == PageTypeCaretakers),
 		NewLink("subjects_link", "Предмети", "history_edu", "/subjects", active == PageTypeSubjects),
 		NewLink("lessons_link", "Уроки", "book", "/lessons", active == PageTypeLessons),
-		NewLink("marks_link", "Оцінки", "hotel_class", "/marks", active == PageTypeMarks),
+		NewLink("stats_link", "Статистика", "analytics", "/stats", active == PageTypeStats),
 		NewLink("query_link", "Query", "search", "/query", active == PageTypeQuery),
 	}
 }

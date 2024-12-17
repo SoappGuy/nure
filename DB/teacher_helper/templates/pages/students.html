@@ -1,64 +1,92 @@
 {{ define "content" }}
 <main class="responsive" id="main_content">
     <h1 class="right-align middle-align">Учні</h1>
-    <div class="grid">
-        {{ template "controls-row" . }}
-        <div class="s12 grid" id="students">
+    <div class="row">
+        <article class="grid" style="display: flex; flex-direction: column; width: 25%;">
+            <form hx-get="/students/search" hx-target="#students" class="s12 grid"
+                hx-trigger="change, keyup changed, load" id="filters" style="display: flex; flex-direction: column;">
+
+                <div class="s12 grid">
+                    <button class="error circle s2" type="reset submit">
+                        <i>close</i>
+                    </button>
+                    <div class="field label border round small s10">
+                        <input name="query" _="on keyup trigger query on #filters">
+                        <label>Пошук</label>
+                    </div>
+                </div>
+
+                <div class="s12 grid">
+                    <label class="circle checkbox icon s2">
+                        <input type="checkbox" class="circle" name="is_descending" value="1">
+                        <span>
+                            <i>south</i>
+                            <i>north</i>
+                        </span>
+                    </label>
+
+                    <div class="field label border round small s10">
+                        <select name="order_by">
+                            <option value="lastname">Ім'я</option>
+                            <option value="birthday">Дата народження</option>
+                            <option value="form_of_education">Форма навчання</option>
+                            <option value="gender">Стать</option>
+                            <option value="personal_file_number">Номер особової справи &#5760;</option>
+                        </select>
+                        <label>Сортувати за</label>
+                    </div>
+                </div>
+
+                <div class="field label border round small s12">
+                    <select name="form_of_education" required>
+                        <option value="Денна">Денна</option>
+                        <option value="Домашня">Домашня</option>
+                        <option value="Вечірня">Вечірня</option>
+                    </select>
+                    <label>Форма навчання</label>
+                    <i>arrow_drop_down</i>
+                </div>
+
+                <div class="field label border round small s12">
+                    <input name="birthday_from" type="date" value="2000-01-01">
+                    <label>Від</label>
+                </div>
+                <div class="field label border round small s12">
+                    <input name="birthday_to" type="date" value='{{ now.Format "2006-01-02" }}'>
+                    <label>До</label>
+                </div>
+
+                <div class="field middle-align s12">
+                    <nav>
+                        <label class="radio">
+                            <input type="radio" name="gender" value="M">
+                            <span>Хлопець</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="gender" value="F">
+                            <span>Дівчина</span>
+                        </label>
+                    </nav>
+                </div>
+
+                <div class="s12" style="flex: 1;"></div>
+            </form>
+            <div class="s12" style="flex: 1;"></div>
+            <button class="s12"
+                _="on click add .active to <div.overlay/> in #addDialog then add .active to <dialog/> in #addDialog">
+                <i>add</i>
+                <span>Додати учня</span>
+            </button>
+        </article>
+        <div class="grid" id="students" style="width: 75%;">
         </div>
     </div>
     {{ template "add-dialog" . }}
 </main>
 {{ end }}
 
-{{ define "controls-row" }}
-<nav class="controls s12" id="controls_row">
-    <form class="row" hx-boost="true" hx-get="/students/search" hx-target="#students" autocomplete="off">
-        <div hx-get="/students/search" hx-trigger="load">
-        </div>
-
-        <button class="error circle" hx-get="/students/search">
-            <i>close</i>
-        </button>
-        <button type="submit">
-            <i>search</i>
-            <span>Застосувати</span>
-        </button>
-
-        <div class="field label border round small">
-            <input name="query">
-            <label>Пошук</label>
-        </div>
-        <div class="field label border round small">
-            <select name="order_by">
-                <option value="lastname">Ім'я</option>
-                <option value="birthday">Дата народження</option>
-                <option value="form_of_education">Форма навчання</option>
-                <option value="gender">Стать</option>
-                <option value="personal_file_number">Номер особової справи &#5760;</option>
-            </select>
-            <label>Сортувати за</label>
-        </div>
-        <label class="circle checkbox icon">
-            <input type="checkbox" class="circle" name="is_descending" value="1">
-            <span>
-                <i>south</i>
-                <i>north</i>
-            </span>
-        </label>
-    </form>
-
-    <div class="max">
-    </div>
-
-    <button _="on click add .active to <div.overlay/> in #addDialog then add .active to <dialog/> in #addDialog">
-        <i>add</i>
-        <span>Додати учня</span>
-    </button>
-</nav>
-{{ end }}
-
 {{ define "students" }}
-<div class="s12 grid" id="students" hx-swap-oob="true">
+<div class="grid" id="students" hx-swap-oob="true" style="width: 75%;">
     {{ range . }}
     {{ template "student" . }}
     {{ end }}

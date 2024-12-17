@@ -1,5 +1,7 @@
 package handler
 
+import "fmt"
+
 import (
 	"net/http"
 	"strconv"
@@ -7,6 +9,7 @@ import (
 	"teacher_helper/internal/model"
 	"teacher_helper/internal/repo"
 
+	"github.com/go-pdf/fpdf"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
@@ -48,6 +51,10 @@ func (h *StudentHandler) RegisterRoutes(e *echo.Echo) {
 	e.POST("/students", h.CreateStudent)
 	e.DELETE("/students/:id", h.DeleteStudent)
 	e.PUT("/students/:id", h.UpdateStudent)
+
+	e.GET("/students/print/general/:id", h.PrintStudentInfo)
+	e.GET("/students/print/medcard/:id", h.PrintMedicalCard)
+	e.GET("/students/print/grades/:id", h.PrintGrades)
 }
 
 type StudentsPage struct {
@@ -168,15 +175,18 @@ func (h *StudentHandler) StudentInfo(c echo.Context) error {
 func (h *StudentHandler) SearchStudents(c echo.Context) error {
 	query := new(repo.QueryParams)
 	if err := c.Bind(query); err != nil {
+		log.Error(err)
 		return err
 	}
 
 	if err := query.Validate(); err != nil {
+		log.Error(err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	students, err := h.studentRepo.GetWithParams(*query)
 	if err != nil {
+		log.Error(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get students"})
 	}
 
@@ -493,4 +503,198 @@ func (h *StudentHandler) CreatePrivilege(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusCreated, "student.html/privilege", privilege)
+}
+
+func (h *StudentHandler) PrintStudentInfo(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	student, err := h.studentRepo.GetByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get student"})
+	}
+
+	caretakers, err := h.studentRepo.GetCaretakers(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get CareTakers"})
+	}
+
+	pdf := fpdf.New("P", "mm", "A6", "")
+
+	pdf.AddUTF8Font("Roboto", "", "roboto.ttf")
+	pdf.SetFont("Roboto", "", 14)
+
+	pdf.AddPage()
+	pdf.Cell(0, 10, fmt.Sprintf("%s %s %s", student.Lastname, student.Firstname, student.Middlename))
+	pdf.Ln(8)
+
+	pdf.SetFont("Roboto", "", 12)
+	var gender string
+	if student.Gender == model.Male {
+		gender = "Хлопець"
+	} else {
+		gender = "Дівчина"
+	}
+
+	pdf.Cell(0, 10, gender)
+	pdf.Ln(8)
+	pdf.Cell(0, 10, "Дата народження: "+student.Birthday.Format("2006-01-02"))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, "Форма навчання: "+string(student.FormOfEducation))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, "№ особової справи: "+student.PersonalFileNumber)
+	pdf.Ln(8)
+	if student.Note != nil {
+		pdf.Cell(0, 10, *student.Note)
+		pdf.Ln(8)
+	}
+
+	pdf.Ln(16)
+	pdf.Cell(0, 10, "Опікуни:")
+	pdf.SetFont("Roboto", "", 8)
+
+	for _, caretaker := range caretakers {
+		pdf.Ln(6)
+		pdf.Cell(0, 10, fmt.Sprintf("%s %s %s", caretaker.Lastname, caretaker.Firstname, caretaker.Middlename))
+		pdf.Ln(4)
+		pdf.Cell(0, 10, caretaker.Phone)
+		pdf.Ln(4)
+		pdf.Cell(0, 10, caretaker.Email)
+	}
+
+	err = pdf.OutputFileAndClose("student_info.pdf")
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create PDF"})
+	}
+
+	return c.File("student_info.pdf")
+}
+
+func (h *StudentHandler) PrintMedicalCard(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	student, err := h.studentRepo.GetByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get student"})
+	}
+
+	medicalCard, err := h.studentRepo.GetMedicalCard(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get MedicalCard"})
+	}
+
+	pdf := fpdf.New("P", "mm", "A6", "")
+
+	pdf.AddUTF8Font("Roboto", "", "roboto.ttf")
+	pdf.SetFont("Roboto", "", 16)
+
+	pdf.AddPage()
+	pdf.Cell(0, 10, fmt.Sprintf("%s %s %s", student.Lastname, student.Firstname, student.Middlename))
+	pdf.Ln(8)
+
+	pdf.SetFont("Roboto", "", 12)
+	pdf.Cell(0, 10, fmt.Sprintf("Група крові: %s", string(medicalCard.BloodGroup)))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, fmt.Sprintf("Резус-фактор: %s", string(medicalCard.RhFactor)))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, fmt.Sprintf("Вага: %.1f кг", medicalCard.Weight))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, fmt.Sprintf("Зріст: %.1f см", medicalCard.Height))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, fmt.Sprintf("Група здоров'я: %s", medicalCard.HealthGroup))
+	pdf.Ln(16)
+	pdf.Cell(0, 10, "Медичні огляди:")
+	pdf.Ln(8)
+	pdf.Cell(0, 10, fmt.Sprintf("Попередній - %s", (*medicalCard).LastInspectionDate.Format("2006-01-02")))
+	pdf.Ln(8)
+	pdf.Cell(0, 10, fmt.Sprintf("Наступний - %s", (*medicalCard).NextInspectionDate.Format("2006-01-02")))
+
+	err = pdf.OutputFileAndClose("medical_card.pdf")
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create PDF"})
+	}
+
+	return c.File("medical_card.pdf")
+}
+
+func (h *StudentHandler) PrintGrades(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid student ID"})
+	}
+
+	student, err := h.studentRepo.GetByID(id)
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't get student"})
+	}
+
+	stats, err := h.studentRepo.GetStatsForStudent(id)
+	if err != nil {
+		log.Error(err)
+	}
+
+	pdf := fpdf.New("L", "mm", "A5", "")
+
+	pdf.AddUTF8Font("Roboto", "", "roboto.ttf")
+	pdf.SetFont("Roboto", "", 16)
+
+	pdf.AddPage()
+
+	pdf.Cell(0, 10, fmt.Sprintf("%s %s %s", student.Lastname, student.Firstname, student.Middlename))
+	pdf.Ln(8)
+
+	pdf.Cell(0, 10, "Оцінки:")
+	pdf.Ln(8)
+
+	pdf.SetFont("Roboto", "", 12)
+	// for _, stat := range stats {
+	// 	pdf.CellFormat(80, 10, stat.SubjectTitle, "0", 0, "L", false, 0, "")               // Перший стовпець (80 мм)
+	// 	pdf.CellFormat(30, 10, fmt.Sprintf("%.2f", stat.Grade), "0", 0, "L", false, 0, "") // Другий стовпець (30 мм)
+	// 	pdf.Ln(8)                                                                          // Перехід на наступний рядок
+	// }
+	// Розміри колонок
+	columnWidth := 90.0 // Ширина кожної колонки (A4 ширина ≈ 210 мм, дві колонки по 90 мм + відступи)
+	margin := 10.0      // Відступи між колонками
+
+	// Координати початку
+	leftColumnX := margin
+	rightColumnX := margin + columnWidth + 10 // Відступ між колонками
+
+	// Висота рядка
+	lineHeight := 8.0
+
+	// Малювання двох колонок
+	for i, stat := range stats {
+		// Визначаємо колонку: ліва або права
+		if i%2 == 0 {
+			// Ліва колонка
+			pdf.SetXY(leftColumnX, margin+float64(i/2)*lineHeight+20)
+		} else {
+			// Права колонка
+			pdf.SetXY(rightColumnX, margin+float64(i/2)*lineHeight+20)
+		}
+
+		pdf.CellFormat(80, 10, stat.SubjectTitle, "0", 0, "L", false, 0, "")               // Перший стовпець (80 мм)
+		pdf.CellFormat(30, 10, fmt.Sprintf("%.2f", stat.Grade), "0", 0, "L", false, 0, "") // Другий стовпець (30 мм)
+	}
+
+	err = pdf.OutputFileAndClose("grades.pdf")
+	if err != nil {
+		log.Error(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Can't create PDF"})
+	}
+
+	return c.File("grades.pdf")
 }

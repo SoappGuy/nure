@@ -14,8 +14,11 @@
 
 {{ define "student-info" }}
 <article class="round s12 l8 grid" id="student-info">
-    <h5 class="s12 middle-align row">
+    <h5 class="s12 row">
         {{.Lastname}} {{.Firstname}} {{.Middlename}}
+        <div class="max"></div>
+        <button class="circle" onclick="location.href='/students/print/general/{{.StudentID}}';">
+            <i>print</i></button>
     </h5>
     <hr class="s12" />
     <h6 class="s12 row">Особова справа <div class="max"></div> {{.PersonalFileNumber}}</h6>
@@ -314,6 +317,8 @@
         <h5 class="s12 row">
             <button class="circle" hx-get="/medicalCard/{{.StudentID}}/edit" hx-target="#medical-card"
                 hx-swap="outerHTML"><i>edit</i></button>
+            <button class="circle"
+                onclick="location.href='/students/print/medcard/{{.StudentID}}';"><i>print</i></button>
             <div class="max"></div>
             Медична Картка
         </h5>
@@ -562,6 +567,14 @@
 
 {{ define "stats" }}
 <article class="s12">
+    <nav class="row">
+        <h5>Статистика</h5>
+        <div class="max"></div>
+        <button onclick="location.href='/students/print/grades/{{(index . 0).StudentID}}';">
+            <i>print</i><span>Роздрукувати</span>
+        </button>
+    </nav>
+    <hr class="max small-margin" />
     <table class="border">
         <thead>
             <tr>
@@ -572,7 +585,7 @@
                     <h6 class="small bold">Всього занять</h6>
                 </th>
                 <th>
-                    <h6 class="small bold">Занять відвідано</h6>
+                    <h6 class="small bold">Занять пропущено</h6>
                 </th>
                 <th>
                     <h6 class="small bold">Підсумкова оцінка</h6>
@@ -585,7 +598,7 @@
                 <td><a href="/subjects/{{.SubjectID}}" class="link active underline">{{.SubjectTitle}}</a></td>
                 <td>{{.TotalLessons}}</td>
                 <td>{{.Visits}}</td>
-                <td>{{.Grade}}</td>
+                <td>{{printf "%.1f" .Grade}}</td>
                 {{ end }}
         </tbody>
     </table>

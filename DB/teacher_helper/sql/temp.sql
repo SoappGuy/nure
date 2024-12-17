@@ -1,27 +1,90 @@
 SELECT
-    subj.subject_ID,
-    subj.title,
-    COUNT(DISTINCT l.lesson_ID) AS total_lessons,
-    COUNT(
-        DISTINCT CASE
-            WHEN a.attendance = 'Відсутній' THEN l.lesson_ID
-        END
-    ) AS Visits,
-    IFNULL(AVG(m.mark), 0) AS grade
+    Student.student_ID,
+    CONCAT_WS(
+        ' ',
+        Student.lastname,
+        Student.firstname,
+        Student.middlename
+    ) AS fullname,
+    MedicalCard.next_inspection_date
 FROM
-    Student s
-    CROSS JOIN Lesson l
-    LEFT JOIN Subject subj ON l.subject_ID = subj.subject_ID
-    LEFT JOIN Attendance a ON s.student_ID = a.student_ID
-    AND l.lesson_ID = a.lesson_ID
-    LEFT JOIN Mark m ON s.student_ID = m.student_ID
-    AND l.lesson_ID = m.lesson_ID
+    MedicalCard,
+    Student
 WHERE
-    s.student_ID = 1
-GROUP BY
-    s.student_ID,
-    subj.subject_ID
+    MedicalCard.student_ID = Student.student_ID
 ORDER BY
-    s.lastname,
-    s.firstname,
-    subj.title;
+    MedicalCard.next_inspection_date;
+
+
+SELECT
+    Student.student_ID,
+    CONCAT_WS(
+        ' ',
+        Student.lastname,
+        Student.firstname,
+        Student.middlename
+    ) AS fullname,
+    AVG(Mark.mark) AS avg_mark
+FROM
+    Mark
+    JOIN Student ON Mark.student_ID = Student.student_ID
+GROUP BY
+    Student.student_ID
+ORDER BY
+    AVG(Mark.mark) DESC;
+
+
+SELECT
+    Student.student_ID,
+    CONCAT_WS(
+        ' ',
+        Student.lastname,
+        Student.firstname,
+        Student.middlename
+    ) AS fullname,
+    Privilege.type,
+    Privilege.expiration_date
+FROM
+    Privilege
+    JOIN Student ON Privilege.student_ID = Student.student_ID;
+
+
+SELECT
+    form_of_education,
+    COUNT(*) AS COUNT
+FROM
+    Student
+GROUP BY
+    form_of_education;
+
+
+SELECT
+    gender,
+    COUNT(*) AS COUNT
+FROM
+    Student
+GROUP BY
+    gender;
+
+
+SELECT
+    MedicalCard.health_group,
+    COUNT(*) AS COUNT
+FROM
+    MedicalCard
+GROUP BY
+    MedicalCard.health_group;
+
+
+SELECT
+    MedicalCard.blood_group,
+    MedicalCard.rh_factor,
+    COUNT(*) AS COUNT
+FROM
+    MedicalCard
+GROUP BY
+    MedicalCard.blood_group,
+    MedicalCard.rh_factor
+ORDER BY
+    MedicalCard.blood_group,
+    MedicalCard.rh_factor;
