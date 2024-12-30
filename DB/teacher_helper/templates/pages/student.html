@@ -1,3 +1,7 @@
+{{ define "title" }}
+<title> {{.Student.Lastname}} {{.Student.Firstname}} {{.Student.Middlename}} | Teacher Helper</title>
+{{ end }}
+
 {{ define "content" }}
 <main class="responsive" id="main_content" hx-swap-oob="true">
     <div class="grid">
@@ -369,7 +373,7 @@
             <div class="field small suffix no-margin s12 l4">
                 <input class="small-width" type="number" value="{{.Height}}" name="height" required>
             </div>
-            кг.
+            см.
         </h6>
         <h6 class="s12 row">Група здоров'я <div class="max"></div>
             <div class="field small no-margin s12 l4">
@@ -478,7 +482,11 @@
             </nav>
         </summary>
         <p class="left-margin large-margin">
+            {{if .ExpirationDate }}
             до {{.ExpirationDate.Format "2006-01-02"}}
+            {{else}}
+            Безстроково
+            {{end}}
             <br>
             {{.Description}}
         </p>

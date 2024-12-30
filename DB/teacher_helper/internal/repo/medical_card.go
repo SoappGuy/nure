@@ -18,9 +18,9 @@ func (r *StudentRepo) GetMedicalCard(id int) (*model.MedicalCard, error) {
 func (r *StudentRepo) CreateMedicalCard(medicalCard *model.MedicalCard) error {
 	result, err := r.db.NamedExec(`
 		INSERT INTO MedicalCard
-			(student_ID, weight, height, health_group, blood_group, rh_factor, last_inspection_date, next_inspection_date, note)
+			(student_ID, weight, height, health_group, blood_group, rh_factor, last_inspection_date, next_inspection_date)
 		VALUES
-			(:student_ID, :weight, :height, :health_group, :blood_group, :rh_factor, :last_inspection_date, :next_inspection_date, :note)
+			(:student_ID, :weight, :height, :health_group, :blood_group, :rh_factor, :last_inspection_date, :next_inspection_date)
 		`,
 		medicalCard,
 	)
@@ -57,8 +57,7 @@ func (r *StudentRepo) UpdateMedicalCard(medicalCard *model.MedicalCard) error {
 			blood_group = :blood_group,
 			rh_factor = :rh_factor,
 			last_inspection_date = :last_inspection_date,
-			next_inspection_date = :next_inspection_date,
-			note = :note
+			next_inspection_date = :next_inspection_date
 		WHERE 
 			medical_card_ID = :medical_card_ID
 		`,
