@@ -25,7 +25,7 @@ type Calendar struct {
 }
 
 func NewCalendar(now time.Time, repo repo.LessonRepo, filters repo.Filters) (*Calendar, error) {
-	year, _ := now.ISOWeek()
+	year := now.Year()
 	today := now.Day()
 	month := now.Month()
 
@@ -88,7 +88,6 @@ func daysInMonth(m time.Month, year int) int {
 }
 
 func startDaysFrom(now time.Time) int {
-	// year, week := now.ISOWeek()
 	monthStart := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
 	weekday := monthStart.Weekday()
 

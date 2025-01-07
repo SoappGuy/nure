@@ -1,13 +1,12 @@
 package handler
 
-import "fmt"
-
 import (
+	"fmt"
 	"net/http"
 	"strconv"
-
 	"teacher_helper/internal/model"
 	"teacher_helper/internal/repo"
+	"time"
 
 	"github.com/go-pdf/fpdf"
 	"github.com/labstack/echo/v4"
@@ -659,11 +658,6 @@ func (h *StudentHandler) PrintGrades(c echo.Context) error {
 	pdf.Ln(8)
 
 	pdf.SetFont("Roboto", "", 12)
-	// for _, stat := range stats {
-	// 	pdf.CellFormat(80, 10, stat.SubjectTitle, "0", 0, "L", false, 0, "")               // Перший стовпець (80 мм)
-	// 	pdf.CellFormat(30, 10, fmt.Sprintf("%.2f", stat.Grade), "0", 0, "L", false, 0, "") // Другий стовпець (30 мм)
-	// 	pdf.Ln(8)                                                                          // Перехід на наступний рядок
-	// }
 	// Розміри колонок
 	columnWidth := 90.0 // Ширина кожної колонки (A4 ширина ≈ 210 мм, дві колонки по 90 мм + відступи)
 	margin := 10.0      // Відступи між колонками
@@ -689,6 +683,9 @@ func (h *StudentHandler) PrintGrades(c echo.Context) error {
 		pdf.CellFormat(80, 10, stat.SubjectTitle, "0", 0, "L", false, 0, "")               // Перший стовпець (80 мм)
 		pdf.CellFormat(30, 10, fmt.Sprintf("%.2f", stat.Grade), "0", 0, "L", false, 0, "") // Другий стовпець (30 мм)
 	}
+
+	pdf.Ln(20)
+	pdf.Cell(0, 10, fmt.Sprintf("Станом на: %s", time.Now().Format("2006-01-02")))
 
 	err = pdf.OutputFileAndClose("grades.pdf")
 	if err != nil {

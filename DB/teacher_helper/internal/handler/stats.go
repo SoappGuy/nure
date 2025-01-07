@@ -92,8 +92,5 @@ func (h *StatsHandler) GetPage(c echo.Context) error {
 		BloodGroupCount:      bloodGroupCount,
 	}
 
-	// log.Printf("%#v", stats_page)
-	// dump(stats_page)
-
 	return c.Render(http.StatusOK, "stats.html/base", stats_page)
 }
